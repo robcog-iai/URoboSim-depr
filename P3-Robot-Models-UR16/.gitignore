@@ -1,0 +1,42 @@
+# Unreal
+*.db
+*.opendb
+/UnrealRobotsP3/Binaries
+/UnrealRobotsP3/Build
+/UnrealRobotsP3/DerivedDataCache
+/UnrealRobotsP3/Intermediate
+/UnrealRobotsP3/Saved
+/UnrealRobotsP3/.vs
+*.sln
+*.suo
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app

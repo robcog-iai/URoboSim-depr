@@ -1,0 +1,417 @@
+<robot name="pi_robot">
+	<!-- * * * Link Definitions * * * -->
+	<link name="base_link">
+		<inertial>
+			<mass value="5.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.64 0.52 0.17"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="base_laser">
+		<inertial>
+			<mass value="0.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.05" length="0.14"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="cpu_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.38 0.38 0.14"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="upper_base_link">
+		<inertial>
+			<mass value="2.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.17" length="0.2"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="torso_link">
+		<inertial>
+			<mass value="3.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.1" length="0.48"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="head_pan_link">
+		<inertial>
+			<mass value="0.25"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.1 0.09 0.09"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="head_tilt_link">
+		<inertial>
+			<mass value="0.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.076 0.08"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="neck_link">
+		<inertial>
+			<mass value="0.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.05 0.084"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="head_link">
+		<inertial>
+			<mass value="0.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.14 0.22"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="antenna_link">
+		<inertial>
+			<mass value="0.02"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.004" length="0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_shoulder_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.05 0.03 0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_shoulder_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.05 0.03 0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_shoulder_forward_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_shoulder_forward_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_shoulder_up_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_shoulder_up_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_upper_arm_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.015" length="0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_upper_arm_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.0150" length="0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_elbow_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.07 0.07 0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_elbow_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.07 0.07 0.1"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_lower_arm_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.015" length="0.22"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_lower_arm_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<cylinder radius="0.015" length="0.22"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_wrist_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_wrist_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.1 0.06"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="left_hand_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.02 0.12"/>
+			</geometry>
+		</visual>
+	</link>
+	<link name="right_hand_link">
+		<inertial>
+			<mass value="1.5"/>
+		</inertial>
+		<visual>
+			<geometry>
+				<box size="0.06 0.02 0.12"/>
+			</geometry>
+		</visual>
+	</link>
+	<!-- * * * Joint Definitions * * * -->
+	<joint name="cpu_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="cpu_link"/>
+		<origin xyz="0.0 0 0.15" rpy="0 0 0"/>
+	</joint>
+	<joint name="base_laser_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="base_laser"/>
+		<origin xyz="0.35 0 0.05" rpy="0 0 0"/>
+	</joint>
+	<joint name="upper_base_joint" type="fixed">
+		<parent link="cpu_link"/>
+		<child link="upper_base_link"/>
+		<origin xyz="0.0 0 0.15" rpy="0 0 0"/>
+	</joint>
+	<joint name="torso_joint" type="revolute">
+		<parent link="upper_base_link"/>
+		<child link="torso_link"/>
+		<origin xyz="0.0 0 0.15" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-3.1416" upper="3.1416" effort="10" velocity="3"/>
+	</joint>
+	<!-- -->
+	<joint name="head_pan_servo" type="fixed">
+		<parent link="torso_link"/>
+		<child link="head_pan_link"/>
+		<origin xyz="0.0 0 0.25" rpy="0 0 0"/>
+	</joint>
+	<joint name="head_pan_joint" type="revolute">
+		<parent link="head_pan_link"/>
+		<child link="head_tilt_link"/>
+		<origin xyz="0.0 0 0.08" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit lower="-3.1416" upper="3.1416" effort="10" velocity="3"/>
+	</joint>
+	<!-- -->
+	<joint name="head_tilt_joint" type="revolute">
+		<parent link="head_tilt_link"/>
+		<child link="neck_link"/>
+		<origin xyz="0.0 0 0.08" rpy="0 0 0"/>
+		<axis xyz="0 1 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+	</joint>
+	<joint name="neck_joint" type="fixed">
+		<parent link="neck_link"/>
+		<child link="head_link"/>
+		<origin xyz="0.095 0 0.15" rpy="0 0 0"/>
+	</joint>
+	<joint name="antenna_joint" type="fixed">
+		<parent link="head_link"/>
+		<child link="antenna_link"/>
+		<origin xyz="0.0 0.05 0.15" rpy="0 0 0"/>
+	</joint>
+	<!-- Arms -->
+	<joint name="left_shoulder_joint" type="fixed">
+		<parent link="torso_link"/>
+		<child link="left_shoulder_link"/>
+		<origin xyz="0 -0.1 .165" rpy="0 0 0"/>
+	</joint>
+	<joint name="right_shoulder_joint" type="fixed">
+		<parent link="torso_link"/>
+		<child link="right_shoulder_link"/>
+		<origin xyz="0 0.1 .165" rpy="0 0 0"/>
+	</joint>
+	<joint name="left_shoulder_forward_joint" type="revolute">
+		<parent link="left_shoulder_link"/>
+		<child link="left_shoulder_forward_link"/>
+		<origin xyz="0 -0.05 0" rpy="0 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+	<joint name="right_shoulder_forward_joint" type="revolute">
+		<parent link="right_shoulder_link"/>
+		<child link="right_shoulder_forward_link"/>
+		<origin xyz="0 0.05 0" rpy="0 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+	<joint name="left_shoulder_up_joint" type="revolute">
+		<parent link="left_shoulder_forward_link"/>
+		<child link="left_shoulder_up_link"/>
+		<origin xyz="0 -0.075 -0.035" rpy="1.575 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="0 1 0"/>
+	</joint>
+	<joint name="right_shoulder_up_joint" type="revolute">
+		<parent link="right_shoulder_forward_link"/>
+		<child link="right_shoulder_up_link"/>
+		<origin xyz="0 0.075 -0.035" rpy="1.575 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="0 1 0"/>
+	</joint>
+	<!-- --->
+	<joint name="left_upper_arm_joint" type="fixed">
+		<parent link="left_shoulder_up_link"/>
+		<child link="left_upper_arm_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+	</joint>
+	<joint name="right_upper_arm_joint" type="fixed">
+		<parent link="right_shoulder_up_link"/>
+		<child link="right_upper_arm_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+	</joint>
+	<!-- 2--->
+	<joint name="left_elbow_joint" type="revolute">
+		<parent link="left_upper_arm_link"/>
+		<child link="left_elbow_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="0 0 0"/>
+		<limit lower="-3.146" upper="3.146" effort="10" velocity="3"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+	<joint name="right_elbow_joint" type="revolute">
+		<parent link="right_upper_arm_link"/>
+		<child link="right_elbow_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="0 0 0"/>
+		<limit lower="-3.146" upper="3.146" effort="10" velocity="3"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+	<joint name="left_lower_arm_joint" type="fixed">
+		<parent link="left_elbow_link"/>
+		<child link="left_lower_arm_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="0 0 0"/>
+	</joint>
+	<joint name="right_lower_arm_joint" type="fixed">
+		<parent link="right_elbow_link"/>
+		<child link="right_lower_arm_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="0 0 0"/>
+	</joint>
+	<joint name="left_wrist_joint" type="revolute">
+		<parent link="left_lower_arm_link"/>
+		<child link="left_wrist_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="1 0 0"/>
+	</joint>
+	<joint name="right_wrist_joint" type="revolute">
+		<parent link="right_lower_arm_link"/>
+		<child link="right_wrist_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+		<limit lower="-1.57" upper="1.57" effort="10" velocity="3"/>
+		<axis xyz="1 0 0"/>
+	</joint>
+	<joint name="left_hand_joint" type="fixed">
+		<parent link="left_wrist_link"/>
+		<child link="left_hand_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+	</joint>
+	<joint name="right_hand_joint" type="fixed">
+		<parent link="right_wrist_link"/>
+		<child link="right_hand_link"/>
+		<origin xyz="0.0 0 -0.085" rpy="1.575 0 0"/>
+	</joint>
+</robot>
