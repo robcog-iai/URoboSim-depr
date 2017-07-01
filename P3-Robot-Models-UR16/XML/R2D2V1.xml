@@ -1,0 +1,207 @@
+<robot name="flexible">
+  <!-- R2D2, only joints def. xyz and rpy -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.6" radius="0.2"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="right_leg">
+    <visual>
+      <geometry>
+        <box size="0.6 .2 .1"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="right_base">
+    <visual>
+      <geometry>
+        <box size=".1 0.4 .1"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="right_front_wheel">
+    <visual>
+      <geometry>
+        <cylinder length=".1" radius="0.035"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="right_back_wheel">
+    <visual>
+      <geometry>
+        <cylinder length=".1" radius="0.035"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="left_leg">
+    <visual>
+      <geometry>
+        <box size="0.6 .2 .1"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="left_base">
+    <visual>
+      <geometry>
+        <box size=".1 0.4 .1"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="left_front_wheel">
+    <visual>
+      <geometry>
+        <cylinder length=".1" radius="0.035"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="left_back_wheel">
+    <visual>
+      <geometry>
+        <cylinder length=".1" radius="0.035"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="gripper_pole">
+    <visual>
+      <geometry>
+        <cylinder length="0.2" radius=".01"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="head">
+    <visual>
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="box">
+    <visual>
+      <geometry>
+        <box size=".08 .08 .08"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <!-- Gripper as box geometry -->
+  <link name="left_gripper">
+    <visual>
+      <geometry>
+        <box size=".02 .06 .12"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <link name="right_gripper">
+    <visual>
+      <geometry>
+        <box size=".02 .06 .12"/>
+      </geometry>
+    </visual>
+  </link>
+  
+  <!-- joints -->
+  <joint name="base_to_right_leg" type="fixed">
+    <parent link="base_link"/>
+    <child link="right_leg"/>
+    <origin xyz="0.25 0 0 " rpy="0 1.5705 0"/>
+  </joint>
+
+  <joint name="right_base_joint" type="fixed">
+    <parent link="right_leg"/>
+    <child link="right_base"/>
+    <origin xyz="0 0 -0.3" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="right_front_wheel_joint" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="right_base"/>
+    <child link="right_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0 0.175  -0.09"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+
+  <joint name="right_back_wheel_joint" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="right_base"/>
+    <child link="right_back_wheel"/>
+    <origin rpy="0 0 0" xyz="0 -0.175 -0.09"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+
+  <joint name="base_to_left_leg" type="fixed">
+    <parent link="base_link"/>
+    <child link="left_leg"/>
+    <origin xyz="-0.25 0 0 " rpy="0 1.57075 0"/>
+  </joint>
+
+  <joint name="left_base_joint" type="fixed">
+    <parent link="left_leg"/>
+    <child link="left_base"/>
+    <origin xyz="0 0 -0.3"/>
+  </joint>
+
+  <joint name="left_front_wheel_joint" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="left_base"/>
+    <child link="left_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0 0.175 -0.09"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+
+  <joint name="left_back_wheel_joint" type="continuous">
+    <axis xyz="0 0 1"/>
+    <parent link="left_base"/>
+    <child link="left_back_wheel"/>
+    <origin rpy="0 0 0" xyz="0 -0.175 -0.09"/>
+    <limit effort="100" velocity="100"/>
+  </joint>
+
+  <joint name="gripper_extension" type="prismatic">
+    <parent link="base_link"/>
+    <child link="gripper_pole"/>
+    <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
+    <origin rpy="1.57075 0 0" xyz="0 .3 0.2"/>
+  </joint>
+
+  <joint name="head_swivel" type="continuous">
+    <parent link="base_link"/>
+    <child link="head"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 0.325"/>
+  </joint>
+
+  <joint name="tobox" type="fixed">
+    <parent link="head"/>
+    <child link="box"/>
+    <origin xyz="0 0.1414 0.1414"/>
+  </joint>
+
+  <joint name="gripper_polleft" type="revolute">
+    <parent link="gripper_pole"/>
+    <child link="left_gripper"/>
+    <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.015 0.15 0"/>
+  </joint>
+
+  <joint name="gripper_polright" type="revolute">
+    <parent link="gripper_pole"/>
+    <child link="right_gripper"/>
+    <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="-0.015 0.15 0"/>
+  </joint>
+
+</robot>
