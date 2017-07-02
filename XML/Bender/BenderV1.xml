@@ -1,0 +1,569 @@
+<robot name="Bender_robot"> 
+
+	<!-- * * * Torso * * * --> 
+	<link name="torso_link"> 
+	<inertial>
+            <mass value="50"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Torso.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="head_link"> 
+		<inertial>
+            <mass value="40"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Head.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<!-- * * * Foot-Left Elements * * * --> 
+	<link name="foot_Left_link"> 
+		<inertial>
+            <mass value="15"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Foot.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Left1_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Left2_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Left3_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Left4_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Left5_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+	
+	<!-- * * * Foot-Right Elements * * * --> 
+	<link name="leg_Right1_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Right2_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Right3_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Right4_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="leg_Right5_link"> 
+		<inertial>
+            <mass value="12"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Leg.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="foot_Right_link"> 
+		<inertial>
+            <mass value="15"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Foot.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="door_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Door.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<!-- joints --> 
+	<joint name="torso_head" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="head_link"/> 
+		<origin xyz="0.2505 0 1.275" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="torso_leg_Left" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="leg_Left1_link"/> 
+		<origin xyz="0.095 -0.85 -3.75" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="torso_leg_Right" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="leg_Right1_link"/> 
+		<origin xyz="0.095 0.85 -3.75" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Left1" type="fixed"> 
+		<parent link="leg_Left1_link"/> 
+		<child link="leg_Left2_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Right1" type="fixed"> 
+		<parent link="leg_Right1_link"/> 
+		<child link="leg_Right2_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Left2" type="fixed"> 
+		<parent link="leg_Left2_link"/> 
+		<child link="leg_Left3_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Right2" type="fixed"> 
+		<parent link="leg_Right2_link"/> 
+		<child link="leg_Right3_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Left3" type="fixed"> 
+		<parent link="leg_Left3_link"/> 
+		<child link="leg_Left4_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Right3" type="fixed"> 
+		<parent link="leg_Right3_link"/> 
+		<child link="leg_Right4_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Left4" type="fixed"> 
+		<parent link="leg_Left4_link"/> 
+		<child link="leg_Left5_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Right4" type="fixed"> 
+		<parent link="leg_Right4_link"/> 
+		<child link="leg_Right5_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Foot_Left" type="fixed"> 
+		<parent link="leg_Left5_link"/> 
+		<child link="foot_Left_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="leg_Foot_Right" type="fixed"> 
+		<parent link="leg_Right5_link"/> 
+		<child link="foot_Right_link"/> 
+		<origin xyz="0 0 -1" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="torso_door" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="door_link"/> 
+		<origin xyz="2.1 0 -0.15" rpy="0 0 0"/> 
+	</joint>
+
+	<!-- Arms --> 
+	<link name="arm_Right1_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Left1_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Right2_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Left2_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Right3_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Left3_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Right4_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Left4_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+		<link name="arm_Right5_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="arm_Left5_link"> 
+		<inertial>
+            <mass value="2"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Arm.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+
+	<!-- -->
+
+	<joint name="torso_Arm_Left" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="arm_Left1_link"/> 
+		<origin xyz="0 -3.1 0.8" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="torso_Arm_Right" type="fixed"> 
+		<parent link="torso_link"/> 
+		<child link="arm_Right1_link"/> 
+		<origin xyz="0 3.1 0.8" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Left1" type="fixed"> 
+		<parent link="arm_Left1_link"/> 
+		<child link="arm_Left2_link"/> 
+		<origin xyz="0 -1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Right1" type="fixed"> 
+		<parent link="arm_Right1_link"/> 
+		<child link="arm_Right2_link"/> 
+		<origin xyz="0 1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Left2" type="fixed"> 
+		<parent link="arm_Left2_link"/> 
+		<child link="arm_Left3_link"/> 
+		<origin xyz="0 -1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Right2" type="fixed"> 
+		<parent link="arm_Right2_link"/> 
+		<child link="arm_Right3_link"/> 
+		<origin xyz="0 1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Left3" type="fixed"> 
+		<parent link="arm_Left3_link"/> 
+		<child link="arm_Left4_link"/> 
+		<origin xyz="0 -1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Right3" type="fixed"> 
+		<parent link="arm_Right3_link"/> 
+		<child link="arm_Right4_link"/> 
+		<origin xyz="0 1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Left4" type="fixed"> 
+		<parent link="arm_Left4_link"/> 
+		<child link="arm_Left5_link"/> 
+		<origin xyz="0 -1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<joint name="arm_Right4" type="fixed"> 
+		<parent link="arm_Right4_link"/> 
+		<child link="arm_Right5_link"/> 
+		<origin xyz="0 1 0" rpy="0 0 0"/> 
+	</joint>
+
+	<!-- hand --> 
+	<link name="hand_Right_link"> 
+		<inertial>
+            <mass value="3"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Hand.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="hand_Left_link"> 
+		<inertial>
+            <mass value="3"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Hand.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<joint name="arm_Left" type="fixed"> 
+		<parent link="arm_Left5_link"/> 
+		<child link="hand_Left_link"/> 
+		<origin xyz="0 -0.3 0" rpy="1.575 0 0"/> 
+	</joint>
+
+	<joint name="arm_Right" type="fixed"> 
+		<parent link="arm_Right5_link"/> 
+		<child link="hand_Right_link"/> 
+		<origin xyz="0 0.3 0" rpy="-1.575 0 0"/> 
+	</joint>
+
+	<!-- finger R--> 
+	<link name="finger1_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="finger2_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="finger3_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<joint name="hand_finger1" type="fixed"> 
+		<parent link="hand_Right_link"/> 
+		<child link="finger1_link"/> 
+		<origin xyz="0 0.5 0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+	<joint name="hand_finger2" type="fixed"> 
+		<parent link="hand_Right_link"/> 
+		<child link="finger2_link"/> 
+		<origin xyz="0.75 0.5 -0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+	<joint name="hand_finger3" type="fixed"> 
+		<parent link="hand_Right_link"/> 
+		<child link="finger3_link"/> 
+		<origin xyz="-0.75 0.5 -0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+	<!-- finger L--> 
+	<link name="finger_Sec_1_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="finger_Sec_2_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<link name="finger_Sec_3_link"> 
+		<inertial>
+            <mass value="0.5"/>
+        </inertial>
+		<visual> 
+			<geometry> 
+				<mesh filename="/Meshes/B_Finger.fbx"/> 
+			</geometry> 
+		</visual> 
+	</link>
+
+	<joint name="hand_Sec_finger1" type="fixed"> 
+		<parent link="hand_Left_link"/> 
+		<child link="finger_Sec_1_link"/> 
+		<origin xyz="0 -0.5 0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+	<joint name="hand_Sec_finger2" type="fixed"> 
+		<parent link="hand_Left_link"/> 
+		<child link="finger_Sec_2_link"/> 
+		<origin xyz="0.75 -0.5 -0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+	<joint name="hand_Sec_finger3" type="fixed"> 
+		<parent link="hand_Left_link"/> 
+		<child link="finger_Sec_3_link"/> 
+		<origin xyz="-0.75 -0.5 -0.75" rpy="1.575 0 0"/> 
+	</joint>
+
+</robot> 
