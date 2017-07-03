@@ -1,0 +1,3 @@
+[submodule "ROSBridgePlugin"]
+	path = ROSBridgePlugin
+	url = ./Plugins/ROSBridgePlugin
