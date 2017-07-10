@@ -2,30 +2,30 @@
 
 #include "ROSBridgeSubscriber.h"
 #include "std_msgs/String.h"
-#include "CoreMinimal.h"
+#include "Core.h"
 
-class UROSStringSubScriber : public UROSBridgeSubscriber {
+class FROSStringSubScriber : public FROSBridgeSubscriber {
 
 public:
-    UROSStringSubScriber(FString Topic_) :
-        UROSBridgeSubscriber(TEXT("std_msgs/String"), Topic_)
+    FROSStringSubScriber(FString Topic_) :
+        FROSBridgeSubscriber(TEXT("std_msgs/String"), Topic_)
     {
 
     }
 
-    TSharedPtr<FROSBridgeMsg> ParseMessage(const FJsonObject *JsonObject) override
+    ~FROSStringSubScriber() override {};
+
+    FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) override
     {
-        TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage =
-            MakeShareable(new FROSBridgeMsgStdmsgsString());
+        FROSBridgeMsgStdmsgsString* StringMessage = new FROSBridgeMsgStdmsgsString();
         StringMessage->FromJson(JsonObject);
+        UE_LOG(LogTemp, Log, TEXT("Data in String Message: %s"), *StringMessage->GetData());
 
-        return StaticCastSharedPtr<FROSBridgeMsg>(StringMessage);
+        return StringMessage;
     }
 
-    void CallBack(const FROSBridgeMsg* msg) override {
-        TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage =
-                StaticCastSharedPtr<FROSBridgeMsgStdmsgsString> ( MakeShareable (msg) );
-
+    void CallBack(FROSBridgeMsg* msg) override {
+        FROSBridgeMsgStdmsgsString* StringMessage = static_cast<FROSBridgeMsgStdmsgsString*>(msg);
         // do something
         UE_LOG(LogTemp, Log, TEXT("Message received! Content: %s"), *StringMessage->GetData());
 
