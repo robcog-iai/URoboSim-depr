@@ -545,9 +545,7 @@ OTHER_FILES += \
 	"$$unrealRootPath/Engine/Plugins/Tests/FunctionalTestingEditor/Source/FunctionalTestingEditor.Build.cs" \
 	"$$unrealRootPath/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/RuntimeTests.Build.cs" \
 	"$$unrealRootPath/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/ScreenshotTools.Build.cs" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/ROSBridgePlugin.Build.cs" \
 	"$$ROSBridgeTestRootPath/Source/ROSBridgeTest/ROSBridgeTest.Build.cs" \
  
-
-DISTFILES += \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/ROSBridgePlugin.Build.cs
 

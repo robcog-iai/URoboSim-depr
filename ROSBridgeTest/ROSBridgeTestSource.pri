@@ -6412,15 +6412,14 @@ SOURCES += \
 	"$$unrealRootPath/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Private/Slate/RichTextMarkupProcessingTest.cpp" \
 	"$$unrealRootPath/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/CompareScreenshotsCommandlet.cpp" \
 	"$$unrealRootPath/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/ScreenshotTools.cpp" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/HTML5NetworkingPrivate.cpp" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgeHandler.cpp" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgePlugin.cpp" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocket.cpp" \
+	"$$ROSBridgeTestRootPath/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocketServer.cpp" \
 	"$$ROSBridgeTestRootPath/Source/ROSBridgeTest/ROSBridgeTest.cpp" \
 	"$$ROSBridgeTestRootPath/Source/ROSBridgeTest/ROSBridgeTestGameModeBase.cpp" \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgePlugin.cpp \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgeHandler.cpp \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/HTML5NetworkingPrivate.cpp \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocket.cpp \
-    $$PWD/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocketServer.cpp \
-    $$PWD/Source/ROSBridgeTest/ROSStringSubscriber.cpp
-
-HEADERS += \
-    $$PWD/Source/ROSBridgeTest/ROSStringSubscriber.h
+	"$$ROSBridgeTestRootPath/Source/ROSBridgeTest/ROSStringSubscriber.cpp" \
+	"$$ROSBridgeTestRootPath/Source/ROSBridgeTest/Private/ROSBridgeActor.cpp" \
+ 
 

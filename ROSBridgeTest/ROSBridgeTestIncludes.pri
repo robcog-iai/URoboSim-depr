@@ -2048,6 +2048,15 @@ INCLUDEPATH += \
 	/data/work/UnrealEngine/Engine/Intermediate/Build/Linux/B4D820EA/BootstrapPackagedGame/Inc/BootstrapPackagedGame \
 	/data/work/UnrealEngine/Engine/Source/Programs/Windows/BootstrapPackagedGame \
 	Source \
+	Source/ROSBridgeTest/Public \
 	Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/ROSBridgeTest \
 	Source/ROSBridgeTest \
+	/data/work/UnrealEngine/Engine/Source/ROSBridgePlugin/Public \
+	Plugins/ROSBridgePlugin/Source \
+	Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Classes \
+	Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public \
+	Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs \
+	Plugins/ROSBridgePlugin/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/ROSBridgePlugin \
+	Plugins/ROSBridgePlugin/Source/ROSBridgePlugin \
+	Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private \
 

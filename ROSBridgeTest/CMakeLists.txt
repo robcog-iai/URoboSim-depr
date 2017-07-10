@@ -6423,8 +6423,15 @@ set(SOURCE_FILES
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Private/Slate/RichTextMarkupProcessingTest.cpp"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/CompareScreenshotsCommandlet.cpp"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/ScreenshotTools.cpp"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/HTML5NetworkingPrivate.cpp"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgeHandler.cpp"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/ROSBridgePlugin.cpp"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocket.cpp"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private/WebSocketServer.cpp"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSBridgeTest.cpp"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSBridgeTestGameModeBase.cpp"
+	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSStringSubscriber.cpp"
+	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/Private/ROSBridgeActor.cpp"
  )
 
 set(HEADER_FILES 
@@ -14758,8 +14765,29 @@ set(HEADER_FILES
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/Public/RuntimeTests.h"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Private/CompareScreenshotsCommandlet.h"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/Public/ScreenshotTools.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Classes/MyPluginObject.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/HTML5NetworkingPrivate.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/IROSBridgePlugin.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/ROSBridgeHandler.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/ROSBridgeMsg.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/ROSBridgePublisher.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/ROSBridgeSubscriber.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/WebSocket.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/WebSocketServer.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/Byte.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/Int16.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/Int32.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/Int64.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/Int8.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/String.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/UInt16.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/UInt32.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/UInt64.h"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs/UInt8.h"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSBridgeTest.h"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSBridgeTestGameModeBase.h"
+	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSStringSubscriber.h"
+	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/Public/ROSBridgeActor.h"
  )
 
 set(CONFIG_FILES 
@@ -15309,6 +15337,7 @@ set(CONFIG_FILES
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/FunctionalTestingEditor/Source/FunctionalTestingEditor.Build.cs"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/RuntimeTests/Source/RuntimeTests/RuntimeTests.Build.cs"
 	"${UE4_ROOT_PATH}/Engine/Plugins/Tests/ScreenshotTools/Source/ScreenshotTools/ScreenshotTools.Build.cs"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/ROSBridgePlugin.Build.cs"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/ROSBridgeTest.Build.cs"
  )
 
@@ -18712,6 +18741,7 @@ include_directories(
 	"${UE4_ROOT_PATH}/Engine/Source/Programs/Windows/BootstrapPackagedGame"
 	"${UE4_ROOT_PATH}/Engine/Source"
 	"${GAME_ROOT_PATH}/Source"
+	"${GAME_ROOT_PATH}/Source/ROSBridgeTest/Public"
 	"${GAME_ROOT_PATH}/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/ROSBridgeTest"
 	"${GAME_ROOT_PATH}/Source/ROSBridgeTest"
 	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Core/Public"
@@ -19017,6 +19047,36 @@ include_directories(
 	"${UE4_ROOT_PATH}/Engine/Source/Runtime/NetworkReplayStreaming/NetworkReplayStreaming/Public"
 	"${UE4_ROOT_PATH}/Engine/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/NetworkReplayStreaming"
 	"${UE4_ROOT_PATH}/Engine/Source/Runtime/NetworkReplayStreaming/NetworkReplayStreaming"
+	"${UE4_ROOT_PATH}/Engine/Source/ROSBridgePlugin/Public"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Classes"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Public/std_msgs"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/ROSBridgePlugin"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking/Public"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking/Public/Common"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking/Public/Interfaces"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking/Public/Interfaces/IPv4"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking/Public/Interfaces/Steam"
+	"${UE4_ROOT_PATH}/Engine/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/Networking"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Networking"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Sockets/Public"
+	"${UE4_ROOT_PATH}/Engine/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/Sockets"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/Sockets"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/libWebSockets/libwebsockets/include"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/libWebSockets/libwebsockets/include/Linux"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/libWebSockets/libwebsocketsinclude"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/libWebSockets/libwebsockets/include/Linux/x86_64-unknown-linux-gnu"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/libWebSockets"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/OpenSSL/1_0_2h/include/Linux/x86_64-unknown-linux-gnu"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/OpenSSL"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/zlib/v1.2.8/include/Linux/x86_64-unknown-linux-gnu"
+	"${UE4_ROOT_PATH}/Engine/Source/ThirdParty/zlib"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/JsonUtilities/Public"
+	"${UE4_ROOT_PATH}/Engine/Intermediate/Build/Linux/B4D820EA/UE4Editor/Inc/JsonUtilities"
+	"${UE4_ROOT_PATH}/Engine/Source/Runtime/JsonUtilities"
+	"${GAME_ROOT_PATH}/Plugins/ROSBridgePlugin/Source/ROSBridgePlugin/Private"
  )
 
 add_definitions( 
@@ -19529,6 +19589,7 @@ add_definitions(
 	-DUE_BUILD_DEVELOPMENT_WITH_DEBUGGAME=0
 	-DDEPRECATED_FORGAME=DEPRECATED
 	-DROSBRIDGETEST_API=
+	-DROSBRIDGEPLUGIN_API=
  )
 
 add_custom_target(UE4Client-Linux-Debug ${BUILD} UE4Client Linux Debug  $(ARGS))
