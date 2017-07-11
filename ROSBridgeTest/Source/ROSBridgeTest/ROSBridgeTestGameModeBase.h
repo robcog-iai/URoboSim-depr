@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+#include "Core.h"
 #include "Engine.h"
 
 #include "ROSBridgeActor.h"
@@ -21,6 +22,7 @@ class ROSBRIDGETEST_API AROSBridgeTestGameModeBase : public AGameModeBase
 public:
     FROSBridgeHandler* Handler;
     FROSStringSubScriber* Subscriber;
+    FROSBridgePublisher* Publisher;
 
     AROSBridgeTestGameModeBase(const FObjectInitializer &ObjectInitializer) :
         AGameModeBase(ObjectInitializer){
@@ -39,6 +41,9 @@ public:
         Handler->AddSubscriber(Subscriber);
         UE_LOG(LogTemp, Log, TEXT("Added chatter subscriber. "));
 
+        Publisher = new FROSBridgePublisher(TEXT("std_msgs/String"), TEXT("/talker"));
+        Handler->AddPublisher(Publisher);
+
         Handler->Connect();
         UE_LOG(LogTemp, Log, TEXT("Connected to WebSocket server. "));
     }
@@ -46,6 +51,12 @@ public:
     void Tick(float DeltaSeconds) override {
         Super::Tick(DeltaSeconds);
         UE_LOG(LogTemp, Log, TEXT("GameMode Ticks, DeltaSeconds = %.3f."), DeltaSeconds);
+
+        FROSBridgeMsgStdmsgsString* StringMsgToSend = new
+            FROSBridgeMsgStdmsgsString(TEXT("New Message at ") + FDateTime::Now().ToString());
+        Handler->PublishMsg(TEXT("/talker"), StringMsgToSend);
+        delete StringMsgToSend;
+
         Handler->Render();
     }
 
@@ -55,7 +66,8 @@ public:
         // UE_LOG(LogTemp, Log, TEXT("SharedPtr RefCount = %d. "), Handler.GetSharedReferenceCount());
         Handler->Disconnect();
         // delete Handler;
-        // delete Subscriber;
+        delete Subscriber;
+        delete Publisher;
         UE_LOG(LogTemp, Log, TEXT("After Logout() function. "));
         AGameModeBase::Logout(Exiting);
     }
