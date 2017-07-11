@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{15E5F246-3906-100F-0000-023FD8FEEDEB}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ROSBridgeTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
