@@ -4,9 +4,13 @@ using UnrealBuildTool;
 
 public class ROSBridgeTest : ModuleRules
 {
-	public ROSBridgeTest(TargetInfo Target)
-	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+	public ROSBridgeTest(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicIncludePaths.AddRange(new string[] { "ROSBridgeTest/Public", "ROSBridgePlugin/Public", "ROSBridgePlugin/Classes" });
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ROSBridgePlugin", "Json", "JsonUtilities" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "ROSBridgePlugin" });
 
