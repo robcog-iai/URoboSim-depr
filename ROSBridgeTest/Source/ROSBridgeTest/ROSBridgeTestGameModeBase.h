@@ -1,14 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
 #include "Core.h"
 #include "Engine.h"
 
-#include "ROSBridgeActor.h"
 #include "ROSBridgeHandler.h"
+#include "ROSBridgePublisher.h"
 #include "ROSStringSubscriber.h"
+
+// #include "ROSBridgeActor.h"
+#include "ROSStringSubscriber.h"
+
 #include "ROSBridgeTestGameModeBase.generated.h"
 
 /**
@@ -33,7 +36,7 @@ public:
     void BeginPlay() override
     {
         Super::BeginPlay();
-        AROSBridgeActor* Actor = GetWorld()->SpawnActor<AROSBridgeActor>(AROSBridgeActor::StaticClass());
+        // AROSBridgeActor* Actor = GetWorld()->SpawnActor<AROSBridgeActor>(AROSBridgeActor::StaticClass());
         Handler = new FROSBridgeHandler(TEXT("127.0.0.1"), 9001);
         UE_LOG(LogTemp, Log, TEXT("Handler Created. "));
 
