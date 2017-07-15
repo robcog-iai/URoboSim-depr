@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class ROSBridgeTest : ModuleRules
 {
-	public ROSBridgeTest(ReadOnlyTargetRules Target) : base(Target)
+	public ROSBridgeTest(TargetInfo Target)// : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
