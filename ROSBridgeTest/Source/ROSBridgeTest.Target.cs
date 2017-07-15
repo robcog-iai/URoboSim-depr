@@ -5,11 +5,22 @@ using System.Collections.Generic;
 
 public class ROSBridgeTestTarget : TargetRules
 {
-    public ROSBridgeTestTarget(TargetInfo Target) : base(Target)
+    public ROSBridgeTestTarget(TargetInfo Target)
     {
         Type = TargetType.Game;
-
-        ExtraModuleNames.AddRange(new string[] { "ROSBridgeTest" });
     }
+
+	//
+	// TargetRules interface.
+	//
+
+	public override void SetupBinaries(
+		TargetInfo Target,
+		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
+		ref List<string> OutExtraModuleNames
+		)
+	{
+		OutExtraModuleNames.AddRange( new string[] { "ROSBridgeTest" } );
+	}
 }
 
