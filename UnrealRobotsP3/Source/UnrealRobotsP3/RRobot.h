@@ -50,12 +50,18 @@ public:
 		FString Parent;
 		FString Child;
 
-		FVector Axis;
+		FVector Axis;		
 
 		float LowerLimit;
 		float UpperLimit;
 		float Effort;
 		float Velocity;
+
+		//safety_controller
+		float k_velocity;
+		//dynamics
+		float damping;
+		float friction;
 
 		bool operator== (const FRJoint &Joint)
 		{
