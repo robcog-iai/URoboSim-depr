@@ -11,6 +11,8 @@
 
 // #include "ROSBridgeActor.h"
 #include "ROSStringSubscriber.h"
+#include "sensor_msgs/JointState.h"
+#include "std_msgs/Header.h"
 
 #include "ROSBridgeTestGameModeBase.generated.h"
 
@@ -44,7 +46,7 @@ public:
         Handler->AddSubscriber(Subscriber);
         UE_LOG(LogTemp, Log, TEXT("Added chatter subscriber. "));
 
-        Publisher = new FROSBridgePublisher(TEXT("std_msgs/String"), TEXT("/talker"));
+        Publisher = new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker"));
         Handler->AddPublisher(Publisher);
 
         Handler->Connect();
@@ -55,10 +57,24 @@ public:
         Super::Tick(DeltaSeconds);
         UE_LOG(LogTemp, Log, TEXT("GameMode Ticks, DeltaSeconds = %.3f."), DeltaSeconds);
 
-        FROSBridgeMsgStdmsgsString* StringMsgToSend = new
-            FROSBridgeMsgStdmsgsString(TEXT("New Message at ") + FDateTime::Now().ToString());
-        Handler->PublishMsg(TEXT("/talker"), StringMsgToSend);
-        delete StringMsgToSend;
+        // FROSBridgeMsgStdmsgsString* StringMsgToSend = new
+        //     FROSBridgeMsgStdmsgsString(TEXT("New Message at ") + FDateTime::Now().ToString());
+        // Handler->PublishMsg(TEXT("/talker"), StringMsgToSend); 
+        // delete StringMsgToSend;
+
+        FROSBridgeMsgStdmsgsHeader header(GFrameCounter, FROSTime::Now(), TEXT("1"));
+        TArray<FString> names = { TEXT("head"), TEXT("torso"), TEXT("gripper") }; 
+        TArray<double > position, velocity, effort; 
+        for (int i = 0; i < 3; i++)
+        {
+            position.Add(FMath::FRandRange(0.0f, 5.0f)); 
+            velocity.Add(FMath::FRandRange(0.0f, 5.0f));
+            effort.Add(FMath::FRandRange(0.0f, 5.0f));
+        }
+        FROSBridgeMsgSensormsgsJointState *JointState
+            = new FROSBridgeMsgSensormsgsJointState(header, names, position, velocity, effort); 
+        Handler->PublishMsg(TEXT("/talker"), JointState);
+        delete JointState; 
 
         Handler->Render();
     }
