@@ -12,7 +12,7 @@ public:
 
     }
 
-    void CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request, TSharedPtr<FROSBridgeSrv::SrvResponse> Response) override
+    void CallBack(TSharedPtr<FROSBridgeSrv::SrvRequest> Request, TSharedPtr<FROSBridgeSrv::SrvResponse> Response) const override
     {
         TSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request> Request_ =
             StaticCastSharedPtr<FROSBridgeSrvRospytutorialsAddTwoInts::Request>(Request);

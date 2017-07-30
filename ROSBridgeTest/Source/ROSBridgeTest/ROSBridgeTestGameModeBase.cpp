@@ -3,22 +3,36 @@
 #include "ROSBridgeTestGameModeBase.h"
 #include "ROSBridgeTest.h"
 
+// forward declaration
+static void SendJointStateMessage(FROSBridgeHandler* Handler);
+
 void AROSBridgeTestGameModeBase::BeginPlay()
 {
     Super::BeginPlay();
     // AROSBridgeActor* Actor = GetWorld()->SpawnActor<AROSBridgeActor>(AROSBridgeActor::StaticClass());
+
+    // Set websocket server address to ws://127.0.0.1:9001
     Handler = new FROSBridgeHandler(TEXT("127.0.0.1"), 9001);
     UE_LOG(LogTemp, Log, TEXT("Handler Created. "));
 
+    // Add subscriber for /chatter topic
     Subscriber = new FROSStringSubScriber(TEXT("/chatter"));
     Handler->AddSubscriber(Subscriber);
     UE_LOG(LogTemp, Log, TEXT("Added chatter subscriber. "));
 
-    /* Publisher = new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker"));
-    Handler->AddPublisher(Publisher); */
+    // Add publisher for /talker topic
+    Publisher = new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker"));
+    Handler->AddPublisher(Publisher);
 
+    // Add service client for /add_two_ints service
     ServiceClient = new FROSAddTwoIntsClient(TEXT("add_two_ints"));
 
+    // Add service server for /add_two_ints_2 service
+    ServiceServer = new FROSAddTwoIntsServer(TEXT("add_two_ints_2"));
+    Handler->AddServiceServer(ServiceServer);
+    UE_LOG(LogTemp, Log, TEXT("Added /add_two_ints_2 server. "));
+
+    // Connect to ROSBridge Websocket server.
     Handler->Connect();
     UE_LOG(LogTemp, Log, TEXT("Connected to WebSocket server. "));
 }
@@ -29,24 +43,10 @@ void AROSBridgeTestGameModeBase::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     UE_LOG(LogTemp, Log, TEXT("GameMode Ticks, DeltaSeconds = %.3f."), DeltaSeconds);
 
-    // FROSBridgeMsgStdmsgsString* StringMsgToSend = new
-    //     FROSBridgeMsgStdmsgsString(TEXT("New Message at ") + FDateTime::Now().ToString());
-    // Handler->PublishMsg(TEXT("/talker"), StringMsgToSend);
-    // delete StringMsgToSend;
-
-    /* FROSBridgeMsgStdmsgsHeader header(GFrameCounter, FROSTime::Now(), TEXT("1"));
-    TArray<FString> names = { TEXT("head"), TEXT("torso"), TEXT("gripper") };
-    TArray<double > position, velocity, effort;
-    for (int i = 0; i < 3; i++)
+    if (GFrameCounter % 10 == 5)
     {
-        position.Add(FMath::FRandRange(0.0f, 5.0f));
-        velocity.Add(FMath::FRandRange(0.0f, 5.0f));
-        effort.Add(FMath::FRandRange(0.0f, 5.0f));
+        SendJointStateMessage(Handler);
     }
-    FROSBridgeMsgSensormsgsJointState *JointState
-        = new FROSBridgeMsgSensormsgsJointState(header, names, position, velocity, effort);
-    Handler->PublishMsg(TEXT("/talker"), JointState);
-    delete JointState;  */
 
     if (GFrameCounter % 10 == 0)
     {
@@ -61,6 +61,23 @@ void AROSBridgeTestGameModeBase::Tick(float DeltaSeconds)
     Handler->Render();
 }
 
+static void SendJointStateMessage(FROSBridgeHandler* Handler)
+{
+    FROSBridgeMsgStdmsgsHeader header(GFrameCounter, FROSTime::Now(), TEXT("1"));
+    TArray<FString> names = { TEXT("head"), TEXT("torso"), TEXT("gripper") };
+    TArray<double > position, velocity, effort;
+    for (int i = 0; i < 3; i++)
+    {
+        position.Add(FMath::FRandRange(0.0f, 5.0f));
+        velocity.Add(FMath::FRandRange(0.0f, 5.0f));
+        effort.Add(FMath::FRandRange(0.0f, 5.0f));
+    }
+    FROSBridgeMsgSensormsgsJointState *JointState
+        = new FROSBridgeMsgSensormsgsJointState(header, names, position, velocity, effort);
+    Handler->PublishMsg(TEXT("/talker"), JointState);
+    delete JointState;
+}
+
 void AROSBridgeTestGameModeBase::Logout(AController *Exiting)
 {
     UE_LOG(LogTemp, Log, TEXT("On Logout() function. "));
@@ -69,6 +86,8 @@ void AROSBridgeTestGameModeBase::Logout(AController *Exiting)
     // delete Handler;
     delete Subscriber;
     delete Publisher;
+    delete ServiceClient;
+    delete ServiceServer;
     UE_LOG(LogTemp, Log, TEXT("After Logout() function. "));
     AGameModeBase::Logout(Exiting);
 }

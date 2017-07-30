@@ -9,6 +9,7 @@
 #include "ROSBridgePublisher.h"
 #include "ROSStringSubscriber.h"
 #include "ROSAddTwoIntsClient.h"
+#include "ROSAddTwoIntsServer.h"
 
 #include "sensor_msgs/JointState.h"
 #include "std_msgs/Header.h"
@@ -28,6 +29,7 @@ public:
     FROSStringSubScriber* Subscriber;
     FROSBridgePublisher* Publisher;
     FROSAddTwoIntsClient* ServiceClient;
+    FROSAddTwoIntsServer* ServiceServer;
 
     AROSBridgeTestGameModeBase(const FObjectInitializer &ObjectInitializer) :
         AGameModeBase(ObjectInitializer){
