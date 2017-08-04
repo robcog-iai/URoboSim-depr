@@ -25,11 +25,11 @@ class ROSBRIDGETEST_API AROSBridgeTestGameModeBase : public AGameModeBase
     GENERATED_BODY()
 	
 public:
-    FROSBridgeHandler* Handler;
-    FROSStringSubScriber* Subscriber;
-    FROSBridgePublisher* Publisher;
-    FROSAddTwoIntsClient* ServiceClient;
-    FROSAddTwoIntsServer* ServiceServer;
+    TSharedPtr<FROSBridgeHandler> Handler;
+    TSharedPtr<FROSStringSubScriber> Subscriber;
+    TSharedPtr<FROSBridgePublisher> Publisher;
+    TSharedPtr<FROSAddTwoIntsClient> ServiceClient;
+    TSharedPtr<FROSAddTwoIntsServer> ServiceServer;
 
     AROSBridgeTestGameModeBase(const FObjectInitializer &ObjectInitializer) :
         AGameModeBase(ObjectInitializer){

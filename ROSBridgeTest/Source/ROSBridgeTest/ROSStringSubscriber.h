@@ -15,18 +15,19 @@ public:
 
     ~FROSStringSubScriber() override {};
 
-    FROSBridgeMsg* ParseMessage(TSharedPtr<FJsonObject> JsonObject) const override
+    TSharedPtr<FROSBridgeMsg> ParseMessage(TSharedPtr<FJsonObject> JsonObject) const override
     {
-        FROSBridgeMsgStdmsgsString* StringMessage = new FROSBridgeMsgStdmsgsString();
+        TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage = 
+            MakeShareable<FROSBridgeMsgStdmsgsString>(new FROSBridgeMsgStdmsgsString());
         StringMessage->FromJson(JsonObject);
         UE_LOG(LogTemp, Log, TEXT("Data in String Message: %s"), *StringMessage->GetData());
 
-        return StringMessage;
+        return StaticCastSharedPtr<FROSBridgeMsg>(StringMessage);
     }
 
-    void CallBack(FROSBridgeMsg* msg) const override
+    void CallBack(TSharedPtr<FROSBridgeMsg> msg) const override
     {
-        FROSBridgeMsgStdmsgsString* StringMessage = static_cast<FROSBridgeMsgStdmsgsString*>(msg);
+        TSharedPtr<FROSBridgeMsgStdmsgsString> StringMessage = StaticCastSharedPtr<FROSBridgeMsgStdmsgsString>(msg);
         // do something
         UE_LOG(LogTemp, Log, TEXT("Message received! Content: %s"), *StringMessage->GetData());
 
