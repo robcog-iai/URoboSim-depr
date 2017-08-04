@@ -4,7 +4,7 @@
 #include "ROSBridgeTest.h"
 
 // forward declaration
-static void SendJointStateMessage(FROSBridgeHandler* Handler);
+static void SendJointStateMessage(TSharedPtr<FROSBridgeHandler> Handler);
 
 void AROSBridgeTestGameModeBase::BeginPlay()
 {
@@ -12,23 +12,23 @@ void AROSBridgeTestGameModeBase::BeginPlay()
     // AROSBridgeActor* Actor = GetWorld()->SpawnActor<AROSBridgeActor>(AROSBridgeActor::StaticClass());
 
     // Set websocket server address to ws://127.0.0.1:9001
-    Handler = new FROSBridgeHandler(TEXT("127.0.0.1"), 9001);
+    Handler = MakeShareable<FROSBridgeHandler>(new FROSBridgeHandler(TEXT("127.0.0.1"), 9001));
     UE_LOG(LogTemp, Log, TEXT("Handler Created. "));
 
     // Add subscriber for /chatter topic
-    Subscriber = new FROSStringSubScriber(TEXT("/chatter"));
+    Subscriber = MakeShareable<FROSStringSubScriber>(new FROSStringSubScriber(TEXT("/chatter")));
     Handler->AddSubscriber(Subscriber);
     UE_LOG(LogTemp, Log, TEXT("Added chatter subscriber. "));
 
     // Add publisher for /talker topic
-    Publisher = new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker"));
+    Publisher = MakeShareable<FROSBridgePublisher>(new FROSBridgePublisher(TEXT("sensor_msgs/JointState"), TEXT("/talker")));
     Handler->AddPublisher(Publisher);
 
     // Add service client for /add_two_ints service
-    ServiceClient = new FROSAddTwoIntsClient(TEXT("add_two_ints"));
+    ServiceClient = MakeShareable<FROSAddTwoIntsClient>(new FROSAddTwoIntsClient(TEXT("add_two_ints")));
 
     // Add service server for /add_two_ints_2 service
-    ServiceServer = new FROSAddTwoIntsServer(TEXT("add_two_ints_2"));
+    ServiceServer = MakeShareable<FROSAddTwoIntsServer>(new FROSAddTwoIntsServer(TEXT("add_two_ints_2")));
     Handler->AddServiceServer(ServiceServer);
     UE_LOG(LogTemp, Log, TEXT("Added /add_two_ints_2 server. "));
 
@@ -61,7 +61,7 @@ void AROSBridgeTestGameModeBase::Tick(float DeltaSeconds)
     Handler->Render();
 }
 
-static void SendJointStateMessage(FROSBridgeHandler* Handler)
+static void SendJointStateMessage(TSharedPtr<FROSBridgeHandler> Handler)
 {
     FROSBridgeMsgStdmsgsHeader header(GFrameCounter, FROSTime::Now(), TEXT("1"));
     TArray<FString> names = { TEXT("head"), TEXT("torso"), TEXT("gripper") };
@@ -72,10 +72,10 @@ static void SendJointStateMessage(FROSBridgeHandler* Handler)
         velocity.Add(FMath::FRandRange(0.0f, 5.0f));
         effort.Add(FMath::FRandRange(0.0f, 5.0f));
     }
-    FROSBridgeMsgSensormsgsJointState *JointState
-        = new FROSBridgeMsgSensormsgsJointState(header, names, position, velocity, effort);
+    TSharedPtr<FROSBridgeMsgSensormsgsJointState> JointState
+        = MakeShareable<FROSBridgeMsgSensormsgsJointState>
+        (new FROSBridgeMsgSensormsgsJointState(header, names, position, velocity, effort));
     Handler->PublishMsg(TEXT("/talker"), JointState);
-    delete JointState;
 }
 
 void AROSBridgeTestGameModeBase::Logout(AController *Exiting)
@@ -83,11 +83,6 @@ void AROSBridgeTestGameModeBase::Logout(AController *Exiting)
     UE_LOG(LogTemp, Log, TEXT("On Logout() function. "));
     // UE_LOG(LogTemp, Log, TEXT("SharedPtr RefCount = %d. "), Handler.GetSharedReferenceCount());
     Handler->Disconnect();
-    // delete Handler;
-    delete Subscriber;
-    delete Publisher;
-    delete ServiceClient;
-    delete ServiceServer;
     UE_LOG(LogTemp, Log, TEXT("After Logout() function. "));
     AGameModeBase::Logout(Exiting);
 }
