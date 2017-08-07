@@ -32,7 +32,7 @@ ARRobot::ARRobot()
 
 	//
 	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New"));
-	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
 
 	if (MeshCy.Succeeded())
 	{
@@ -46,12 +46,10 @@ ARRobot::ARRobot()
 	{
 		SphereMesh = MeshSp.Object;
 	}
-	/* Material support disabled for now
 	if (Material.Succeeded())
 	{
 		//BasicMaterial = Material.Object;
 	}
-	*/
 
 }
 
@@ -155,7 +153,7 @@ bool ARRobot::CreateRobot()
 	if (Joints.Num() != Links.Num() - 1)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Robot is invalid. Abort creating.\n"));
-		//return false;
+		return false;
 	}
 
 	FRJoint CurrentJoint(Joints[0]);
@@ -256,9 +254,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
 	bool bUseCollision = !(Link->Collision.Mesh.IsEmpty());
-	//test
-	bUseCollision = false;
-	//
+
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
@@ -293,7 +289,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
 			((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
 		}
-		else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
+		else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
 		{
 			Mesh = CylinderMesh;
 			ShapeComp = NewObject<UCapsuleComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
@@ -498,52 +494,21 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	{
 		UPhysicsConstraintComponent* Constraint = NewObject<UPhysicsConstraintComponent>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
 		FConstraintInstance ConstraintInstance = SetConstraint(Joint);
+		ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 10;// 10;
 		ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
 		ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-		//Optional constraints commented out 
-		//ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 10;// 
-		//ConstraintInstance.ProfileInstance.TwistLimit.ContactDistance = 5.f;//
-		//ConstraintInstance.ProfileInstance.TwistLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
-		//ConstraintInstance.ProfileInstance.ConeLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
-								
-		FRotator rotTarget(0.f, 0.f, 0.f);		
+		ConstraintInstance.ProfileInstance.TwistLimit.ContactDistance = 5.f;
+
 		//Example of how the angular motors can be enabled
-		if (Joint->Name.Contains("r_shoulder_lift")) {			
-			rotTarget= FRotator(-30.f, 0.f, 0.f);
-		}	
-		//Damping requires velocity drive to be enabled
-		ConstraintInstance.ProfileInstance.AngularDrive.AngularVelocityTarget = FVector (0.f, 0.f, 0.f);		
-		ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = true;
-		ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = true;
-		ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnableVelocityDrive = true;
+		if (Joint->Name.Contains("shoulder_lift_joint")) {
+			FVector angularVelTarg(0.f, -300.f, 0.f);
+			ConstraintInstance.ProfileInstance.AngularDrive.AngularVelocityTarget = angularVelTarg;
 
-		
-		ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
-		ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		ConstraintInstance.SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		ConstraintInstance.SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		
-		ConstraintInstance.ProfileInstance.AngularDrive.OrientationTarget = rotTarget;
+			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnableVelocityDrive = true;
+		}		
 
-		ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = true;
-		ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
-		ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnablePositionDrive = true;
-
-		
-		ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Damping = Link->Inertial.Mass* 50000;
-		ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Stiffness = Link->Inertial.Mass* 120000;
-
-		ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = Link->Inertial.Mass * 50000;
-		ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = Link->Inertial.Mass * 120000;
-
-		ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Damping = Link->Inertial.Mass * 50000;
-		ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Stiffness = Link->Inertial.Mass * 120000;
-
-
-
-		//--
 		Constraint->ConstraintInstance = ConstraintInstance;		
 		Constraint->SetDisableCollision(true);
 		Constraint->AttachToComponent(ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));

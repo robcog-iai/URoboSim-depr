@@ -14,36 +14,9 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 {
 	FString AttName(AttributeName);
 	FString AttValue(AttributeValue);
-	
-	
+
 	if (!AttName.IsEmpty() && !AttValue.IsEmpty()) {
-
-		if (Stack.Top().Equals("joint")) {
-			FString stackOldTop = Stack.Pop();
-
-			//Handle special case 1 of joint tags within a transmission tag
-			if (Stack.FindLast("transmission") > Stack.FindLast("joint") && Stack.FindLast("transmission") > Stack.FindLast("link") && Stack.FindLast("transmission") > Stack.FindLast("gazebo") && Stack.FindLast("transmission") > Stack.FindLast("material")) {
-				stackOldTop = "transmission_joint"; //When the parser later pops a joint tag from the stack, it needs to know that a joint tag within transmission is a different case from a regular joint tag
-				AttMap.Add(stackOldTop + "_" + AttName, AttValue);
-				Stack.Push(stackOldTop);
-				return true;
-			}
-			//---
-
-			//Handle special case 2 of joint tags within a gazebo tag
-			if (Stack.FindLast("gazebo") > Stack.FindLast("joint") && Stack.FindLast("gazebo") > Stack.FindLast("link") && Stack.FindLast("gazebo") > Stack.FindLast("transmission") && Stack.FindLast("gazebo") > Stack.FindLast("material")) {
-				stackOldTop = "gazebo_joint"; //When the parser later pops a joint tag from the stack, it needs to know that a joint tag within transmission is a different case from a regular joint tag
-				AttMap.Add(stackOldTop + "_" + AttName, AttValue);
-				Stack.Push(stackOldTop);
-				return true;
-			}
-			//---
-
-			Stack.Push(stackOldTop);
-		}
-
-		//Handles the sub categories for Links
-		if (!Stack.Top().Equals("gazebo") && !Stack.Top().Equals("transmission") && !Stack.Top().Equals("material") && !Stack.Top().Equals("link") && Stack.FindLast("link") > Stack.FindLast("joint") ) {
+		if (!Stack.Top().Equals("link") && Stack.FindLast("link") > Stack.FindLast("joint")) {
 
 			// Look which element is the current one.
 			int32 IndexVisual = Stack.FindLast("visual");
@@ -69,12 +42,7 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 			return true;
 		}
 		// Add Stackelement from Top, Attributname and Attributvalue to a Map.
-		
-
-
-		else {
-			AttMap.Add(Stack.Top() + "_" + AttName, AttValue);
-		}
+		AttMap.Add(Stack.Top() + "_" + AttName, AttValue);
 		return true;
 	}
 	else {
@@ -93,7 +61,7 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 
 		return false;
 	}
-	else if (Stack.Top().Equals("joint") ) {
+	else if (Stack.Top().Equals("joint")) {
 
 		FString JointName = AttMap.FindRef("joint_name");			// required value (urdf).
 		FString Type = AttMap.FindRef("joint_type");				// required value (urdf).
@@ -154,11 +122,6 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 		// for safety limits...
 		NewJoint.Effort = FCString::Atof(*AttMap.FindRef("limit_effort"));
 		NewJoint.Velocity = FCString::Atof(*AttMap.FindRef("limit_velocity"));
-
-		// for safety controller...
-		NewJoint.k_velocity = FCString::Atof(*AttMap.FindRef("safety_controller_k_velocity"));
-		NewJoint.damping = FCString::Atof(*AttMap.FindRef("dynamics_damping"));
-		NewJoint.friction = FCString::Atof(*AttMap.FindRef("dynamics_friction"));
 
 		// Add the joint data to the Robot
 		Robot->AddJoint(NewJoint);
