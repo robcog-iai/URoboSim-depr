@@ -5,9 +5,9 @@
 #include "RRobot.h"
 
 
-FRURDFParser::FRURDFParser(ARRobot* Robot)
+FRURDFParser::FRURDFParser(ARRobot* Robot_)
 {
-	this->Robot = Robot;
+	this->Robot = Robot_;
 }
 
 bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* AttributeValue)
