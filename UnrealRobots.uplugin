@@ -1,0 +1,25 @@
+{
+	"FileVersion" : 1,
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"FriendlyName" : "UnrealRobots Plugin",
+	"Description" : "Import URDF Robot Model in Unreal Engine",
+	"Category" : "Examples",
+	"CreatedBy" : "Yousaf Raja",
+	"CreatedByURL" : "",
+	"DocsURL" : "",
+	"MarketplaceURL" : "",
+	"SupportURL" : "",
+	"EnabledByDefault" : true,
+	"CanContainContent" : false,
+	"IsBetaVersion" : false,
+	"Installed" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "UnrealRobots",
+			"Type" : "Developer",
+			"LoadingPhase" : "Default"
+		}
+	]
+}
