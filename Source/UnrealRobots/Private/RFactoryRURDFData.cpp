@@ -19,6 +19,7 @@ URFactoryRURDFData::URFactoryRURDFData(const FObjectInitializer& ObjectInitializ
 
 	// Tells the Editor which file types we can import.
 	Formats.Add(TEXT("xml;XML Files"));
+	Formats.Add(TEXT("urdf;URDF Files"));
 
 	// Tells the Editor which Asset type this UFactory can import.
 	SupportedClass = URURDFData::StaticClass();
@@ -85,7 +86,7 @@ bool URFactoryRURDFData::DoesSupportClass(UClass* Class)
 
 bool URFactoryRURDFData::FactoryCanImport(const FString & Filename)
 {
-	return Filename.EndsWith(".xml", ESearchCase::IgnoreCase);
+	return (Filename.EndsWith(".xml", ESearchCase::IgnoreCase)) ? true : Filename.EndsWith(".urdf", ESearchCase::IgnoreCase);
 }
 
 bool URFactoryRURDFData::CanReimport(UObject* Object, TArray<FString>& OutFilenames)
@@ -183,11 +184,13 @@ FString URFactoryRURDFData::AdeptXml(const FString PathToXml,
 			bInComment = false;
 		}
 
-		if (Line.Contains("mesh filename") && Line.Contains("fbx") && !bInComment) {
+		if (Line.Contains("mesh filename") && (Line.Contains("fbx") || Line.Contains("stl") || Line.Contains("dae"))&& !bInComment) {
 
 			// Standardizes the file paths for the Xml
 			Line = Line.Replace((L"\\"), (L"/"), ESearchCase::IgnoreCase);
-
+			Line = Line.Replace((L"package://"), (L"/"), ESearchCase::IgnoreCase);
+			Line = Line.Replace((L".stl"), (L".fbx"), ESearchCase::IgnoreCase);
+			Line = Line.Replace((L".dae"), (L".fbx"), ESearchCase::IgnoreCase);
 			FString SaveLine = Line;
 
 			// Delete everything before the path.
