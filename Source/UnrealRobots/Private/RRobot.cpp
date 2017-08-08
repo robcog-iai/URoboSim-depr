@@ -606,11 +606,11 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		{
 			Constraint->SetWorldLocation(MeshComp->GetComponentLocation());
 			Constraint->SetConstrainedComponents(ParentLink, NAME_None, MeshComp, NAME_None);
-            UE_LOG(LogTemp, Log, TEXT("[%s] [%s] [%x] [%x]"),
+            /* UE_LOG(LogTemp, Log, TEXT("[%s] [%s] [%x] [%x]"),
                 *Constraint->ComponentName1.ComponentName.ToString(),
                 *Constraint->ComponentName2.ComponentName.ToString(),
                 Constraint->OverrideComponent1.Get(),
-                Constraint->OverrideComponent2.Get());
+                Constraint->OverrideComponent2.Get()); */
 		}
 
         FRotator ParentRotation = ParentLink->GetComponentRotation();
@@ -948,7 +948,7 @@ float ARRobot::GetJointPosition(FString JointName)
         if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
         {
             // not a hinged joint
-            UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
+            // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
             return 0;
         }
         else
@@ -965,10 +965,12 @@ float ARRobot::GetJointPosition(FString JointName)
             while (ResultAngle < -180 )
                 ResultAngle += 360;
 
-            UE_LOG(LogTemp, Log, TEXT("Joint [%s] Link [%s] -> [%s] Current Axis: [%s] --- Angle: [%.3f] --- InitialRel: [%s] CurrentRel: [%s] "),
+            // UE_LOG(LogTemp, Warning, TEXT("ResultAngle = %.6f"), ResultAngle);
+
+            /* UE_LOG(LogTemp, Log, TEXT("Joint [%s] Link [%s] -> [%s] Current Axis: [%s] --- Angle: [%.3f] --- InitialRel: [%s] CurrentRel: [%s] "),
                 *Joint->GetName(), *ParentComponent->GetName(), *ChildComponent->GetName(),
                 *Axis.ToString(), ResultAngle,
-                *InitialRotationRel.Rotator().ToString(), *CurrentRotationRel.Rotator().ToString());
+                *InitialRotationRel.Rotator().ToString(), *CurrentRotationRel.Rotator().ToString()); */
 
             return ResultAngle;
         }
@@ -1026,8 +1028,8 @@ float ARRobot::GetJointVelocity(FString JointName)
             FVector ChildAvel = ChildComponent->GetPhysicsAngularVelocity();
             float HingeVel = FVector::DotProduct(ChildAvel - ParentAvel, GlobalAxis); 
 
-            UE_LOG(LogTemp, Warning, TEXT("Joint [%s]: HingeVel = %.3f; ChildAvel [%s], ParentAvel [%s], Axis [%s] (global)"),
-                *Joint->GetName(), HingeVel, *ChildAvel.ToString(), *ParentAvel.ToString(), *GlobalAxis.ToString());
+            /* UE_LOG(LogTemp, Warning, TEXT("Joint [%s]: HingeVel = %.3f; ChildAvel [%s], ParentAvel [%s], Axis [%s] (global)"),
+                *Joint->GetName(), HingeVel, *ChildAvel.ToString(), *ParentAvel.ToString(), *GlobalAxis.ToString()); */
 
             return HingeVel;
         }
@@ -1041,6 +1043,12 @@ float ARRobot::GetJointVelocity(FString JointName)
 
 void ARRobot::AddForceToJoint(FString JointName, float Force)
 {
+    if (!JointComponents.Find(JointName))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Unable to find Joint [%s]!"), *JointName);
+        return;
+    }
+
     UPhysicsConstraintComponent* Joint = JointComponents[JointName];
 
     FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
@@ -1065,7 +1073,7 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
         if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
         {
             // not a hinged joint
-            UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
+            // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
         }
         else
         {
