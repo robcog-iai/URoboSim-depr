@@ -1,45 +1,52 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
-namespace UnrealBuildTool.Rules
+using UnrealBuildTool;
+
+public class URoboSim : ModuleRules
 {
-	public class URoboSim : ModuleRules
+	public URoboSim(ReadOnlyTargetRules Target) : base(Target)
 	{
-		public URoboSim (TargetInfo Target)
-		{
-			PublicIncludePaths.AddRange(
-				new string[] {
-					"URoboSim/Public"
-					// ... add public include paths required here ...
-				}
-				);
-
-			PrivateIncludePaths.AddRange(
-				new string[] {
-                    "URoboSim/Public",
-					"URoboSim/Private"
-					// ... add other private include paths required here ...
-				}
-				);
-
-			PublicDependencyModuleNames.AddRange(
-				new string[]
-				{
-                    "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
-				}
-				);
-
-			PrivateDependencyModuleNames.AddRange(
-				new string[]
-				{
-                    "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
-                }
-				);
-
-			DynamicallyLoadedModuleNames.AddRange(
-				new string[]
-				{
-				}
-				);
-		}
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		PublicIncludePaths.AddRange(
+			new string[] {
+				"URoboSim/Public"
+				// ... add public include paths required here ...
+			}
+			);
+				
+		
+		PrivateIncludePaths.AddRange(
+			new string[] {
+				"URoboSim/Private",
+				// ... add other private include paths required here ...
+			}
+			);
+			
+		
+		PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+                    		"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
+				// ... add other public dependencies that you statically link with here ...
+			}
+			);
+			
+		
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+                    		"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
+				// ... add private dependencies that you statically link with here ...	
+			}
+			);
+		
+		
+		DynamicallyLoadedModuleNames.AddRange(
+			new string[]
+			{
+				// ... add any modules that your module loads dynamically here ...
+			}
+			);
 	}
 }
