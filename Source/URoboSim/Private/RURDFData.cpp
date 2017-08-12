@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "RURDFData.h"
 #include "IURoboSim.h"
 #include "EditorFramework/AssetImportData.h"
-#include "RURDFData.h"
 
 void URURDFData::SetAssetFilename(const FString & NewFilename)
 {

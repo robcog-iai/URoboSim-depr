@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "RRobot.h"
 #include "IURoboSim.h"
 #include "RURDFParser.h"
 #include "math.h"
@@ -7,7 +8,6 @@
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Runtime/Engine/Classes/Engine/StaticMeshActor.h"
 #include "UnrealEd.h"
-#include "RRobot.h"
 #include "Engine/EngineTypes.h"
 
 // Sets default values
