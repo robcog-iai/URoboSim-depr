@@ -27,7 +27,7 @@ public class URoboSim : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+                    		"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -36,10 +36,7 @@ public class URoboSim : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
-				"Engine",
-				"Slate",
-				"SlateCore",
+                    		"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "XmlParser", "UnrealEd"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
