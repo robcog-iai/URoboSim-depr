@@ -7,7 +7,7 @@
 #include "RRobot.generated.h"
 
 UCLASS(Blueprintable)
-class UNREALROBOTS_API ARRobot : public AActor
+class UROBOSIM_API ARRobot : public AActor
 {
 	GENERATED_BODY()
 

@@ -2,21 +2,21 @@
 
 namespace UnrealBuildTool.Rules
 {
-	public class UnrealRobots : ModuleRules
+	public class URoboSim : ModuleRules
 	{
-		public UnrealRobots (TargetInfo Target)
+		public URoboSim (TargetInfo Target)
 		{
 			PublicIncludePaths.AddRange(
 				new string[] {
-					"UnrealRobots/Public"
+					"URoboSim/Public"
 					// ... add public include paths required here ...
 				}
 				);
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-                    "UnrealRobots/Public",
-					"UnrealRobots/Private"
+                    "URoboSim/Public",
+					"URoboSim/Private"
 					// ... add other private include paths required here ...
 				}
 				);

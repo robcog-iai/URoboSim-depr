@@ -9,7 +9,7 @@
  * 
  */
 UCLASS()
-class UNREALROBOTS_API ARTestRobotMotors : public ARRobot
+class UROBOSIM_API ARTestRobotMotors : public ARRobot
 {
 	GENERATED_BODY()
 

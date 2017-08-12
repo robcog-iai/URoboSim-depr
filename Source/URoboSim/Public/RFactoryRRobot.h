@@ -9,7 +9,7 @@
 * Own ActorFactory which creates a robot from URURDFData Asset.
 */
 UCLASS()
-class UNREALROBOTS_API URFactoryRRobot : public UActorFactory
+class UROBOSIM_API URFactoryRRobot : public UActorFactory
 {
 	GENERATED_BODY()
 

@@ -9,7 +9,7 @@
 /**
  * The public interface to this module
  */
-class IUnrealRobots : public IModuleInterface
+class IURoboSim : public IModuleInterface
 {
 
 public:
@@ -20,9 +20,9 @@ public:
 	 *
 	 * @return Returns singleton instance, loading the module on demand if needed
 	 */
-	static inline IUnrealRobots& Get()
+	static inline IURoboSim& Get()
 	{
-		return FModuleManager::LoadModuleChecked< IUnrealRobots >( "UnrealRobots" );
+		return FModuleManager::LoadModuleChecked< IURoboSim >( "URoboSim" );
 	}
 
 	/**
@@ -32,7 +32,7 @@ public:
 	 */
 	static inline bool IsAvailable()
 	{
-		return FModuleManager::Get().IsModuleLoaded( "UnrealRobots" );
+		return FModuleManager::Get().IsModuleLoaded( "URoboSim" );
 	}
 };
 

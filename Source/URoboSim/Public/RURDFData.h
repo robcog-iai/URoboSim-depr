@@ -9,7 +9,7 @@
  * This object is created as uAsset and secures the information for the construction of RRobots.
  */
 UCLASS()
-class UNREALROBOTS_API URURDFData : public UObject
+class UROBOSIM_API URURDFData : public UObject
 {
 	GENERATED_BODY()
 

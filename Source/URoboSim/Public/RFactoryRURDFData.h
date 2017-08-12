@@ -11,7 +11,7 @@
  * The generated uAsset is a RURDFData for further processing.
  */
 UCLASS()
-class UNREALROBOTS_API URFactoryRURDFData : public UFactory, public FReimportHandler
+class UROBOSIM_API URFactoryRURDFData : public UFactory, public FReimportHandler
 {
 	GENERATED_BODY()
 	
