@@ -15,7 +15,6 @@ class UROBOSIM_API ARRobot : public AActor
 	GENERATED_BODY()
 
 public:
-	static FString testL;
 
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")

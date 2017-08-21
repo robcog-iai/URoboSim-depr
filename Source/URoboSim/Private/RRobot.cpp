@@ -218,39 +218,7 @@ bool ARRobot::CreateRobot()
 }
 
 
-FORCEINLINE void SetLinearLimits( //unused function, may delete later
-	FConstraintInstance& Constraint,
-	const uint8& XLim, const uint8& YLim, const uint8& ZLim,
-	const float& Size,
-	bool SoftLimit = true,
-	float SoftStiffness = 0,
-	float SoftDampening = 0
-	)
-{
-	
-	switch (XLim)
-	{
-	case 0: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Locked);
-	}
-	switch (YLim)
-	{
-	case 0: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Locked);
-	}
-	switch (ZLim)
-	{
-	case 0: Constraint.SetLinearZMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearZMotion (ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearZMotion (ELinearConstraintMotion::LCM_Locked);
-	}
-	//~~~~~~~~~~
 
-	Constraint.SetLinearLimitSize(Size);
-	
-}
 
 
 bool ARRobot::CreateActorsFromNode(FRNode* Node)
@@ -493,19 +461,13 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 		
 
-		//Prevents certain links from colliding with themselves.
-		//for (FString robotLink : 		FURoboSimEdModule::collisionFilter) {
-		//	if (Link->Name.Contains(robotLink)) {
-		//		MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		//		MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-		//		MeshComp->WeldTo(ParentComp);
-		//		break;
-		//	}
-		//}
-		if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm")  ||   Link->Name.Contains("finger_link")) {			
-			//MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); 
-			//MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);						
-			//MeshComp->WeldTo(ParentComp);
+		MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
+		
+
+		if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
+			//Prevents certain links from colliding with themselves.
+			MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+			MeshComp->WeldTo(ParentComp);
 		}
 		
 		MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
@@ -523,13 +485,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		FConstraintInstance ConstraintInstance = SetConstraint(Joint);
 		ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
 		ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-		//Optional constraints commented out 
-		//ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 10;// 
-		//ConstraintInstance.ProfileInstance.TwistLimit.ContactDistance = 5.f;//
-		//ConstraintInstance.ProfileInstance.TwistLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
-		//ConstraintInstance.ProfileInstance.ConeLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
+	
 								
 		FRotator rotTarget(0.f, 0.f, 0.f);		
 		//Example of how the angular motors can be enabled
@@ -894,16 +850,7 @@ bool ARRobot::RotateJoint(FString Name, FRotator TargetRotation)
 
 	}
 
-	/*
-	UE_LOG(LogTemp, Display, TEXT("Rotate Joint %s | Number of joints: %d"), Name.GetCharArray().GetData(), JointComponents.Num());
-	if (!JointComponents.Contains(Name)) return false;
-	UE_LOG(LogTemp, Display, TEXT("Joint %s exists"), Name.GetCharArray().GetData());
 
-	UPhysicsConstraintComponent* Constraint = JointComponents.FindRef(Name);
-
-	FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-	Constraint->SetAngularOrientationTarget(TargetRotation);
-	*/
 	return false;
 }
 
@@ -925,15 +872,7 @@ bool ARRobot::MovePrismaticJoint(FString Name, FVector TargetPosition)
 		}
 
 	}
-	/*
-	UE_LOG(LogTemp, Display, TEXT("Move Joint %s | Number of joints: %d"), Name.GetCharArray().GetData(), JointComponents.Num());
-	if (!JointComponents.Contains(Name)) return false;
-	UE_LOG(LogTemp, Display, TEXT("Joint %s exists"), Name.GetCharArray().GetData());
-	UPhysicsConstraintComponent* Constraint = JointComponents.FindRef(Name);
 
-	FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-	ConstraintInstance->SetLinearPositionTarget(TargetPosition);
-	*/
 	return true;
 }
 
@@ -988,12 +927,7 @@ float ARRobot::GetJointPosition(FString JointName)
             while (ResultAngle < -180 )
                 ResultAngle += 360;
 
-            // UE_LOG(LogTemp, Warning, TEXT("ResultAngle = %.6f"), ResultAngle);
 
-            /* UE_LOG(LogTemp, Log, TEXT("Joint [%s] Link [%s] -> [%s] Current Axis: [%s] --- Angle: [%.3f] --- InitialRel: [%s] CurrentRel: [%s] "),
-                *Joint->GetName(), *ParentComponent->GetName(), *ChildComponent->GetName(),
-                *Axis.ToString(), ResultAngle,
-                *InitialRotationRel.Rotator().ToString(), *CurrentRotationRel.Rotator().ToString()); */
 
             return ResultAngle;
         }
