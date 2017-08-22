@@ -30,60 +30,48 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 			return GEditor->GetSelectedActors()->Num() != 0;
 		}
 
-		static FReply OnButtonClick2()
-		{
-			USelection* SelectedActors = GEditor->GetSelectedActors();
-			// Let editor know that we're about to do something that we want to undo/redo
-			GEditor->BeginTransaction(LOCTEXT("MoveActorsTransactionName", "MoveActors"));
-
-			//FURoboSimEdModule::setCollisionFilter((*collisionFilter).GetText().ToString());			
-			//FURoboSimEdModsetCollisionFilter((*collisionFilter).GetText().ToString());
-			//testA = "starting";
-			//Damping;
-			// We're done moving actors so close transaction
-			GEditor->EndTransaction();
-
-			return FReply::Handled();
+		static void SetUROSBridge(ECheckBoxState NewCheckedState) {			
+			if (IURoboSimEd::IsAvailableEd()) {
+				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+				placeHolder.bEnableUROSBridge = (NewCheckedState == ECheckBoxState::Checked) ? true : false;
+			}			
 		}
 
-		static FReply OnButtonClick(FVector InOffset)
+		static void SetAngularMotors(ECheckBoxState NewCheckedState) {
+			if (IURoboSimEd::IsAvailableEd()) {
+				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+				placeHolder.bEnableAngularMotors = (NewCheckedState == ECheckBoxState::Checked) ? true : false;
+			}
+		}
+
+		static void SetCollisionTags(ECheckBoxState NewCheckedState) {
+			if (IURoboSimEd::IsAvailableEd()) {
+				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+				placeHolder.bEnableCollisionTags = (NewCheckedState == ECheckBoxState::Checked) ? true : false;
+			}
+		}
+
+		static FReply OnButtonClickSaveFilter()
 		{
 			USelection* SelectedActors = GEditor->GetSelectedActors();
-
 			// Let editor know that we're about to do something that we want to undo/redo
-			GEditor->BeginTransaction(LOCTEXT("MoveActorsTransactionName", "MoveActors"));
+			GEditor->BeginTransaction(LOCTEXT("SaveCollisionFilterName", "SaveCollisionFilter"));
 
-			// For each selected actor
-			for (FSelectionIterator Iter(*SelectedActors); Iter; ++Iter)
-			{
-				if (AActor* LevelActor = Cast<AActor>(*Iter))
-				{
-					// Register actor in opened transaction (undo/redo)
-					LevelActor->Modify();
-					// Move actor to given location
-					LevelActor->TeleportTo(LevelActor->GetActorLocation() + InOffset, FRotator(0, 0, 0));
-				}
+
+			if (IURoboSimEd::IsAvailableEd()) {
+				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+				(*collisionFilter).GetText().ToString().ParseIntoArray(placeHolder.collisionFilterArr, TEXT(" "), true);								
 			}
 
-			// We're done moving actors so close transaction
 			GEditor->EndTransaction();
 
 			return FReply::Handled();
 		}
 
-		static TSharedRef<SWidget> MakeButton(FText InLabel, const FVector InOffset)
-		{
-			return SNew(SButton)
-				.Text(InLabel)
-
-				.OnClicked_Static(&Locals::OnButtonClick, InOffset);
-		}
 
 	};
 
-	const float Factor = 256.0f;
 	TAttribute<FSlateColor> InBackgroundColor(FLinearColor(1.0f, 1.0f, 1.0f));
-	FText input;
 
 	SAssignNew(ToolkitWidget, SBorder)
 		.VAlign(VAlign_Top)
@@ -91,10 +79,11 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 		[
 			SNew(SVerticalBox)
 
+	//Enable UROSBridge-----------------
 			+ SVerticalBox::Slot()
 		.AutoHeight()
-		.HAlign(HAlign_Left)
-		.Padding(50)
+		.HAlign(HAlign_Center)
+		.Padding(5)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
@@ -108,14 +97,62 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 		[
 			SNew(SCheckBox)
 			.ToolTipText(LOCTEXT("EnableUROSBridgeToolTip", "If enabled, will try to connect to a server once game starts."))
-		.IsChecked(ECheckBoxState::Checked)
-		.OnCheckStateChanged_Static(&FURoboSimEdModeToolkit::SetUROSBridge)
-		//.OnCheckStateChanged(this, Locals::SetUROSBridge)
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged_Static(&Locals::SetUROSBridge)
 		]
 		]
+	//-------------------------------------
 
 
-	////Self Collision Filter
+	//AngularMotors-------------------
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.HAlign(HAlign_Center)
+		.Padding(5)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(10)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("EnableAngularMotorLabel", "Enable AngularMotors"))
+		]
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("EnableAngularMotorsToolTip", "If enabled, will use UE4's built in angular motors for more rigid links. Should not be used with UROSBridge."))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged_Static(&Locals::SetAngularMotors)
+		]
+		]
+	//-----------------------------
+
+	//CollisionTags-------------------
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.HAlign(HAlign_Center)
+		.Padding(5)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(10)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("EnableCollisionTagsLabel", "Enable Collision Tags"))
+		]
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("EnableCollisionTagsToolTip", "If enabled, parser will also try to use information in URDF collision tags."))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged_Static(&Locals::SetCollisionTags)
+		]
+		]
+	//-----------------------------
+
+	//Self Collision Filter----------------
 	+SVerticalBox::Slot()
 		.HAlign(HAlign_Center)
 		.AutoHeight()
@@ -131,7 +168,7 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 		.AutoWidth()
 		[
 			SAssignNew(collisionFilter, SMultiLineEditableTextBox)
-			.Text(LOCTEXT("CollisionFilterPlaceHolderLabel", "Joint1 Joint2 Joint3..."))
+			.Text(LOCTEXT("CollisionFilterPlaceHolderLabel", "wheel_link shoulder arm finger_link"))
 		.ToolTipText(LOCTEXT("CollisionFilterPlaceHolderToolTip", "For example, if the term \"wheel\" is entered, all joints which have that term in their name will have self collision disabled."))
 		.BackgroundColor(InBackgroundColor)
 		]
@@ -139,15 +176,17 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 		]
 
 
-	+SVerticalBox::Slot()
+	+ SVerticalBox::Slot()
 		.AutoHeight()
 		.HAlign(HAlign_Center)
+		.Padding(10)
 		[
 			SNew(SButton)
 			.Text(LOCTEXT("SaveCollisionFilterLabel", "Save Collision Filter"))
 		.ToolTipText(LOCTEXT("SaveCollisionFilterToolTip", "During robot generation if any joint name contains an entry from the collision filter, self-collision for that joint will be disabled. Entries can be separated by spaces or a new line. Note: Does not apply to robots which are already in the game."))
-		.OnClicked_Static(&Locals::OnButtonClick2)
+		.OnClicked_Static(&Locals::OnButtonClickSaveFilter)
 		]
+	//--------------------------------
 
 
 

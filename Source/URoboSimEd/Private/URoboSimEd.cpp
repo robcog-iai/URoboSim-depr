@@ -1,20 +1,14 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 #include "URoboSimEd.h"
-#include "IURoboSimEd.h"
 #include "URoboSimEdMode.h"
 
 #define LOCTEXT_NAMESPACE "FURoboSimEdModule"
 
-class FURoboSimEd : public IURoboSimEd
-{
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-};
+
 
 void FURoboSimEdModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module	
  	FEditorModeRegistry::Get().RegisterMode<FURoboSimEdMode>(FURoboSimEdMode::EM_URoboSimEdModeId, LOCTEXT("URoboSimEdModeName", "URoboSimEdMode"), FSlateIcon(), true);
 }
 

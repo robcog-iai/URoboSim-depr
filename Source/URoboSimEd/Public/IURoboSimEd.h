@@ -1,7 +1,7 @@
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
-
+#include "URoboSimEd.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 #include "Modules/ModuleManager.h"
@@ -13,6 +13,24 @@ class IURoboSimEd : public IModuleInterface
 {
 
 public:
+	static FString someString;
+	FString someString2;
+
+	FString getTest2() {
+		return someString2;
+	}
+
+	void setTest2(FString s) {
+		someString2 = s;
+	}
+
+	static FString getTest() {		
+		return someString;
+	}
+
+	static void setTest(FString& s) {
+		someString = s;
+	}
 
 	/**
 	* Singleton-like access to this module's interface.  This is just for convenience!
@@ -20,9 +38,9 @@ public:
 	*
 	* @return Returns singleton instance, loading the module on demand if needed
 	*/
-	static inline IURoboSimEd& GetEd()
+	static inline FURoboSimEdModule& GetEd()
 	{
-		return FModuleManager::LoadModuleChecked< IURoboSimEd >("URoboSimEd");
+		return FModuleManager::LoadModuleChecked< FURoboSimEdModule >("URoboSimEd");
 	}
 
 	/**

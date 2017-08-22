@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "IURoboSimEd.h"
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "GameFramework/Actor.h"
@@ -9,12 +9,15 @@
 #include "RRobot.generated.h"
 
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor 
+class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
 {
 
 	GENERATED_BODY()
 
 public:
+
+
+
 
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
@@ -59,12 +62,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 		bool bEnableLogging;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge")
-		bool bEnableROSBridge;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
+		//bool bEnableROSBridge;
 
+	//URoboSimEd Variables
+	TArray<FString> collisionFilterArr; //holds links on which self-collision should be disabled
+	bool bEnableUROSBridge; //holds links on which self-collision should be disabled
+	bool bEnableCollisionTags;
+	bool bEnableAngularMotors;
 
-
-public:
 
 	// A structure representing a URDF Joint
 	struct FRJoint
