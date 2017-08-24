@@ -47,7 +47,7 @@ public class URoboSimEd : ModuleRules
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
-				"UROSBridge"
+				
 			}
 			);
 	}
