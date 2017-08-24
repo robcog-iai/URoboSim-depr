@@ -37,6 +37,13 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 			}			
 		}
 
+		static void SetShapeCollision(ECheckBoxState NewCheckedState) {
+			if (IURoboSimEd::IsAvailableEd()) {
+				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+				placeHolder.bEnableShapeCollisions = (NewCheckedState == ECheckBoxState::Checked) ? true : false;
+			}
+		}
+
 		static void SetAngularMotors(ECheckBoxState NewCheckedState) {
 			if (IURoboSimEd::IsAvailableEd()) {
 				FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
@@ -99,6 +106,30 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 			.ToolTipText(LOCTEXT("EnableUROSBridgeToolTip", "If enabled, will try to connect to a server once game starts."))
 		.IsChecked(ECheckBoxState::Unchecked)
 		.OnCheckStateChanged_Static(&Locals::SetUROSBridge)
+		]
+		]
+	//-------------------------------------
+
+	//Enable Shape Collisions-----------------
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.HAlign(HAlign_Center)
+		.Padding(5)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(10)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("EnableShapeCollisionsLabel", "Enable Shape Collisions"))
+		]
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("EnableShapeCollisionsToolTip", "If enabled, URDF shapes will have collisions too."))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged_Static(&Locals::SetShapeCollision)
 		]
 		]
 	//-------------------------------------

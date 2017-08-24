@@ -13,24 +13,6 @@ class IURoboSimEd : public IModuleInterface
 {
 
 public:
-	static FString someString;
-	FString someString2;
-
-	FString getTest2() {
-		return someString2;
-	}
-
-	void setTest2(FString s) {
-		someString2 = s;
-	}
-
-	static FString getTest() {		
-		return someString;
-	}
-
-	static void setTest(FString& s) {
-		someString = s;
-	}
 
 	/**
 	* Singleton-like access to this module's interface.  This is just for convenience!

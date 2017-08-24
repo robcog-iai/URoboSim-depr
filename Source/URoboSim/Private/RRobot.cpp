@@ -23,6 +23,8 @@ ARRobot::ARRobot()
 	if (IURoboSimEd::IsAvailableEd()) {
 		FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
 		bEnableUROSBridge = placeHolder.bEnableUROSBridge;
+		bEnableShapeCollisions = placeHolder.bEnableShapeCollisions;
+		bEnableCollisionTags = placeHolder.bEnableShapeCollisions;
 		bEnableAngularMotors = placeHolder.bEnableAngularMotors;
 		bEnableCollisionTags = placeHolder.bEnableCollisionTags;
 		collisionFilterArr = placeHolder.collisionFilterArr;
@@ -432,7 +434,9 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		ShapeComp->RegisterComponent();
 
 		//Disabling collisions for all shape components turned out to be necessary for the pr2.
-		ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);			
+		if (!bEnableShapeCollisions) {
+			ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		}
 		
 		MeshComp->WeldTo(ParentComp);		
 

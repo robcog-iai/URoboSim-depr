@@ -70,6 +70,8 @@ public:
 	bool bEnableUROSBridge; //holds links on which self-collision should be disabled
 	bool bEnableCollisionTags;
 	bool bEnableAngularMotors;
+	bool bEnableShapeCollisions;
+
 
 
 	// A structure representing a URDF Joint

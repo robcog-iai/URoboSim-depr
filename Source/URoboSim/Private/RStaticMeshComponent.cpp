@@ -54,27 +54,8 @@ void URStaticMeshComponent::BeginPlay()
 	}
 
 	PRigidBody = GetBodyInstance()->GetPxRigidBody_AssumesLocked();
-	//SetSimulatePhysics(true);
-	//SetEnableGravity(false);
-	//SetMassOverrideInKg();
-	//SetAngularDamping(0);
-	//SetLinearDamping(0);
-
-	//SetConstraintMode(EDOFMode::SixDOF);
-
-	//FBodyInstance *bi = GetBodyInstance();
-	//if (bi) {
-	//	bi->bLockXTranslation = true;
-	//	bi->bLockYTranslation = true;
-	//	bi->bLockZTranslation = false;
-
-	//	bi->bLockXRotation = true;
-	//	bi->bLockYRotation = true;
-	//	bi->bLockZRotation = true;
-	//}
 
 	StartH = GetComponentLocation().Z;
-	//SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, owner->StartVelocity));
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
