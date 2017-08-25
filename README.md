@@ -9,7 +9,7 @@ Note that if the URDF uses meshes, it likely keeps them in one or more folders.
 
 Make sure that for each robot within the XML folder, the file system reflects the structure that the URDF expects.
 
-For example, for the pr2, it expects to find the wheel mesh here pr2_description/meshes/base_v0/wheel.dae. So in the same directory as the PR2.urdf, there should be a folder called pr2_description which contains the subsequent folders and file.
+For example, for the pr2, it expects to find the wheel mesh here: "pr2_description/meshes/base_v0/wheel.dae". So in the same directory as the pr2.urdf, there should be a folder called pr2_description which contains the subsequent folders and file.
 
 Developed on UE4 version 4.16, tested on 4.17
 
