@@ -1,6 +1,6 @@
-[submodule "ROSBridgeTest/Plugins/ROSBridgePlugin"]
-	path = ROSBridgeTest/Plugins/ROSBridgePlugin
-	url = git@github.com:gnoliyil/ROSBridgePlugin.git
-[submodule "ROSBridgePlugin-backup"]
-	path = ROSBridgePlugin
-	url = git@github.com:gnoliyil/ROSBridgePlugin.git
+[submodule "UROSBridge"]
+	path = UROSBridge
+	url = git@github.com:robcog-iai/UROSBridge.git
+[submodule "ROSBridgeTest/Plugins/UROSBridge"]
+	path = ROSBridgeTest/Plugins/UROSBridge
+	url = git@github.com:robcog-iai/UROSBridge.git

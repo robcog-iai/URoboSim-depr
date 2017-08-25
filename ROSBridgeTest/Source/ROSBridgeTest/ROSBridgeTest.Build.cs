@@ -8,11 +8,11 @@ public class ROSBridgeTest : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicIncludePaths.AddRange(new string[] { "ROSBridgeTest/Public", "ROSBridgePlugin/Public", "ROSBridgePlugin/Classes" });
+        PublicIncludePaths.AddRange(new string[] { "ROSBridgeTest/Public", "UROSBridge/Public", "ROSBridgePlugin/Classes" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ROSBridgePlugin", "Json", "JsonUtilities" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UROSBridge", "Json", "JsonUtilities" });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "ROSBridgePlugin" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "UROSBridge" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
