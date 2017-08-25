@@ -14,9 +14,14 @@
 	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
-		{
-			"Name": "URoboSim",
-			"Type": "Developer",
+    {
+      "Name": "URoboSim",
+      "Type": "Developer",
+      "LoadingPhase": "Default"
+    },
+    {
+			"Name": "URoboSimEd",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	]

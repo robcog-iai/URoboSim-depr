@@ -2,16 +2,16 @@
 
 using UnrealBuildTool;
 
-public class URoboSim : ModuleRules
+public class URoboSimEd : ModuleRules
 {
-	public URoboSim(ReadOnlyTargetRules Target) : base(Target)
+	public URoboSimEd(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"URoboSim/Public",
-                "URoboSimEd/Public"
+				"URoboSimEd/Public",
+                "URoboSim/Public",
 				// ... add public include paths required here ...
 			}
 			);
@@ -19,8 +19,8 @@ public class URoboSim : ModuleRules
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"URoboSim/Private",
-                "URoboSimEd/Private",
+				"URoboSimEd/Private",
+                "URoboSim/Private",
 				// ... add other private include paths required here ...
 			}
 			);
@@ -29,7 +29,7 @@ public class URoboSim : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX", "URoboSimEd"
+                    		"Core",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,7 +38,7 @@ public class URoboSim : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX", "URoboSimEd"
+                    		"Core", "CoreUObject", "Engine", "Slate", "SlateCore", "InputCore", "UnrealEd", "LevelEditor"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -47,7 +47,7 @@ public class URoboSim : ModuleRules
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
-				// ... add any modules that your module loads dynamically here ...
+				
 			}
 			);
 	}

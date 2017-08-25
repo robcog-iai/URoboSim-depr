@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RRobot.h"
-#include "IURoboSim.h"
+
+#include "RStaticMeshComponent.h"
 #include "RURDFParser.h"
 #include "math.h"
 #include "Engine.h"
@@ -13,9 +14,23 @@
 // Sets default values
 ARRobot::ARRobot()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	// Init parameters for substepping in RStaticMeshComponent for which this is the parent actor
+	StartVelocity = 1000.0f;
+	KSpring = 100.0f;
+	Damping = 0;		
+	
+	//Get values from UROboSimEd
+	if (IURoboSimEd::IsAvailableEd()) {
+		FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+		bEnableUROSBridge = placeHolder.bEnableUROSBridge;
+		bEnableShapeCollisions = placeHolder.bEnableShapeCollisions;
+		bEnableCollisionTags = placeHolder.bEnableShapeCollisions;
+		bEnableAngularMotors = placeHolder.bEnableAngularMotors;
+		bEnableCollisionTags = placeHolder.bEnableCollisionTags;
+		collisionFilterArr = placeHolder.collisionFilterArr;
+	}	
+	
+		
 	// Create a USceneComponent to be the RootComponent
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
 	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
@@ -54,6 +69,8 @@ ARRobot::ARRobot()
 	*/
 
 }
+
+
 
 // Called when the game starts or when spawned
 void ARRobot::BeginPlay()
@@ -204,39 +221,7 @@ bool ARRobot::CreateRobot()
 }
 
 
-FORCEINLINE void SetLinearLimits( //unused function, may delete later
-	FConstraintInstance& Constraint,
-	const uint8& XLim, const uint8& YLim, const uint8& ZLim,
-	const float& Size,
-	bool SoftLimit = true,
-	float SoftStiffness = 0,
-	float SoftDampening = 0
-	)
-{
-	
-	switch (XLim)
-	{
-	case 0: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearXMotion(ELinearConstraintMotion::LCM_Locked);
-	}
-	switch (YLim)
-	{
-	case 0: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearYMotion(ELinearConstraintMotion::LCM_Locked);
-	}
-	switch (ZLim)
-	{
-	case 0: Constraint.SetLinearZMotion(ELinearConstraintMotion::LCM_Free);
-	case 1: Constraint.SetLinearZMotion (ELinearConstraintMotion::LCM_Limited);
-	case 2: Constraint.SetLinearZMotion (ELinearConstraintMotion::LCM_Locked);
-	}
-	//~~~~~~~~~~
 
-	Constraint.SetLinearLimitSize(Size);
-	
-}
 
 
 bool ARRobot::CreateActorsFromNode(FRNode* Node)
@@ -256,9 +241,9 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
 	bool bUseCollision = !(Link->Collision.Mesh.IsEmpty());
-	//test
-	bUseCollision = false;
-	//
+	
+	bUseCollision = bEnableCollisionTags;
+	
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
@@ -278,7 +263,8 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	}
 
 	UStaticMesh* Mesh = nullptr;
-	UStaticMeshComponent* MeshComp = nullptr;
+	//UStaticMeshComponent* MeshComp = nullptr;
+	URStaticMeshComponent* MeshComp = nullptr;
 	UShapeComponent* ShapeComp = nullptr;
 	FVector Scale(Link->Visual.Scale);
 
@@ -407,11 +393,11 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	// Create and configure the Link
 	if (ShapeComp)
-		MeshComp = NewObject<UStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
+		MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
 	else
 	{
 		// Using custom mesh
-		MeshComp = NewObject<UStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+		MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
 
 	}
 
@@ -448,7 +434,9 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		ShapeComp->RegisterComponent();
 
 		//Disabling collisions for all shape components turned out to be necessary for the pr2.
-		ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);			
+		if (!bEnableShapeCollisions) {
+			ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		}
 		
 		MeshComp->WeldTo(ParentComp);		
 
@@ -478,12 +466,22 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 		
 
-		//Prevents certain links from colliding with themselves.
-		if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm")  ||   Link->Name.Contains("finger_link")) {			
-			MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); 
-			MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);						
-			MeshComp->WeldTo(ParentComp);
+		MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
+		
+
+		for (FString linkName : collisionFilterArr) {
+			if (Link->Name.Contains(linkName)) {
+				MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+				MeshComp->WeldTo(ParentComp);
+				break;
+			}
 		}
+
+		//if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
+		//	//Prevents certain links from colliding with themselves.
+		//	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+		//	MeshComp->WeldTo(ParentComp);
+		//}
 		
 		MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
         UE_LOG(LogTemp, Warning, TEXT("Add MeshComp [%s], Parent [%s], Parent WorldRotation = [%s]"), *MeshComp->GetName(), *ParentComp->GetName(), *ParentComp->GetComponentRotation().ToString()); 
@@ -500,49 +498,41 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		FConstraintInstance ConstraintInstance = SetConstraint(Joint);
 		ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
 		ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-		//Optional constraints commented out 
-		//ConstraintInstance.ProfileInstance.LinearLimit.ContactDistance = 10;// 
-		//ConstraintInstance.ProfileInstance.TwistLimit.ContactDistance = 5.f;//
-		//ConstraintInstance.ProfileInstance.TwistLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
-		//ConstraintInstance.ProfileInstance.ConeLimit.Stiffness;
-		//ConstraintInstance.ProfileInstance.TwistLimit.Damping;		
+	
 								
-		FRotator rotTarget(0.f, 0.f, 0.f);		
-		//Example of how the angular motors can be enabled
-		if (Joint->Name.Contains("r_shoulder_lift")) {			
+		FRotator rotTarget(0.f, 0.f, 0.f);				
+		if (Joint->Name.Contains("r_shoulder_lift")) { //Example of how certain joints can be given a rotation target
 			rotTarget= FRotator(-30.f, 0.f, 0.f);
 		}	
 		
 		
-		// Disable built-in motor for joints (Yilong)
-		// Damping requires velocity drive to be enabled
-		// ConstraintInstance.ProfileInstance.AngularDrive.AngularVelocityTarget = FVector (0.f, 0.f, 0.f);		
-		// ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = true;
-		// ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = true;
-		// ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnableVelocityDrive = true;
-        //
-        //
-		// ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
-		// ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		// ConstraintInstance.SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		// ConstraintInstance.SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
-		//
-		// ConstraintInstance.ProfileInstance.AngularDrive.OrientationTarget = rotTarget;
-        //
-		// ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = true;
-		// ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
-		// ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnablePositionDrive = true;
-        //
-		//
-		// ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Damping = Link->Inertial.Mass* 50000;
-		// ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Stiffness = Link->Inertial.Mass* 120000;
-        //
-		// ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = Link->Inertial.Mass * 50000;
-		// ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = Link->Inertial.Mass * 120000;
-        //
-		// ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Damping = Link->Inertial.Mass * 50000;
-		// ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Stiffness = Link->Inertial.Mass * 120000; */
+		if (bEnableAngularMotors) { //Example of how the angular motors can be enabled
+			// Damping requires velocity drive to be enabled
+			ConstraintInstance.ProfileInstance.AngularDrive.AngularVelocityTarget = FVector(0.f, 0.f, 0.f);
+			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnableVelocityDrive = true;
+
+			ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
+			ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
+			ConstraintInstance.SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
+			ConstraintInstance.SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
+
+			ConstraintInstance.ProfileInstance.AngularDrive.OrientationTarget = rotTarget;
+
+			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
+			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.bEnablePositionDrive = true;
+
+			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Damping = Link->Inertial.Mass * 50000;
+			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.Stiffness = Link->Inertial.Mass * 120000;
+
+			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = Link->Inertial.Mass * 50000;
+			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = Link->Inertial.Mass * 120000;
+
+			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Damping = Link->Inertial.Mass * 50000;
+			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Stiffness = Link->Inertial.Mass * 120000; 
+		}
 
 
 
@@ -871,16 +861,7 @@ bool ARRobot::RotateJoint(FString Name, FRotator TargetRotation)
 
 	}
 
-	/*
-	UE_LOG(LogTemp, Display, TEXT("Rotate Joint %s | Number of joints: %d"), Name.GetCharArray().GetData(), JointComponents.Num());
-	if (!JointComponents.Contains(Name)) return false;
-	UE_LOG(LogTemp, Display, TEXT("Joint %s exists"), Name.GetCharArray().GetData());
 
-	UPhysicsConstraintComponent* Constraint = JointComponents.FindRef(Name);
-
-	FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-	Constraint->SetAngularOrientationTarget(TargetRotation);
-	*/
 	return false;
 }
 
@@ -902,15 +883,7 @@ bool ARRobot::MovePrismaticJoint(FString Name, FVector TargetPosition)
 		}
 
 	}
-	/*
-	UE_LOG(LogTemp, Display, TEXT("Move Joint %s | Number of joints: %d"), Name.GetCharArray().GetData(), JointComponents.Num());
-	if (!JointComponents.Contains(Name)) return false;
-	UE_LOG(LogTemp, Display, TEXT("Joint %s exists"), Name.GetCharArray().GetData());
-	UPhysicsConstraintComponent* Constraint = JointComponents.FindRef(Name);
 
-	FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-	ConstraintInstance->SetLinearPositionTarget(TargetPosition);
-	*/
 	return true;
 }
 
@@ -965,12 +938,7 @@ float ARRobot::GetJointPosition(FString JointName)
             while (ResultAngle < -180 )
                 ResultAngle += 360;
 
-            // UE_LOG(LogTemp, Warning, TEXT("ResultAngle = %.6f"), ResultAngle);
 
-            /* UE_LOG(LogTemp, Log, TEXT("Joint [%s] Link [%s] -> [%s] Current Axis: [%s] --- Angle: [%.3f] --- InitialRel: [%s] CurrentRel: [%s] "),
-                *Joint->GetName(), *ParentComponent->GetName(), *ChildComponent->GetName(),
-                *Axis.ToString(), ResultAngle,
-                *InitialRotationRel.Rotator().ToString(), *CurrentRotationRel.Rotator().ToString()); */
 
             return ResultAngle;
         }
