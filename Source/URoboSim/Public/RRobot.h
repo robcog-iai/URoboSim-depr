@@ -1,17 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "IURoboSimEd.h"
+#include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "RRobot.generated.h"
 
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor
+class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
 {
+
 	GENERATED_BODY()
 
 public:
+
+
+
 
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
@@ -42,7 +48,31 @@ public:
 	// Load Static Mesh From Path 
 	FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
-public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+		bool bSubstepEnabled;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+		float StartVelocity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
+		float KSpring;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+		float Damping;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+		bool bEnableLogging;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
+		//bool bEnableROSBridge;
+
+	//URoboSimEd Variables
+	TArray<FString> collisionFilterArr; //holds links on which self-collision should be disabled
+	bool bEnableUROSBridge; //holds links on which self-collision should be disabled
+	bool bEnableCollisionTags;
+	bool bEnableAngularMotors;
+	bool bEnableShapeCollisions;
+
+
 
 	// A structure representing a URDF Joint
 	struct FRJoint
