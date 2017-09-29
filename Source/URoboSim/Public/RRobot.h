@@ -1,6 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
+
 #include "IURoboSimEd.h"
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
@@ -11,14 +12,9 @@
 UCLASS(Blueprintable)
 class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
 {
-
 	GENERATED_BODY()
 
 public:
-
-
-
-
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 	TMap<FString, UPrimitiveComponent*> LinkComponents;
@@ -49,21 +45,22 @@ public:
 	FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-		bool bSubstepEnabled;
+	bool bSubstepEnabled;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-		float StartVelocity;
+	float StartVelocity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
-		float KSpring;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-		float Damping;	
+	float KSpring;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-		bool bEnableLogging;
+	float Damping;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+	bool bEnableLogging;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
-		//bool bEnableROSBridge;
+	//bool bEnableROSBridge;
 
 	//URoboSimEd Variables
 	TArray<FString> collisionFilterArr; //holds links on which self-collision should be disabled
@@ -71,9 +68,7 @@ public:
 	bool bEnableCollisionTags;
 	bool bEnableAngularMotors;
 	bool bEnableShapeCollisions;
-
-
-
+	
 	// A structure representing a URDF Joint
 	struct FRJoint
 	{
@@ -168,7 +163,7 @@ public:
 	// Called when the Robot is constructed
 	virtual void OnConstruction(const FTransform &Transform) override;
 
-	// The Rootcomponent
+	// The root component
 	USceneComponent* Root;
 
 	// Adds the Link data to the Robot
@@ -184,17 +179,16 @@ public:
 	void ParseURDF();
 
 
-
 	UPROPERTY(EditAnywhere, Export)
-	float globalVarA;
+	float GlobalVarA;
 
+	// Copy the XML URDF Code
 	UPROPERTY(EditAnywhere, Export)
-		// Copy the XML URDF Code
-		FString XmlUrdf;
+	FString XmlUrdf;
 
+	// The material used for all robot links
 	UPROPERTY(EditAnywhere)
-		// The material used for all robot links
-		UMaterial* BasicMaterial;
+	UMaterial* BasicMaterial;
 
 	// Rotates the joint to the targeted rotation
 	bool RotateJoint(FString Name, FRotator TargetRotation);
@@ -215,7 +209,6 @@ public:
     void AddForceToJoint(FString JointName, float Force);
 
 private:
-
 	// Array of links added with AddLink. Is cleared in the process of creating the Robot
 	TArray<FRLink> Links;
 
@@ -251,5 +244,4 @@ private:
 
 	// Recursively creates the Robots physical links and joints
 	bool CreateActorsFromNode(FRNode* Node);
-
 };

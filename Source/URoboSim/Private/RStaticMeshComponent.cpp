@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "RStaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
-
-
 #include "PhysXIncludes.h"
 #include "PhysicsPublic.h"
 #include "Runtime/Engine/Private/PhysicsEngine/PhysXSupport.h"
@@ -72,7 +70,8 @@ void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		 //Add custom physics forces each tick
 		GetBodyInstance()->AddCustomPhysics(OnCalculateCustomPhysics);
 	}
-	else {
+	else 
+	{
 		//DoPhysics(DeltaTime, false);
 	}
 }
@@ -87,17 +86,20 @@ void URStaticMeshComponent::SubstepTick(float DeltaTime, FBodyInstance* InBodyIn
 
 void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 {
-	if (PRigidBody) {
+	if (PRigidBody)
+	{
 		float CurrError = GetCurrentLocation().Z - StartH;
 
 		float Velocity = GetCurrentVelocity().Z;
 
 		float force = -(CurrError * owner->KSpring + Velocity * owner->Damping);
 
-		if (InSubstep) {
+		if (InSubstep) 
+		{
 			PRigidBody->addForce(PxVec3(0.0f, 0.0f, force), physx::PxForceMode::eFORCE, true);
 		}
-		else {
+		else 
+		{
 			AddForce(FVector(0.0f, 0.0f, force));
 		}
 	}
@@ -126,22 +128,26 @@ void URStaticMeshComponent::TickPostPhysics(
 	}
 }
 
-FVector URStaticMeshComponent::GetCurrentLocation() {
+FVector URStaticMeshComponent::GetCurrentLocation() 
+{
 	PxTransform PTransform = PRigidBody->getGlobalPose();
 	return FVector(PTransform.p.x, PTransform.p.y, PTransform.p.z);
 }
 
-FRotator URStaticMeshComponent::GetCurrentRotation() {
+FRotator URStaticMeshComponent::GetCurrentRotation() 
+{
 	PxTransform PTransform = PRigidBody->getGlobalPose();
 	return FRotator(FQuat(PTransform.q.x, PTransform.q.y, PTransform.q.z, PTransform.q.w));
 }
 
-FVector URStaticMeshComponent::GetCurrentAngularVelocity() {
+FVector URStaticMeshComponent::GetCurrentAngularVelocity() 
+{
 	PxVec3 PAngVelocity = PRigidBody->getAngularVelocity();
 	return FMath::RadiansToDegrees(FVector(PAngVelocity.x, PAngVelocity.y, PAngVelocity.z));
 }
 
-FVector URStaticMeshComponent::GetCurrentVelocity() {
+FVector URStaticMeshComponent::GetCurrentVelocity() 
+{
 	PxVec3 PVelocity = PRigidBody->getLinearVelocity();
 	return FVector(PVelocity.x, PVelocity.y, PVelocity.z);
 }

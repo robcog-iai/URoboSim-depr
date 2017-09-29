@@ -1,7 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "RRobot.h"
-
 #include "RStaticMeshComponent.h"
 #include "RURDFParser.h"
 #include "math.h"
@@ -29,7 +28,6 @@ ARRobot::ARRobot()
 		bEnableCollisionTags = placeHolder.bEnableCollisionTags;
 		collisionFilterArr = placeHolder.collisionFilterArr;
 	}	
-	
 		
 	// Create a USceneComponent to be the RootComponent
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
@@ -67,10 +65,7 @@ ARRobot::ARRobot()
 		//BasicMaterial = Material.Object;
 	}
 	*/
-
 }
-
-
 
 // Called when the game starts or when spawned
 void ARRobot::BeginPlay()
@@ -219,10 +214,6 @@ bool ARRobot::CreateRobot()
 
 	return bSuccess;
 }
-
-
-
-
 
 bool ARRobot::CreateActorsFromNode(FRNode* Node)
 {
@@ -534,8 +525,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			ConstraintInstance.ProfileInstance.AngularDrive.TwistDrive.Stiffness = Link->Inertial.Mass * 120000; 
 		}
 
-
-
 		//--
 		Constraint->ConstraintInstance = ConstraintInstance;		
 		Constraint->SetDisableCollision(true);
@@ -796,8 +785,6 @@ FConstraintInstance ARRobot::SetConstraint(FRJoint* Joint)
 		}
 
 	}
-	
-
 
 	return ConstraintInstance;
 }

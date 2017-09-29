@@ -1,4 +1,4 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "URoboSimEdMode.h"
 #include "URoboSimEdModeToolkit.h"
@@ -9,12 +9,10 @@ const FEditorModeID FURoboSimEdMode::EM_URoboSimEdModeId = TEXT("EM_URoboSimEdMo
 
 FURoboSimEdMode::FURoboSimEdMode()
 {
-
 }
 
 FURoboSimEdMode::~FURoboSimEdMode()
 {
-
 }
 
 void FURoboSimEdMode::Enter()

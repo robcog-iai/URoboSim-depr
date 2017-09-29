@@ -1,6 +1,7 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
+
 #include "IURoboSimEd.h"
 #include "CoreMinimal.h"
 #include "Toolkits/BaseToolkit.h"
@@ -8,8 +9,6 @@
 class FURoboSimEdModeToolkit : public FModeToolkit
 {
 public:
-
-
 	FURoboSimEdModeToolkit();
 	
 	/** FModeToolkit interface */
@@ -21,8 +20,6 @@ public:
 	virtual class FEdMode* GetEditorMode() const override;
 	virtual TSharedPtr<class SWidget> GetInlineContent() const override { return ToolkitWidget; }
 	
-
 private:
-
 	TSharedPtr<SWidget> ToolkitWidget;
 };

@@ -29,7 +29,7 @@ public class URoboSimEd : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core",
+                "Core",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,7 +38,15 @@ public class URoboSimEd : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core", "CoreUObject", "Engine", "Slate", "SlateCore", "InputCore", "UnrealEd", "LevelEditor"
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "Slate",
+                "SlateCore",
+                "InputCore",
+                "UnrealEd",
+                "LevelEditor",
+                "Projects",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

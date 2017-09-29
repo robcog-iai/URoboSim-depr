@@ -1,7 +1,6 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "URoboSimEdModeToolkit.h"
-
 #include "Engine/Selection.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
@@ -10,8 +9,6 @@
 #include "EditorModeManager.h"
 
 #define LOCTEXT_NAMESPACE "FURoboSimEdModeToolkit"
-
-
 
 FURoboSimEdModeToolkit::FURoboSimEdModeToolkit()
 {
@@ -74,8 +71,6 @@ void FURoboSimEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHos
 
 			return FReply::Handled();
 		}
-
-
 	};
 
 	TAttribute<FSlateColor> InBackgroundColor(FLinearColor(1.0f, 1.0f, 1.0f));

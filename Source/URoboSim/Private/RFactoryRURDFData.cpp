@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "RFactoryRURDFData.h"
 #include "IURoboSim.h"
@@ -32,7 +32,8 @@ URFactoryRURDFData::URFactoryRURDFData(const FObjectInitializer& ObjectInitializ
 	bIsReimport = false;
 }
 
-URFactoryRURDFData::~URFactoryRURDFData() {
+URFactoryRURDFData::~URFactoryRURDFData() 
+{
 }
 
 UObject* URFactoryRURDFData::FactoryCreateText(UClass* InClass,
@@ -46,8 +47,7 @@ UObject* URFactoryRURDFData::FactoryCreateText(UClass* InClass,
 	FFeedbackContext* Feed)
 {
 	if (!DoesSupportClass(InClass)) return nullptr;
-
-	
+		
 	// For reimport via import button.
 	TArray <FAssetData> SelectionList;
 

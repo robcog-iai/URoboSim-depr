@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
@@ -21,12 +21,12 @@ class UROBOSIM_API ARTestRobotMotors : public ARRobot
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	// Target rotation for motor of second_to_third_joint
 	UPROPERTY(EditAnywhere)
-		// Target rotation for motor of second_to_third_joint
-		FRotator TargetRotation;
+	FRotator TargetRotation;
 
+	// Target location for motor of first_to_second_joint
 	UPROPERTY(EditAnywhere)
-		// Target location for motor of first_to_second_joint
-		FVector TargetLocation;
+	FVector TargetLocation;
 
 };

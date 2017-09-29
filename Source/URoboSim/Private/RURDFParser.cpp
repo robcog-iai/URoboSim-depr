@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "RURDFParser.h"
 #include "IURoboSim.h"
@@ -16,9 +16,11 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 	FString AttValue(AttributeValue);
 	
 	
-	if (!AttName.IsEmpty() && !AttValue.IsEmpty()) {
+	if (!AttName.IsEmpty() && !AttValue.IsEmpty())
+	{
 
-		if (Stack.Top().Equals("joint")) {
+		if (Stack.Top().Equals("joint"))
+		{
 			FString stackOldTop = Stack.Pop();
 
 			//Handle special case 1 of joint tags within a transmission tag
@@ -51,16 +53,20 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 			int32 IndexCollision = Stack.FindLast("collision");
 
 			// Check current context.
-			if (IndexInertial > IndexCollision && IndexInertial > IndexVisual) {
+			if (IndexInertial > IndexCollision && IndexInertial > IndexVisual)
+			{
 				AttMap.Add("inertial_" + Stack.Top() + "_" + AttName, AttValue);
 			}
-			else if (IndexVisual > IndexCollision && IndexVisual > IndexInertial) {
+			else if (IndexVisual > IndexCollision && IndexVisual > IndexInertial)
+			{
 				AttMap.Add("visual_" + Stack.Top() + "_" + AttName, AttValue);
 			}
-			else if (IndexCollision > IndexVisual && IndexCollision > IndexInertial) {
+			else if (IndexCollision > IndexVisual && IndexCollision > IndexInertial)
+			{
 				AttMap.Add("collision_" + Stack.Top() + "_" + AttName, AttValue);
 			}
-			else {
+			else 
+			{
 				// if fails.
 				UE_LOG(LogTemp, Warning, TEXT("Unexpected attribute in robot description.\n"));
 
@@ -69,15 +75,15 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 			return true;
 		}
 		// Add Stackelement from Top, Attributname and Attributvalue to a Map.
-		
 
-
-		else {
+		else 
+		{
 			AttMap.Add(Stack.Top() + "_" + AttName, AttValue);
 		}
 		return true;
 	}
-	else {
+	else
+	{
 		// If there a problem with XML attribute.
 		UE_LOG(LogTemp, Warning, TEXT("Failed to read attribute of robot description.\n"));
 
@@ -87,13 +93,15 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 
 bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 {
-	if (Stack.Top().IsEmpty()) {
+	if (Stack.Top().IsEmpty()) 
+	{
 		// If we have no element in the stack. 
 		UE_LOG(LogTemp, Warning, TEXT("Error in robot description.\n"));
 
 		return false;
 	}
-	else if (Stack.Top().Equals("joint") ) {
+	else if (Stack.Top().Equals("joint") ) 
+	{
 
 		FString JointName = AttMap.FindRef("joint_name");			// required value (urdf).
 		FString Type = AttMap.FindRef("joint_type");				// required value (urdf).
@@ -115,25 +123,31 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 		}
 
 		// For Location and Rotation...if not, then default value.
-		if (AttMap.Contains("origin_xyz")) {
+		if (AttMap.Contains("origin_xyz")) 
+		{
 			Location = GenerateVectors("origin_xyz");
 		}
-		if (AttMap.Contains("origin_rpy")) {
+		if (AttMap.Contains("origin_rpy")) 
+		{
 			Rotation = GenerateRotaters("origin_rpy");
 		}
-		if (AttMap.Contains("axis_xyz")) {
+		if (AttMap.Contains("axis_xyz")) 
+		{
 			Axis = GenerateVectors("axis_xyz");
 		}
-		if (AttMap.Contains("limit_lower")) {
+		if (AttMap.Contains("limit_lower")) 
+		{
 			LimitLower = FCString::Atof(*(AttMap.FindRef("limit_lower")));
 		}
-		if (AttMap.Contains("limit_upper")) {
+		if (AttMap.Contains("limit_upper")) 
+		{
 			LimitUpper = FCString::Atof(*(AttMap.FindRef("limit_upper")));
 		}
 
 		// Required at prismatic and revolute 
 		if ((Type.Equals("prismatic") || Type.Equals("revolute")) &&
-			(AttMap.FindRef("limit_effort").IsEmpty() || AttMap.FindRef("limit_velocity").IsEmpty())) {
+			(AttMap.FindRef("limit_effort").IsEmpty() || AttMap.FindRef("limit_velocity").IsEmpty())) 
+		{
 
 			UE_LOG(LogTemp, Warning, TEXT("Missing required data for prismatic/revolute joint.\n"));
 			return false;
@@ -170,7 +184,8 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 		return true;
 
 	}
-	else if (Stack.Top().Equals("link")) {
+	else if (Stack.Top().Equals("link")) 
+	{
 
 		FString LinkName = AttMap.FindRef("link_name");		// required value (urdf).
 
@@ -313,7 +328,8 @@ bool FRURDFParser::ProcessXmlDeclaration(const TCHAR* ElementData, int32 XmlFile
 	return true;
 }
 
-FVector FRURDFParser::GenerateVectors(const FString Element) {
+FVector FRURDFParser::GenerateVectors(const FString Element) 
+{
 
 	// For the conversion. 
 	TArray<FString> Helper;
@@ -334,7 +350,8 @@ FVector FRURDFParser::GenerateVectors(const FString Element) {
 	return FVector(X, Y, Z);
 }
 
-FRotator FRURDFParser::GenerateRotaters(const FString Element) {
+FRotator FRURDFParser::GenerateRotaters(const FString Element) 
+{
 
 	// For the conversion. 
 	TArray<FString> Helper;
@@ -354,7 +371,8 @@ FRotator FRURDFParser::GenerateRotaters(const FString Element) {
 	return FRotator(P, Y, R);
 }
 
-FVector FRURDFParser::GenerateCylinderScale(const FString ElementRadius, const FString ElementLength) {
+FVector FRURDFParser::GenerateCylinderScale(const FString ElementRadius, const FString ElementLength) 
+{
 
 	TArray<FString> HelperRadius, HelperLength;
 
@@ -377,27 +395,32 @@ TPair<FString, FVector> FRURDFParser::MeshAndScale(FString Element)
 	FVector VisualScale(1.f);
 
 	// For Mesh loading 
-	if (AttMap.Contains(Element + "box_size")) {
+	if (AttMap.Contains(Element + "box_size")) 
+	{
 
 		VisualMesh = "box";
 		VisualScale = GenerateVectors(Element + "box_size");
 	}
-	else if (AttMap.Contains(Element + "cylinder_radius")) {
+	else if (AttMap.Contains(Element + "cylinder_radius")) 
+	{
 
 		VisualMesh = "cylinder";
 		VisualScale = GenerateCylinderScale(Element + "cylinder_radius", Element + "cylinder_length");
 	}
-	else if (AttMap.Contains(Element + "sphere_radius")) {
+	else if (AttMap.Contains(Element + "sphere_radius")) 
+	{
 
 		VisualMesh = "sphere";
 		VisualScale = GenerateVectors(Element + "sphere_radius");
 	}
-	else if (AttMap.Contains(Element + "mesh_filename")) {
+	else if (AttMap.Contains(Element + "mesh_filename")) 
+	{
 
 		VisualMesh = AttMap.FindRef(Element + "mesh_filename");
 
 		// optional for own meshes.
-		if (AttMap.Contains(Element + "mesh_scale")) {
+		if (AttMap.Contains(Element + "mesh_scale")) 
+		{
 			VisualScale = GenerateVectors(Element + "mesh_scale");
 		}
 

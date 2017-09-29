@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #include "RTestRobotMotors.h"
 #include "IURoboSim.h"
-
-
 
 ARTestRobotMotors::ARTestRobotMotors() : ARRobot()
 {
