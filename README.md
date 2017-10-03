@@ -1,3 +1,5 @@
+![Alt text](Documentation/images/robot.png "Robot example")
+
 # URoboSim
 Import a URDF file into UE4 by drag & drop into the content browser. A new asset is created with the URDF information. Before dragging the asset into the game world, certain properties can be edited using a new visual interface found in the Editor Mode window.
 
@@ -14,3 +16,17 @@ For example, for the pr2, it expects to find the wheel mesh here: "pr2_descripti
 Developed on UE4 version 4.16, tested on 4.17
 
 Be sure to check the Wiki page for more details.
+
+# Quick Start
+
+Drag and drop a compatible urdf in the content menu
+
+![Alt text](Documentation/images/drag-drop-urdf.png "Robot example")
+
+Drag and drop the the generated file in the world
+
+![Alt text](Documentation/images/drag-drop-robot.png "Robot example")
+
+Generated robot tree
+
+![Alt text](Documentation/images/robot-tree.png "Robot example")
