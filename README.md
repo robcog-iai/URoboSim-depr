@@ -15,7 +15,7 @@ For example, for the pr2, it expects to find the wheel mesh here: "pr2_descripti
 
 Developed on UE4 version 4.16, tested on 4.17
 
-Be sure to check the Wiki page for more details.
+Be sure to check the [Wiki](https://github.com/robcog-iai/URoboSim/wiki) page for more details.
 
 # Quick Start
 
