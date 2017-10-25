@@ -663,7 +663,8 @@ void ARRobot::ParseURDF()
 	bool Success;
 
 	// Remove linebreaks and tabs
-	XmlUrdf = XmlUrdf.Trim().TrimTrailing();
+	//XmlUrdf = XmlUrdf.Trim().TrimTrailing();
+	XmlUrdf.TrimStartAndEndInline();
 	XmlUrdf = XmlUrdf.Replace(L"\n", L" ");
 	XmlUrdf = XmlUrdf.Replace(L"\r", L"");
 	XmlUrdf = XmlUrdf.Replace(L"\t", L" ");
@@ -979,8 +980,8 @@ float ARRobot::GetJointVelocity(FString JointName)
             FQuat JointQuat = Joint->GetComponentTransform().GetRotation();
             FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
 
-            FVector ParentAvel = ParentComponent->GetPhysicsAngularVelocity();
-            FVector ChildAvel = ChildComponent->GetPhysicsAngularVelocity();
+            FVector ParentAvel = ParentComponent->GetPhysicsAngularVelocityInRadians();
+            FVector ChildAvel = ChildComponent->GetPhysicsAngularVelocityInRadians();
             float HingeVel = FVector::DotProduct(ChildAvel - ParentAvel, GlobalAxis); 
 
             /* UE_LOG(LogTemp, Warning, TEXT("Joint [%s]: HingeVel = %.3f; ChildAvel [%s], ParentAvel [%s], Axis [%s] (global)"),
@@ -1043,8 +1044,8 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
             FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
 
             FVector TorqueToAdd = GlobalAxis * Force;
-            ChildComponent->AddTorque(TorqueToAdd);
-            ParentComponent->AddTorque(-TorqueToAdd);
+            ChildComponent->AddTorqueInRadians(TorqueToAdd);
+            ParentComponent->AddTorqueInRadians(-TorqueToAdd);
         }
     }
 }

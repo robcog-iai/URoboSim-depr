@@ -10,6 +10,10 @@ FRURDFParser::FRURDFParser(ARRobot* Robot_)
 	this->Robot = Robot_;
 }
 
+FRURDFParser::~FRURDFParser()
+{
+}
+
 bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* AttributeValue)
 {
 	FString AttName(AttributeName);

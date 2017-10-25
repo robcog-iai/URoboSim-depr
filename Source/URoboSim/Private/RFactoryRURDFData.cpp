@@ -150,7 +150,7 @@ bool URFactoryRURDFData::ImportSourceFile(URURDFData* ForAsset) const
 	}
 
 	FString ReadString;
-	if (!FFileHelper::LoadFileToString(ReadString, *AssetFilename, 0))
+	if (!FFileHelper::LoadFileToString(ReadString, *AssetFilename, FFileHelper::EHashOptions::None))
 	{
 		return false;
 	}

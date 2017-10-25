@@ -87,4 +87,6 @@ private:
 public:
 
 	FRURDFParser(ARRobot* Robot);
+
+	virtual ~FRURDFParser();
 };
