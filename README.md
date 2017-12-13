@@ -13,9 +13,11 @@ Make sure that for each robot within the XML folder, the file system reflects th
 
 For example, for the pr2, it expects to find the wheel mesh here: "pr2_description/meshes/base_v0/wheel.dae". So in the same directory as the pr2.urdf, there should be a folder called pr2_description which contains the subsequent folders and file.
 
-Developed on UE4 version 4.16, tested on 4.17
+Developed on UE4 version 4.16, tested on 4.17, 4.18
 
 Be sure to check the [Wiki](https://github.com/robcog-iai/URoboSim/wiki) page for more details.
+
+See [here](https://github.com/gnoliyil/pr2_kinetic_packages/tree/e43479ea6088062b63271c6b94417c266429d439) PR2 Packages for ROS Kinetic Kame.
 
 # Quick Start
 
