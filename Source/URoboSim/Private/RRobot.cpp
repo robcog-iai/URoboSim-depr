@@ -18,16 +18,16 @@ ARRobot::ARRobot()
 	KSpring = 100.0f;
 	Damping = 0;		
 	
-	//Get values from UROboSimEd
-	if (IURoboSimEd::IsAvailableEd()) {
-		FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
-		bEnableUROSBridge = placeHolder.bEnableUROSBridge;
-		bEnableShapeCollisions = placeHolder.bEnableShapeCollisions;
-		bEnableCollisionTags = placeHolder.bEnableShapeCollisions;
-		bEnableAngularMotors = placeHolder.bEnableAngularMotors;
-		bEnableCollisionTags = placeHolder.bEnableCollisionTags;
-		collisionFilterArr = placeHolder.collisionFilterArr;
-	}	
+	// //Get values from UROboSimEd
+	// if (IURoboSimEd::IsAvailableEd()) {
+	// 	FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
+	// 	bEnableUROSBridge = placeHolder.bEnableUROSBridge;
+	// 	bEnableShapeCollisions = placeHolder.bEnableShapeCollisions;
+	// 	bEnableCollisionTags = placeHolder.bEnableShapeCollisions;
+	// 	bEnableAngularMotors = placeHolder.bEnableAngularMotors;
+	// 	bEnableCollisionTags = placeHolder.bEnableCollisionTags;
+	// 	collisionFilterArr = placeHolder.collisionFilterArr;
+	// }	
 		
 	// Create a USceneComponent to be the RootComponent
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));

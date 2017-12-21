@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "IURoboSimEd.h"
+
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "GameFramework/Actor.h"
@@ -10,7 +10,7 @@
 #include "RRobot.generated.h"
 
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
+class UROBOSIM_API ARRobot : public AActor
 {
 	GENERATED_BODY()
 
@@ -164,6 +164,7 @@ public:
 	virtual void OnConstruction(const FTransform &Transform) override;
 
 	// The root component
+	UPROPERTY(EditAnywhere)
 	USceneComponent* Root;
 
 	// Adds the Link data to the Robot
