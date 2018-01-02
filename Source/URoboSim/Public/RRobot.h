@@ -179,7 +179,19 @@ public:
 	// Parses the URDF code written into property XmlUrdf
 	void ParseURDF();
 
+	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint ,FString Name);
 
+	FConstraintInstance CreateConstraintInstance(FRJoint* Joint);
+
+	FConstraintInstance CreateFixedConstraint(FConstraintInstance ConstraintInstance);
+
+	FConstraintInstance CreateFloatingConstraint(FConstraintInstance ConstraintInstance);
+	
+	FConstraintInstance CreatePrismaticConstraint(FConstraintInstance ConstraintInstance,FRJoint* Joint);
+
+	FConstraintInstance CreateRevoluteConstraint(FConstraintInstance ConstraintInstance, FRJoint* Joint);
+
+	
 	UPROPERTY(EditAnywhere, Export)
 	float GlobalVarA;
 
