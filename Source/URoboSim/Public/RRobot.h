@@ -191,6 +191,7 @@ public:
 
 	FConstraintInstance CreateRevoluteConstraint(FConstraintInstance ConstraintInstance, FRJoint* Joint);
 
+	FConstraintInstance CreatePlanarConstraint(FConstraintInstance ConstraintInstance, FRJoint* Joint);
 	
 	UPROPERTY(EditAnywhere, Export)
 	float GlobalVarA;
