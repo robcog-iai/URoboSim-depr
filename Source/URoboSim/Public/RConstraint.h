@@ -73,6 +73,16 @@ class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
   void InitDrive(){};
 };
 
+UCLASS()
+class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
+{
+  GENERATED_BODY()
+	public:
+	URContinuousConstraint(){};
+  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void InitDrive(){};
+};
+
 // UCLASS()
 // class  UROBOSIM_API URConstraintFactory : public UFactory
 // {

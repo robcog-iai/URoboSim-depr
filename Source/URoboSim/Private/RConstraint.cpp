@@ -116,6 +116,49 @@ void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLin
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
   // A Constraint for planar type. This joint allows motion in a plane perpendicular to the axis.
+
+    float SimpleLimit  = FMath::Abs(Joint->LowerLimit) + FMath::Abs(Joint->UpperLimit);
+  ELinearConstraintMotion LinearConstraintMotion = ELinearConstraintMotion::LCM_Limited;
+
+  if (Joint->Axis.X == 1)
+	{
+	  ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
+	  ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
+	}
+
+  else if (Joint->Axis.Y == 1)
+	{
+	  ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
+	  ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
+
+	}
+
+  else if (Joint->Axis.Z == 1)
+	{
+	  ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
+	  ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
+
+	 
+	}
+}
+
+
+void URContinuousConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+{
+  URFixedConstraint::Init(ParentComp, Joint, Link);
+
   if (Joint->Axis.Z == 1) {
 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
@@ -131,8 +174,8 @@ void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLin
 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
   }
-  //Constraint->ConstraintInstance = ConstraintInstance;
 }
+
 
 // URConstraintFactory::URConstraintFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 // {

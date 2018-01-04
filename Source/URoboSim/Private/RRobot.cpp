@@ -31,7 +31,7 @@ ARRobot::ARRobot()
 	// }	
 
 	collisionFilterArr = { "wheel_link", "shoulder", "arm", "finger_link" };
-	bEnableShapeCollisions = true;
+	bEnableShapeCollisions = false;
 	
 	// Create a USceneComponent to be the RootComponent
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
@@ -1093,9 +1093,13 @@ URConstraint* ARRobot::CreateConstraint(USceneComponent* ParentComp, FRJoint* Jo
 	  {
 		Constraint = NewObject<URRevoluteConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("planar",ESearchCase::IgnoreCase) || Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
+	else if (Joint->Type.Equals("planar",ESearchCase::IgnoreCase))
 	  {
 		Constraint = NewObject<URPlanarConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+	  }
+	else if (Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
+	  {
+		Constraint = NewObject<URContinuousConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
 	  }
 	else
 	  {
