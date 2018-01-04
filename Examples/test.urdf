@@ -53,18 +53,17 @@
 	<child link="third_link"/>
 	<origin xyz="0 0 0.5" rpy="0 0 0"/>
 	<axis xyz="0 0 1"/>
+	<limit lower="-2" upper="2" effort="500" velocity="10"/>
   </joint>
   <link name="forth_link">
 	<inertial>
 	  <mass value="25"/>
-	  <origin xyz="0.0 0 0" rpy="0 0 0" />
-	  <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+	  <origin xyz="-1.51014 0.00032 -0.01211"/>
 	</inertial>
 	<visual>
 	  <geometry>
 		<box size="2.0 0.5 0.5"/>
 	  </geometry>
-	  <origin xyz="-1 0 0" rpy="0 0 0" />
 	  <material name="blue">
 		<color rgba="0 0 .8 1"/>
 	  </material>
@@ -73,7 +72,7 @@
   <joint name="third_to_forth_joint" type="revolute">
 	<parent link="third_link"/>
 	<child link="forth_link"/>
-	<origin xyz="0 0 0.5" rpy="0 0 0"/>
+	<origin xyz="-0.5 0 0.5" rpy="0 0 0"/>
 	<axis xyz="0 1 0"/>
 	<limit lower="0" upper="2" effort="500" velocity="0"/>
   </joint>
