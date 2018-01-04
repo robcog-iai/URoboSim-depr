@@ -158,7 +158,7 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 		}
 
 		// Creates the joint and set the values of the struct.
-		ARRobot::FRJoint NewJoint;
+		FRJoint NewJoint;
 		NewJoint.Name = JointName;
 		NewJoint.Type = Type;
 		NewJoint.Location = Location;
@@ -255,7 +255,7 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 		}
 
 		// Create a new Link for the RLink struct.
-		ARRobot::FRLink NewLink;
+		FRLink NewLink;
 
 		NewLink.Name = LinkName;
 		NewLink.Inertial.Location = InertialLocation;

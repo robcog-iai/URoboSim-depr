@@ -7,7 +7,13 @@
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
+#include "RConstraint.h"
+#include "Structs.h"
 #include "RRobot.generated.h"
+
+
+
+// A structure representing a URDF Joint
 
 UCLASS(Blueprintable)
 class UROBOSIM_API ARRobot : public AActor
@@ -59,6 +65,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	bool bEnableLogging;
 
+	URConstraintFactory ConstraintFactory;
+	
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
 	//bool bEnableROSBridge;
 
@@ -69,87 +77,8 @@ public:
 	bool bEnableAngularMotors;
 	bool bEnableShapeCollisions;
 	
-	// A structure representing a URDF Joint
-	struct FRJoint
-	{
-		FString Name;
-		FString Type;
 
-		FVector Location;
-		FRotator Rotation;
 
-		FString Parent;
-		FString Child;
-
-		FVector Axis;		
-
-		float LowerLimit;
-		float UpperLimit;
-		float Effort;
-		float Velocity;
-
-		//safety_controller
-		float k_velocity;
-		//dynamics
-		float damping;
-		float friction;
-
-		bool operator== (const FRJoint &Joint)
-		{
-			return Name.Equals(Joint.Name);
-		}
-
-		bool operator== (const FString &String)
-		{
-			return Name.Equals(String);
-		}
-	};
-
-	// A structure representing a URDF Link
-	struct FRLink
-	{
-		FString Name;
-
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			float Mass;
-		} Inertial;
-
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			FString Mesh;
-			FVector Scale;
-
-			// Optional. The material of the visual element.
-			struct
-			{
-				FString Name;
-				FColor Color;
-				FString Texture;
-			} Material;
-		} Visual;
-
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			FString Mesh;
-			FVector Scale;
-		} Collision;
-
-		bool operator== (const FRLink &Link)
-		{
-			return Name.Equals(Link.Name);
-		}
-		bool operator== (const FString &String)
-		{
-			return Name.Equals(String);
-		}
-	};
 
 	// Sets default values for this actor's properties
 	ARRobot();
@@ -179,7 +108,9 @@ public:
 	// Parses the URDF code written into property XmlUrdf
 	void ParseURDF();
 
-	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint ,FString Name);
+	URConstraint* CreateConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+
+	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
 	FConstraintInstance CreateConstraintInstance(FRJoint* Joint);
 
@@ -259,3 +190,6 @@ private:
 	// Recursively creates the Robots physical links and joints
 	bool CreateActorsFromNode(FRNode* Node);
 };
+
+
+
