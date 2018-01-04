@@ -3,21 +3,23 @@
 #pragma once
 
 #include "IURoboSim.h"
+#include "UnrealEd.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Runtime/Engine/Classes/Components/SceneComponent.h"
 #include "Runtime/CoreUObject/Public/UObject/NoExportTypes.h"
 #include "Structs.h"
 #include "RConstraint.generated.h"
 
 UCLASS()
-class UROBOSIM_API URConstraint : public UObject
+class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
 {
   GENERATED_BODY()
 	public:
 	URConstraint(){};
-  virtual void InitDrive();
-  virtual void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
-  UPhysicsConstraintComponent* Constraint;
-  FConstraintInstance ConstraintInstance;
+  virtual void InitDrive(){};
+  virtual void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link){};
+  // UPhysicsConstraintComponent* Constraint;
+  // FConstraintInstance ConstraintInstance;
 
 };
 
@@ -71,15 +73,26 @@ class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
   void InitDrive(){};
 };
 
-UCLASS()
-class  UROBOSIM_API URConstraintFactory : public UFactory
-{
-  GENERATED_BODY()
-private:
-	URConstraintFactory(const FObjectInitializer& ObjectInitializer);
-  virtual ~URConstraintFactory();
-	public:
-    UPROPERTY()
-	TSubclassOf<class URConstraint>  NewConstraintClass;
-	static URConstraint* MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
-};
+// UCLASS()
+// class  UROBOSIM_API URConstraintFactory : public UFactory
+// {
+//   GENERATED_BODY()
+// private:
+// 	URConstraintFactory(const FObjectInitializer& ObjectInitializer);
+ 
+// 	public:
+//     UPROPERTY()
+// 	TSubclassOf<class URConstraint>  NewConstraintClass;
+// 	static URConstraint* MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+// 	virtual ~URConstraintFactory();
+// };
+
+// UCLASS()
+// class  UROBOSIM_API URConstraintFactory : public UObject
+// {
+//   GENERATED_BODY()
+// 	public:
+// 	URConstraintFactory(){};
+// 	static URConstraint* MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+
+// };

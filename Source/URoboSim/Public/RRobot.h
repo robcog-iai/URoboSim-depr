@@ -65,7 +65,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	bool bEnableLogging;
 
-	URConstraintFactory ConstraintFactory;
+	//	URConstraintFactory ConstraintFactory;
 	
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
 	//bool bEnableROSBridge;
@@ -110,19 +110,9 @@ public:
 
 	URConstraint* CreateConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
-	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+	//	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
-	FConstraintInstance CreateConstraintInstance(FRJoint* Joint);
 
-	FConstraintInstance CreateFixedConstraint(FConstraintInstance ConstraintInstance);
-
-	FConstraintInstance CreateFloatingConstraint(FConstraintInstance ConstraintInstance);
-	
-	FConstraintInstance CreatePrismaticConstraint(FConstraintInstance ConstraintInstance,FRJoint* Joint);
-
-	FConstraintInstance CreateRevoluteConstraint(FConstraintInstance ConstraintInstance, FRJoint* Joint);
-
-	FConstraintInstance CreatePlanarConstraint(FConstraintInstance ConstraintInstance, FRJoint* Joint);
 	
 	UPROPERTY(EditAnywhere, Export)
 	float GlobalVarA;
