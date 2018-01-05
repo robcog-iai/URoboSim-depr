@@ -62,6 +62,11 @@ void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FR
 }
 
 
+void URPrismaticConstraint::InitDrive()
+{
+  SetLinearDriveParams(10000.0f, 10000.0f, 10000.0f);
+
+}
 
 void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
@@ -106,9 +111,9 @@ void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRL
 void URRevoluteConstraint::InitDrive()
 {
   // SetAngularOrientationDrive(true, true);
-  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = 1000;
-  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = 1000;
-  SetAngularDriveParams(1000.0f, 1000.0f, 0.0f);
+  // ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = 1000;
+  //ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = 1000;
+  SetAngularDriveParams(10000.0f, 10000.0f, 10000.0f);
 }
 
 
@@ -159,21 +164,33 @@ void URContinuousConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, F
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
 
-  if (Joint->Axis.Z == 1) {
-	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 0);
-  }
-  else if (Joint->Axis.X == 1) {
-	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
-	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-  }
-  else if (Joint->Axis.Y == 1) {
-	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
-	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-  }
+  // if (Joint->Axis.Z == 1) {
+  // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
+  // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
+  // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 0);
+  // }
+  // else if (Joint->Axis.X == 1) {
+  // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
+  // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
+  // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
+  // }
+  // else if (Joint->Axis.Y == 1) {
+  // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
+  // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
+  // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
+  // }
+  if (Joint->Axis.Z == 1)
+	{
+	  ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
+	}
+  else if (Joint->Axis.X == 1)
+	{
+	  ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
+	}
+  else if (Joint->Axis.Y == 1)
+	{
+	  ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
+	}
 }
 
 

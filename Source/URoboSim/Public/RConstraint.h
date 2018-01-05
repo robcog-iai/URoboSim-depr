@@ -50,7 +50,7 @@ class UROBOSIM_API URPrismaticConstraint : public URFixedConstraint
 	public:
 	URPrismaticConstraint(){};
   void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
-  void InitDrive(){};
+  void InitDrive();
 };
 
 UCLASS()
