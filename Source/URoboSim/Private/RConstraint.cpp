@@ -12,7 +12,8 @@ void URFixedConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink
   ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
   ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
   ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-
+  //  ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = 5.0f;
+  //ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = 1.0f;
 }
 
 void URFloatingConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
@@ -75,7 +76,7 @@ void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRL
 	//lower, upper A(radians for revolute joints, meters for prismatic joints)	
   
   // TODO: Make Helpfunction Create Simple limit
-  float SimpleLimit  = FMath::Abs(Joint->LowerLimit) + FMath::Abs(Joint->UpperLimit);
+  float SimpleLimit  = (FMath::Abs(Joint->LowerLimit) + FMath::Abs(Joint->UpperLimit))/2.0f;
   EAngularConstraintMotion AngularConstraintMotion = EAngularConstraintMotion::ACM_Limited; 
 
 
@@ -114,6 +115,8 @@ void URRevoluteConstraint::InitDrive()
   // ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = 1000;
   //ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = 1000;
   SetAngularDriveParams(10000.0f, 10000.0f, 10000.0f);
+  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = false;
+  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = false;
 }
 
 

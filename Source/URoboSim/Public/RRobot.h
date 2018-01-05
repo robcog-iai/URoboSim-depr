@@ -92,6 +92,7 @@ public:
 	// Called when the Robot is constructed
 	virtual void OnConstruction(const FTransform &Transform) override;
 
+	
 	// The root component
 	UPROPERTY(EditAnywhere)
 	USceneComponent* Root;
@@ -170,9 +171,6 @@ private:
 
 	// The BaseNode that holds the topmost link and has no parent or joint
 	FRNode* BaseNode = nullptr;
-
-	// Configures the constraint using the given Joint
-	FConstraintInstance SetConstraint(FRJoint* Joint);
 
 	// Builds a tree with the Elements in the Arrays Links and Joints (breadth-first)
 	void BuildTree(FRNode* Node);

@@ -30,9 +30,9 @@ ARRobot::ARRobot()
 	// 	collisionFilterArr = placeHolder.collisionFilterArr;
 	// }	
 
-	collisionFilterArr = { "wheel_link", "shoulder", "arm", "finger_link" };
+	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
 	bEnableShapeCollisions = false;
-	
+
 	// Create a USceneComponent to be the RootComponent
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
 	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
@@ -230,8 +230,8 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	FRJoint* Joint = &(Node->Joint);
 	USceneComponent* ParentComp;
 	UPrimitiveComponent* ParentLink = nullptr;
-	Joint->LowerLimit *= 50.f;
-	Joint->UpperLimit *= 50.f;
+	Joint->LowerLimit = FMath::RadiansToDegrees(Joint->LowerLimit);
+	Joint->UpperLimit = FMath::RadiansToDegrees(Joint->UpperLimit);
 	FVector LinkOriginLocation(0);
 
 	bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
@@ -244,7 +244,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	
 	bUseCollision = bEnableCollisionTags;
-	
+	UE_LOG(LogTemp, Warning, TEXT("enable Collision tags = [%s]"), (bEnableCollisionTags ? TEXT("True") : TEXT("False")));
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
@@ -428,7 +428,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	{
 	  UE_LOG(LogTemp, Log, TEXT("Use Shape Component"));
 		if (Link->Inertial.Mass > 0) {
-			ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass, true);
+			ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass/100.0f, true);
 		}
 
 		ShapeComp->SetSimulatePhysics(true);
@@ -466,7 +466,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	else
 	{
 		if (Link->Inertial.Mass > 0) {
-			MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
+			MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass/100.0f, true);
 		}
 
 		
@@ -659,111 +659,7 @@ void ARRobot::ParseURDF()
 	}
 }
 
-// Sets the constraints according to the urdf
-FConstraintInstance ARRobot::SetConstraint(FRJoint* Joint) 
-{
-	// Create a basic fixed constraint
-	FConstraintInstance ConstraintInstance = NewConstraintInstanceFixed();
-	ELinearConstraintMotion LinearConstraintMotion = ELinearConstraintMotion::LCM_Free;
-	EAngularConstraintMotion AngularConstraintMotion = EAngularConstraintMotion::ACM_Free;
-	ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
 
-	if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
-		return ConstraintInstance;
-
-	if (Joint->Type.Equals("floating", ESearchCase::IgnoreCase))
-	{
-		ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0.f);
-		ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0.f);
-		ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0.f);
-		return ConstraintInstance;
-	}
-
-	//Currently simplified limit (lower + upper as a value).
-	//lower, upper A(radians for revolute joints, meters for prismatic joints)
-	float SimpleLimit = 0.f;
-	if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase) || Joint->Type.Equals("revolute", ESearchCase::IgnoreCase)) {
-		SimpleLimit = FMath::Abs(Joint->LowerLimit) + FMath::Abs(Joint->UpperLimit);
-		LinearConstraintMotion = ELinearConstraintMotion::LCM_Limited;
-		AngularConstraintMotion = EAngularConstraintMotion::ACM_Limited;
-
-
-	}
-
-	// Set the movable axes
-	if (Joint->Axis.X == 1) {
-		if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
-		{
-			ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
-			ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
-			ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
-		}
-		else
-		{
-			// Angular motor on X axis needs SLERP drive mode
-			ConstraintInstance.SetAngularTwistLimit(AngularConstraintMotion, SimpleLimit);
-			ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Limited, 0.1f);
-			ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Limited, 0.1f);
-			ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::SLERP;
-			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.MaxForce = Joint->Effort;
-			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = true;
-		}
-	}
-	if (Joint->Axis.Y == 1) {
-		if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
-		{
-			ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
-			ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
-			ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
-		}
-		else
-		{
-			ConstraintInstance.SetAngularSwing2Limit(AngularConstraintMotion, SimpleLimit);
-			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.MaxForce = Joint->Effort;
-			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
-		}
-
-	}
-	if (Joint->Axis.Z == 1) {
-		if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
-		{
-			ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
-			ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
-			ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
-		}
-		else
-		{
-			ConstraintInstance.SetAngularSwing1Limit(AngularConstraintMotion, SimpleLimit);
-			ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.MaxForce = Joint->Effort;
-			ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
-		}
-	}
-	
-	ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
-
-	if (Joint->Type.Equals("planar")) {
-		// A Constraint for planar type. This joint allows motion in a plane perpendicular to the axis. 
-
-		if (Joint->Axis.Z == 1) {
-			ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-			ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-			ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 0);
-		}
-		else if (Joint->Axis.X == 1) {
-			ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
-			ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-			ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-		}
-		else if (Joint->Axis.Y == 1) {
-			ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-			ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
-			ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-		}
-
-	}
-
-	return ConstraintInstance;
-}
 
 void ARRobot::BuildTree(FRNode* Node)
 {
