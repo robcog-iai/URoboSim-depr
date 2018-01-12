@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Classes/Components/SceneComponent.h"
 #include "Runtime/CoreUObject/Public/UObject/NoExportTypes.h"
 #include "Structs.h"
+#include "RArticulation.h"
 #include "RConstraint.generated.h"
 
 UCLASS()
@@ -18,6 +19,7 @@ class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
 	URConstraint(){};
   virtual void InitDrive(){};
   virtual void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link){};
+  bool bEnableMotor = false;
   // UPhysicsConstraintComponent* Constraint;
   // FConstraintInstance ConstraintInstance;
 
@@ -80,7 +82,7 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
 	public:
 	URContinuousConstraint(){};
   void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
-  void InitDrive(){};
+  void InitDrive();
 };
 
 // UCLASS()

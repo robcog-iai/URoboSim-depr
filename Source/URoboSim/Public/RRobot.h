@@ -22,6 +22,10 @@ class UROBOSIM_API ARRobot : public AActor
 
 public:
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
+
+	  ARArticulation* Articulation;
+
+	  
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 	TMap<FString, UPrimitiveComponent*> LinkComponents;
 
@@ -75,6 +79,7 @@ public:
 	bool bEnableUROSBridge; //holds links on which self-collision should be disabled
 	bool bEnableCollisionTags;
 	bool bEnableAngularMotors;
+
 	bool bEnableShapeCollisions;
 	
 

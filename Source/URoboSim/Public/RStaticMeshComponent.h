@@ -44,9 +44,11 @@ public:
 	void TickPostPhysics(float DeltaSeconds, ELevelTick TickType, FMySecondaryTickFunction& ThisTickFunction);
 
 	float StartH;
+	FVector StartPos;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tick")
 		FMySecondaryTickFunction SecondaryComponentTick;
+
 
 private:
 	FCalculateCustomPhysics OnCalculateCustomPhysics;

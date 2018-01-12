@@ -84,10 +84,10 @@ void ARRobot::BeginPlay()
 		UPrimitiveComponent* PrimComp = LinkComponents.FindRef(LinkName);
 		// Location will be off by about 1/3 after the first gameframe so this extra value is added additionally
 		FVector MovementVector(OriginLocations.FindRef(LinkName) * -1.333333333f);
-		if (PrimComp)
-			PrimComp->AddRelativeLocation(MovementVector, true);
-		else
-			UE_LOG(LogTemp, Warning, TEXT("Error correcting location of link %s\n"), LinkName.GetCharArray().GetData());
+		// if (PrimComp)
+		// 	PrimComp->AddRelativeLocation(MovementVector, true);
+		// else
+		// 	UE_LOG(LogTemp, Warning, TEXT("Error correcting location of link %s\n"), LinkName.GetCharArray().GetData());
 	}
 	
 }
@@ -407,6 +407,8 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	MeshComp->SetStaticMesh(Mesh);
 	MeshComp->SetMaterial(0, BasicMaterial);
 	MeshComp->SetSimulatePhysics(true);
+	MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->PositionSolverIterationCount = 255;
+	MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 1;
 	MeshComp->RegisterComponent();
 
 	FVector minBounds;
@@ -428,7 +430,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	{
 	  UE_LOG(LogTemp, Log, TEXT("Use Shape Component"));
 		if (Link->Inertial.Mass > 0) {
-			ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass/100.0f, true);
+			ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass, true);
 		}
 
 		ShapeComp->SetSimulatePhysics(true);
@@ -466,7 +468,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	else
 	{
 		if (Link->Inertial.Mass > 0) {
-			MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass/100.0f, true);
+			MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
 		}
 
 		

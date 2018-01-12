@@ -12,8 +12,11 @@ void URFixedConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink
   ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
   ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
   ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-  //  ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = 5.0f;
-  //ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = 1.0f;
+  // ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = 0.01f;
+  // ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = 0.01f;
+  //  ConstraintInstance.ProfileInstance.bEnableProjection = false;
+
+
 }
 
 void URFloatingConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
@@ -39,7 +42,6 @@ void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FR
   if (Joint->Axis.X == 1)
 	{
 	  ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
 	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
 	 
 	}
@@ -47,7 +49,6 @@ void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FR
   else if (Joint->Axis.Y == 1)
 	{
 	  ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
 	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
 	 
 	}
@@ -55,7 +56,6 @@ void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FR
   else if (Joint->Axis.Z == 1)
 	{
 	  ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
 	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
 	 
 	}
@@ -65,6 +65,9 @@ void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FR
 
 void URPrismaticConstraint::InitDrive()
 {
+  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = bEnableMotor;
   SetLinearDriveParams(10000.0f, 10000.0f, 10000.0f);
 
 }
@@ -89,7 +92,6 @@ void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRL
 	  ConstraintInstance.SetAngularTwistLimit(AngularConstraintMotion, SimpleLimit);
 	  ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::SLERP;
 	  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.MaxForce = Joint->Effort;
-	  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = true;
 	}
 	
   else if (Joint->Axis.Y == 1)
@@ -97,14 +99,12 @@ void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRL
 	  ConstraintInstance.SetAngularSwing2Limit(AngularConstraintMotion, SimpleLimit);
 	  ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
 	  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.MaxForce = Joint->Effort;
-	  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
 	}
   else if (Joint->Axis.Z == 1)
 	{
 	  ConstraintInstance.SetAngularSwing1Limit(AngularConstraintMotion, SimpleLimit);
 	  ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
 	  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.MaxForce = Joint->Effort;
-	  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = true;
 	}
   //Constraint->ConstraintInstance = ConstraintInstance;
 }
@@ -114,9 +114,16 @@ void URRevoluteConstraint::InitDrive()
   // SetAngularOrientationDrive(true, true);
   // ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = 1000;
   //ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = 1000;
-  SetAngularDriveParams(10000.0f, 10000.0f, 10000.0f);
-  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = false;
-  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = false;
+  float Strength = 100000000.0f;
+  SetAngularDriveParams(Strength, Strength, Strength);
+  SetLinearDriveParams(Strength, Strength, Strength);
+  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnableVelocityDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = bEnableMotor;
 }
 
 
@@ -131,20 +138,20 @@ void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLin
   if (Joint->Axis.X == 1)
 	{
 	  ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
 	  ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
 	}
 
   else if (Joint->Axis.Y == 1)
 	{
 	  ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.ZDrive.MaxForce = Joint->Effort;
 	  ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
 
 	}
@@ -152,10 +159,10 @@ void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLin
   else if (Joint->Axis.Z == 1)
 	{
 	  ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.YDrive.MaxForce = Joint->Effort;
 	  ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
-	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = true;
+	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = bEnableMotor;
 	  ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = Joint->Effort;
 
 	 
@@ -194,6 +201,15 @@ void URContinuousConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, F
 	{
 	  ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
 	}
+}
+
+void URContinuousConstraint::InitDrive()
+{
+  float Strength = 1000000.0f;
+  SetAngularDriveParams(Strength, Strength, Strength);
+
+  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnableVelocityDrive = bEnableMotor;
+  ConstraintInstance.ProfileInstance.AngularDrive.SlerpDrive.bEnablePositionDrive = bEnableMotor;
 }
 
 

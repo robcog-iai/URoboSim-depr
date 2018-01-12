@@ -55,6 +55,7 @@ void URStaticMeshComponent::BeginPlay()
 	PRigidBody = GetBodyInstance()->GetPxRigidBody_AssumesLocked();
 
 	StartH = GetComponentLocation().Z;
+	StartPos = GetComponentLocation();
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -89,20 +90,15 @@ void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 {
 	if (PRigidBody)
 	{
-		float CurrError = GetCurrentLocation().Z - StartH;
+		FRotator CurrError;
+		CurrError = FRotator(0.0f, 0.0f, 0.0f) - GetCurrentRotation();
+		FRotator t = (CurrError * owner->KSpring);
+		//FVector t = GetTorque();
+		// And apply them to the rigid body
+		//PRigidBody->addForce(PxVec3(f.X, f.Y, f.Z), physx::PxForceMode::eFORCE, true);
+		//PRigidBody->addTorque(PxVec3(t.Roll, t.Pitch, t.Yaw), PxForceMode::eFORCE, true);
 
-		float Velocity = GetCurrentVelocity().Z;
 
-		float force = -(CurrError * owner->KSpring + Velocity * owner->Damping);
-
-		if (InSubstep) 
-		{
-			PRigidBody->addForce(PxVec3(0.0f, 0.0f, force), physx::PxForceMode::eFORCE, true);
-		}
-		else 
-		{
-			AddForce(FVector(0.0f, 0.0f, force));
-		}
 	}
 }
 

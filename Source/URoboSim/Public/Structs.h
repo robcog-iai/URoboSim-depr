@@ -4,7 +4,6 @@
 #include "IURoboSim.h"
 
 
-
 struct UROBOSIM_API FRJoint
 {
 
