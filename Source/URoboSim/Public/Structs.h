@@ -3,6 +3,28 @@
 
 #include "IURoboSim.h"
 
+struct UROBOSIM_API FRConnectedJoint
+{
+
+  FString Name;
+  FString Type;
+
+  FVector Location;
+  FRotator Rotation;
+
+  bool IsParent;
+
+  bool operator== (const FRConnectedJoint &Joint)
+  {
+	return Name.Equals(Joint.Name);
+  }
+
+  bool operator== (const FString &String)
+  {
+	return Name.Equals(String);
+  }
+};
+
 
 struct UROBOSIM_API FRJoint
 {

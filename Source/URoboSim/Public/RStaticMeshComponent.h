@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Components/StaticMeshComponent.h"
+#include "Structs.h"
 #include "RStaticMeshComponent.generated.h"
 
 USTRUCT()
@@ -49,6 +50,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Tick")
 		FMySecondaryTickFunction SecondaryComponentTick;
 
+	TArray<FRConnectedJoint> ConnectedJoints;
+
+	void AddConnectedJoint(FRJoint Joint);
+
 
 private:
 	FCalculateCustomPhysics OnCalculateCustomPhysics;
@@ -60,6 +65,8 @@ private:
 	int32 FrameCount;
 
 	physx::PxRigidBody* PRigidBody;
+
+
 
 	FORCEINLINE FVector  GetCurrentLocation();
 	FORCEINLINE FRotator GetCurrentRotation();

@@ -148,3 +148,8 @@ FVector URStaticMeshComponent::GetCurrentVelocity()
 	PxVec3 PVelocity = PRigidBody->getLinearVelocity();
 	return FVector(PVelocity.x, PVelocity.y, PVelocity.z);
 }
+
+void URStaticMeshComponent::AddConnectedJoint(FRJoint Joint)
+{
+
+}
