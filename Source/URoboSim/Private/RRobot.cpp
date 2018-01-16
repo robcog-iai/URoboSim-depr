@@ -269,6 +269,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			BoxSize *= 50.f;
 			((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
 			((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
+
+			//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+			//	*Link->Name.GetCharArray().GetData(), *Link->Name.GetCharArray().GetData());
+			//ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
 		{
@@ -278,6 +282,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			float Height = Scale.Z * 50.f;
 			((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
 			((UCapsuleComponent*)ShapeComp)->SetCapsuleSize(Radius, Height);
+
+			//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+			//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+			//ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
 		{
@@ -286,6 +294,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			float Radius = Scale.X * 50.f;
 			((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
 			((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
+
+			//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+			//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+			//ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else
 		{
@@ -338,6 +350,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			BoxSize *= 50.f;
 			((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
 			((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
+
+			//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+			//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+			//ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else if (Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
 		{
@@ -347,6 +363,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			float Height = Scale.Z * 50.f;
 			((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
 			((UCapsuleComponent*)ShapeComp)->SetCapsuleSize(Radius, Height);
+
+			FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+				*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+			ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else if (Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
 		{
@@ -355,6 +375,10 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 			float Radius = Scale.X * 50.f;
 			((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
 			((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
+
+			//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+			//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+			//ShapeComp->ComponentTags.Add(FName(*TFTag));
 		}
 		else
 		{
@@ -384,11 +408,21 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	// Create and configure the Link
 	if (ShapeComp)
+	{
 		MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
+
+		//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+		//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+		//MeshComp->ComponentTags.Add(FName(*TFTag));
+	}
 	else
 	{
 		// Using custom mesh
 		MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+
+		//FString TFTag = FString::Printf(TEXT("TF;ParentFrameId,%s;ChildFrameId,%s;"),
+		//	*ParentComp->GetName(), *Link->Name.GetCharArray().GetData());
+		//MeshComp->ComponentTags.Add(FName(*TFTag));
 
 	}
 
