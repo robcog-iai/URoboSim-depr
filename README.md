@@ -8,11 +8,11 @@ Unreal engine based robot simulator.
 
 * Import a URDF file into UE4 by drag & drop into the content browser. A new asset is created with the URDF information. Before dragging the asset into the game world, certain properties can be edited using a new visual interface found in the Editor Mode window.
 
-* As an optional feature, this project can be run with the [UROSBridge](https://github.com/robcog-iai/UROSBridge) plugin to control the imported robot from a ROS server through websockets. 
+* As an optional feature, this project can be run with the [UROSBridge](https://github.com/robcog-iai/UROSBridge) plugin to control the imported robot from a ROS server through websockets.
 
 * The URDF can be placed inside a folder called XML which should be in the same directory as the Unreal Engine Project File.
 
-* Note that if the URDF uses meshes, it likely keeps them in one or more folders. 
+* Note that if the URDF uses meshes, it likely keeps them in one or more folders.
 
 * Make sure that for each robot within the XML folder, the file system reflects the structure that the URDF expects.
 
@@ -22,7 +22,7 @@ Unreal engine based robot simulator.
 
 * See [here](https://github.com/gnoliyil/pr2_kinetic_packages/tree/e43479ea6088062b63271c6b94417c266429d439) PR2 Packages for ROS Kinetic Kame.
 
-* See the [robosim](https://github.com/robcog-iai/RobCoG/tree/robosim) branch of RobCoG as an Unreal Project example with PR2 and UROSBridge communication.
+* See the [ex-ros-tf-robosim](https://github.com/robcog-iai/RobCoG/tree/ex-ros-tf-robosim) branch of RobCoG as an Unreal Project example with PR2 [UROSBridge](https://github.com/robcog-iai/UROSBridge) communication and TF publishing with [UTFPublisher](https://github.com/robcog-iai/UTFPublisher).
 
 # Quick Start
 
@@ -38,3 +38,9 @@ Generated robot tree
 
 ![Alt text](Documentation/Img/robot-tree.png "Robot example")
 
+## Credits
+
+* Unreal Robots Bachelor Project students
+* GSoC 2017 students
+
+### Engine Version 4.18
