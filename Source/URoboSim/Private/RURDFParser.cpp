@@ -250,7 +250,7 @@ bool FRURDFParser::ProcessClose(const TCHAR* ElementName)
 			return false;
 		}
 		if (VisualMesh.IsEmpty() && CollisionMesh.IsEmpty()) {
-			UE_LOG(LogTemp, Warning, TEXT("Missing mesh name for custom mesh in robot description.\n"));
+			UE_LOG(LogTemp, Warning, TEXT("Missing mesh name for custom mesh in robot description.%s \n"), *LinkName);
 			//return false;
 		}
 

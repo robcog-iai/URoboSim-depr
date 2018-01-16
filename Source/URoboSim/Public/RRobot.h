@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "RConstraint.h"
+#include "RMeshHandler.h"
 #include "Structs.h"
 #include "RRobot.generated.h"
 
@@ -23,8 +24,8 @@ class UROBOSIM_API ARRobot : public AActor
 public:
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
 
-	  ARArticulation* Articulation;
-
+		ARArticulation* Articulation;
+	URMeshFactory* MeshFactory;
 	  
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 	TMap<FString, UPrimitiveComponent*> LinkComponents;
@@ -114,7 +115,9 @@ public:
 	// Parses the URDF code written into property XmlUrdf
 	void ParseURDF();
 
+	// Create the Constraint
 	URConstraint* CreateConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+
 
 	//	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
@@ -155,24 +158,6 @@ private:
 
 	// Array of joints added with AddJoint. Is cleared in the process of creating the Robot
 	TArray<FRJoint> Joints;
-
-	// Node to represent the Robot virtually as a tree
-	struct FRNode
-	{
-		FRLink Link;
-		FRJoint Joint;
-
-		FRNode* Parent;
-		TArray<FRNode*> Children;
-
-		~FRNode()
-		{
-			for (int c = 0; c < Children.Num(); c++)
-			{
-				delete Children[c];
-			}
-		}
-	};
 
 	// The BaseNode that holds the topmost link and has no parent or joint
 	FRNode* BaseNode = nullptr;

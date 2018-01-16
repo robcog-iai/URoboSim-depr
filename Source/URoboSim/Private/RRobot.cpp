@@ -17,8 +17,7 @@ ARRobot::ARRobot()
 	// Init parameters for substepping in RStaticMeshComponent for which this is the parent actor
 	StartVelocity = 1000.0f;
 	KSpring = 100.0f;
-	Damping = 0;		
-	
+	Damping = 0;
 	// //Get values from UROboSimEd
 	// if (IURoboSimEd::IsAvailableEd()) {
 	// 	FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
@@ -38,7 +37,10 @@ ARRobot::ARRobot()
 	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
 	this->SetRootComponent(Root);
 	Root->bVisualizeComponent = true;
-    UE_LOG(LogTemp, Warning, TEXT("Root - Rotation = [%s]"), *Root->GetComponentRotation().ToString()); 
+    UE_LOG(LogTemp, Warning, TEXT("Root - Rotation = [%s]"), *Root->GetComponentRotation().ToString());
+
+
+     MeshFactory = NewObject<URMeshFactory>(Root, FName(TEXT("MeshFactory")));
 
 	// Preload meshes so they are available in runtime
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCy(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
@@ -244,7 +246,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	
 	bUseCollision = bEnableCollisionTags;
-	UE_LOG(LogTemp, Warning, TEXT("enable Collision tags = [%s]"), (bEnableCollisionTags ? TEXT("True") : TEXT("False")));
+	//UE_LOG(LogTemp, Warning, TEXT("enable Collision tags = [%s]"), (bEnableCollisionTags ? TEXT("True") : TEXT("False")));
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
@@ -269,8 +271,8 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	UShapeComponent* ShapeComp = nullptr;
 	FVector Scale(Link->Visual.Scale);
 
+    URMeshHandler* MeshHandler = MeshFactory->CreateMeshHandler(Root, bUseCollision, bUseVisual);
 
-	
 	if ((bUseCollision && !bUseVisual) || (!bUseCollision && bUseVisual)) // Collision and Visual are the same
 	{
 		if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
@@ -491,7 +493,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		//}
 		
 		MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
-        UE_LOG(LogTemp, Warning, TEXT("Add MeshComp [%s], Parent [%s], Parent WorldRotation = [%s]"), *MeshComp->GetName(), *ParentComp->GetName(), *ParentComp->GetComponentRotation().ToString()); 
+        //UE_LOG(LogTemp, Warning, TEXT("Add MeshComp [%s], Parent [%s], Parent WorldRotation = [%s]"), *MeshComp->GetName(), *ParentComp->GetName(), *ParentComp->GetComponentRotation().ToString());
 		MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
 		MeshComp->AddRelativeLocation(LocationVisual);
 		MeshComp->SetRelativeRotation(Link->Visual.Rotation);
@@ -1010,5 +1012,4 @@ URConstraint* ARRobot::CreateConstraint(USceneComponent* ParentComp, FRJoint* Jo
 	  }
 	return Constraint;
 }
-
 

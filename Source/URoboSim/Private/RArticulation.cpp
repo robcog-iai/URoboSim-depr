@@ -20,7 +20,7 @@ ARArticulation::ARArticulation()
     {
       SphereVisual->SetStaticMesh(SphereVisualAsset.Object);
       //SphereVisual->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-      //SphereVisual->SetWorldScale3D(FVector(0.8f));
+      SphereVisual->SetWorldScale3D(FVector(0.8f));
       SphereVisual->SetSimulatePhysics(true);
       //SphereVisual->SetMaterial(0, BasicMaterial);
     }

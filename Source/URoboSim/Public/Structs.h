@@ -25,7 +25,6 @@ struct UROBOSIM_API FRConnectedJoint
   }
 };
 
-
 struct UROBOSIM_API FRJoint
 {
 
@@ -110,3 +109,20 @@ struct UROBOSIM_API FRLink
   }
 };
 
+// Node to represent the Robot virtually as a tree
+struct UROBOSIM_API FRNode
+{
+  FRLink Link;
+  FRJoint Joint;
+
+  FRNode* Parent;
+  TArray<FRNode*> Children;
+
+  ~FRNode()
+    {
+      for (int c = 0; c < Children.Num(); c++)
+        {
+          delete Children[c];
+        }
+    }
+};
