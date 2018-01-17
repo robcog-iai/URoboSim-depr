@@ -6,6 +6,7 @@
 #include "UnrealEd.h"
 #include "Runtime/CoreUObject/Public/UObject/NoExportTypes.h"
 #include "Structs.h"
+#include "RConstraint.h"
 #include "RStaticMeshComponent.h"
 #include "RMeshHandler.generated.h"
 
@@ -21,16 +22,31 @@ class UROBOSIM_API URMeshHandler : public UObject
   URStaticMeshComponent* MeshComp;
   UShapeComponent* ShapeComp;
   USceneComponent* Root;
+  USceneComponent* ParentComp;
+  UPrimitiveComponent* ParentLink;
+  FVector Scale;
+  FVector LocationCollision;
+  FVector LocationVisual;
+  FVector LinkOriginLocation;
+
+  TMap<FString, FVector> OriginLocations;
+
+
   UStaticMesh* CylinderMesh;
   UStaticMesh* CubeMesh;
   UStaticMesh* SphereMesh;
+
+  URConstraint* Constraint;
+
   bool bEnableCollisionTags = true;
   bool bUseVisual;
   bool bUseCollision;
-
+  bool bEnableShapeCollisions = false;
+  TArray<FString> collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
   URMeshHandler();
-  void CreateMeshType();
-  void ConfigureMeshComp();
+
+
+  TArray<FRConnectedJoint> ConnectedJoints;
 
   //TEMPLATE Load Obj From Path
   template <typename ObjClass>
@@ -40,51 +56,60 @@ class UROBOSIM_API URMeshHandler : public UObject
   FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
   //Create the Link (MeshComponent) of the Robot
-  virtual void CreateLink(FRNode* Node , USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents);
-  virtual void CreateBoxLink(){};
-  virtual void CreateSphereLink(){};
-  virtual void CreateCylinderLink(){};
-  virtual void CreateCustomLink(){};
 
-
+  virtual bool CreateLink(FRNode* Node , USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
+  virtual void CreateMesh(){};
+  virtual void CreateMeshComponent();
+  virtual void ConfigureMeshComponent();
+  virtual void ConfigureLinkPhysics();
+  virtual void AddConnectedJoint(FString Name, FString Type, FVector Location, FRotator Rotation, bool IsParent);
+  //virtual void CreateConstraint();
+  //virtual void ConfigureConstraint();
+  virtual void ConnectPositionLink();
 };
 
 
 UCLASS()
-class UROBOSIM_API URMeshCollisionOrVisual : public URMeshHandler
+class UROBOSIM_API URMeshHandlerBox : public URMeshHandler
 {
   GENERATED_BODY()
 	public:
-	URMeshCollisionOrVisual(){};
+	URMeshHandlerBox(){};
 
-  //Create the Link (MeshComponent) of the Robot
-  // void CreateLink(FRNode* Node , USceneComponent* Root, TMap<FString, UPrimitiveComponent*> LinkComponents);
-  void CreateBoxLink();
-  void CreateSphereLink();
-  void CreateCylinderLink();
-  void CreateCustomLink();
-
+  void CreateMesh();
 };
 
 UCLASS()
-class UROBOSIM_API URMeshCollisionAndVisual : public URMeshCollisionOrVisual
+class UROBOSIM_API URMeshHandlerSphere : public URMeshHandler
 {
   GENERATED_BODY()
 	public:
-	URMeshCollisionAndVisual(){};
-  void CreateMeshType();
-  void CreateCustomLink();
+	URMeshHandlerSphere(){};
 
+  void CreateMesh();
 };
 
 UCLASS()
-class UROBOSIM_API URMeshNoCollisionAndVisual : public URMeshHandler
+class UROBOSIM_API URMeshHandlerCylinder : public URMeshHandler
 {
   GENERATED_BODY()
 	public:
-	URMeshNoCollisionAndVisual(){};
+	URMeshHandlerCylinder(){};
+  void CreateMesh();
+};
+
+UCLASS()
+class UROBOSIM_API URMeshHandlerCustom: public URMeshHandler
+{
+  GENERATED_BODY()
+	public:
+	URMeshHandlerCustom(){};
+  void CreateMesh();
+  void CreateMeshComponent();
+  void ConfigureLinkPhysics();
 
 };
+
 
 UCLASS()
 class UROBOSIM_API URMeshFactory : public UObject
@@ -92,6 +117,6 @@ class UROBOSIM_API URMeshFactory : public UObject
   GENERATED_BODY()
 	public:
 	URMeshFactory(){};
-  URMeshHandler* CreateMeshHandler(USceneComponent* RootComponent, bool bUseCollision, bool bUseVisual);
+  URMeshHandler* CreateMeshHandler(USceneComponent* RootComponent, FRNode* Node);
 
 };

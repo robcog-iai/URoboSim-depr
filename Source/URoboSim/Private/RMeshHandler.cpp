@@ -52,16 +52,18 @@ FORCEINLINE UStaticMesh* URMeshHandler::LoadMeshFromPath(const FName& Path)
 }
 
 
-void URMeshHandler::CreateLink(FRNode* Node, USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents)
+
+bool URMeshHandler::CreateLink(FRNode* Node, USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents, TMap<FString, FVector> OriginLocation)
 {
 	Link = &(Node->Link);
 	Joint = &(Node->Joint);
     Root = RootComponent;
-	USceneComponent* ParentComp;
-	UPrimitiveComponent* ParentLink = nullptr;
-	FVector LinkOriginLocation(0);
+	ParentComp = nullptr;
+	ParentLink = nullptr;
+    OriginLocations = OriginLocation;
+    UE_LOG(LogTemp, Log, TEXT("Create Link %s"), Link->Name.GetCharArray().GetData());
 	//UStaticMeshComponent* MeshComp = nullptr;
-	FVector Scale(Link->Visual.Scale);
+	Scale = Link->Visual.Scale;
 
 
 	Joint->LowerLimit = FMath::RadiansToDegrees(Joint->LowerLimit);
@@ -90,35 +92,29 @@ void URMeshHandler::CreateLink(FRNode* Node, USceneComponent* RootComponent, TMa
 		// This node is the topmost so the parent has to be the RootComponent
 		ParentComp = Root;
 	}
+    if (LinkComponents.Contains(Link->Name))
+      {
+		UE_LOG(LogTemp, Error, TEXT("Link already in LinkComponents contained"));
+        return false;
+      }
 
-    CreateMeshType();
-    ConfigureMeshComp();
+    CreateMesh();
+    CreateMeshComponent();
+    ConfigureMeshComponent();
+    ConfigureLinkPhysics();
+    //CreateConstraint();
+    return true;
 }
 
-void URMeshHandler::CreateMeshType()
+void URMeshHandler::CreateMeshComponent()
 {
-  if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
-    {
-      CreateBoxLink();
-    }
-  else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
-    {
-      CreateCylinderLink();
-    }
-  else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
-    {
-      CreateSphereLink();
-    }
-  else
-    {
-      CreateCustomLink();
-    }
+  MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
 }
 
-void URMeshHandler::ConfigureMeshComp()
+void URMeshHandler::ConfigureMeshComponent()
 {
   MeshComp->SetStaticMesh(Mesh);
-  MeshComp->SetMaterial(0, BasicMaterial);
+  //MeshComp->SetMaterial(0, BasicMaterial);
   MeshComp->SetSimulatePhysics(true);
   MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->PositionSolverIterationCount = 255;
   MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 1;
@@ -129,111 +125,273 @@ void URMeshHandler::ConfigureMeshComp()
   MeshComp->GetLocalBounds(minBounds, maxBounds);
 
   // Recalculate the numbers with the actual scale. Location value 1 equals maxBounds value in UE4
-  FVector LocationCollision = Link->Collision.Location; //All location information should be within the joints tag so LocationCollision and LocationVisual shouldn't be doing anything, should be removed later.
+  LocationCollision = Link->Collision.Location; //All location information should be within the joints tag so LocationCollision and LocationVisual shouldn't be doing anything, should be removed later.
   LocationCollision.Z *= maxBounds.Z * 2;
   LocationCollision.X *= maxBounds.X * 2;
   LocationCollision.Y *= maxBounds.Y * 2;
 
-  FVector LocationVisual = Link->Visual.Location;
+  LocationVisual = Link->Visual.Location;
   LocationVisual.Z *= maxBounds.Z * 2;
   LocationVisual.X *= maxBounds.X * 2;
   LocationVisual.Y *= maxBounds.Y * 2;
-
 }
 
-void URMeshCollisionOrVisual::CreateBoxLink()
+void URMeshHandler::ConfigureLinkPhysics()
 {
-    FVector Scale(Link->Visual.Scale);
+  if (Link->Inertial.Mass > 0)
+    {
+      ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass, true);
+    }
+
+  ShapeComp->SetSimulatePhysics(true);
+  ShapeComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+  ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+  ShapeComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+  ShapeComp->RegisterComponent();
+
+  //Disabling collisions for all shape components turned out to be necessary for the pr2.
+  if (!bEnableShapeCollisions)
+    {
+      ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    }
+
+  MeshComp->WeldTo(ParentComp);
+
+  ShapeComp->SetRelativeScale3D(FVector(1, 1, 1));
+
+  ShapeComp->SetWorldLocation(ParentComp->GetComponentLocation());
+  ShapeComp->SetWorldRotation(ParentComp->GetComponentRotation());
+  ShapeComp->AddLocalOffset(LocationCollision);
+  ShapeComp->AddLocalRotation(Link->Collision.Rotation);
+
+  // Weld visual part to the collision body
+  MeshComp->SetSimulatePhysics(false);
+  MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
+  MeshComp->WeldTo(ShapeComp);
+
+  MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
+  MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
+  MeshComp->AddLocalOffset(LocationVisual);
+  MeshComp->AddLocalRotation(Link->Visual.Rotation);
+  MeshComp->SetWorldScale3D(Scale);
+}
+
+
+// void URMeshHandler::ConfigureConstraint()
+// {
+//   Constraint->InitDrive();
+//   Constraint->SetDisableCollision(true);
+//   Constraint->AttachToComponent(ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+
+//   Constraint->RegisterComponent();
+//   Constraint->ApplyWorldOffset(FVector(0), false);
+// }
+
+void URMeshHandler::ConnectPositionLink()
+{
+  FVector LocationJoint = Joint->Location;
+  //LocationJoint contains the location values as seen in the URDF, must be scaled by 100 when importing to UE4
+  LocationJoint.Z = (LocationJoint.Z * 100);
+  LocationJoint.X = (LocationJoint.X * 100);
+  LocationJoint.Y = (LocationJoint.Y * 100);
+  if (ShapeComp)
+    {
+      ShapeComp->AddRelativeLocation(LocationJoint);
+      ShapeComp->AddRelativeRotation(Joint->Rotation);
+      LinkOriginLocation = ShapeComp->GetRelativeTransform().GetLocation();
+    }
+  else
+    {
+      MeshComp->AddRelativeLocation(LocationJoint);
+      MeshComp->AddRelativeRotation(Joint->Rotation);
+      LinkOriginLocation = MeshComp->GetRelativeTransform().GetLocation();
+    }
+
+  // Prismatic joints need special positioning due to the style of constraint limits
+  if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
+    {
+      FVector MovementVector(Joint->Axis * (Joint->LowerLimit + Joint->UpperLimit));
+      OriginLocations.Add(Joint->Child, MovementVector);
+      if (ShapeComp)
+        {
+          ShapeComp->AddRelativeLocation(MovementVector);
+        }
+      else
+        {
+          MeshComp->AddRelativeLocation(MovementVector);
+        }
+    }
+}
+
+void URMeshHandler::AddConnectedJoint(FString Name, FString Type, FVector Location, FRotator Rotation, bool IsParent)
+{
+  FRConnectedJoint ConnectedJoint;
+  ConnectedJoint.Name = Name;
+  ConnectedJoint.Type = Type;
+  ConnectedJoint.Location = Location;
+  ConnectedJoint.Rotation = Rotation;
+  ConnectedJoint.IsParent = IsParent;
+  ConnectedJoints.Add(ConnectedJoint);
+}
+
+// void URMeshHandler::CreateConstraint()
+// {
+//   URConstraint* Constraint;
+// 	if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URFixedConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else if (Joint->Type.Equals("floating", ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URFloatingConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URPrismaticConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else if (Joint->Type.Equals("revolute", ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URRevoluteConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else if (Joint->Type.Equals("planar",ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URPlanarConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else if (Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
+// 	  {
+// 		Constraint = NewObject<URContinuousConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+// 	  }
+// 	else
+// 	  {
+// 		UE_LOG(LogTemp, Fatal, TEXT("Not a supported Constraint Type"));
+// 		Constraint = nullptr;
+// 	  }
+// 	if(Constraint)
+// 	  {
+// 		Constraint->Init(ParentComp, Joint, Link);
+// 	  }
+
+// }
+
+
+void URMeshHandlerBox::CreateMesh()
+{
     Mesh = CubeMesh;
     ShapeComp = NewObject<UBoxComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
     FVector BoxSize(Scale);
     BoxSize *= 50.f;
     ((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
     ((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
-    MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
+
 }
 
-void URMeshCollisionOrVisual::CreateSphereLink()
+void URMeshHandlerSphere::CreateMesh()
 {
-    FVector Scale(Link->Visual.Scale);
     Mesh = SphereMesh;
     ShapeComp = NewObject<USphereComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
     float Radius = Scale.X * 50.f;
     ((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
     ((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
-    MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
 }
-void URMeshCollisionOrVisual::CreateCylinderLink()
+
+void URMeshHandlerCylinder::CreateMesh()
 {
-    FVector Scale(Link->Visual.Scale);
     Mesh = CylinderMesh;
     ShapeComp = NewObject<UCapsuleComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
     float Radius = Scale.X * 50.f;
     float Height = Scale.Z * 50.f;
     ((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
     ((UCapsuleComponent*)ShapeComp)->SetCapsuleSize(Radius, Height);
-    MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
 }
 
-void URMeshCollisionOrVisual::CreateCustomLink()
+void URMeshHandlerCustom::CreateMesh()
 {
     if (bUseVisual)
         Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
     else
         Mesh = LoadMeshFromPath(FName(*Link->Collision.Mesh));
 
-    MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+
+}
+void URMeshHandlerCustom::CreateMeshComponent()
+{
+  MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
 }
 
-void URMeshCollisionAndVisual::CreateMeshType()
+void URMeshHandlerCustom::ConfigureLinkPhysics()
 {
-  if (Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
+  if (Link->Inertial.Mass > 0)
     {
-      CreateBoxLink();
+      MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
     }
-  else if (Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
+
+
+
+  MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
+
+
+  for (FString linkName : collisionFilterArr)
     {
-      CreateCylinderLink();
+      if (Link->Name.Contains(linkName))
+        {
+          MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+          MeshComp->WeldTo(ParentComp);
+          break;
+        }
     }
-  else if (Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
+
+  //if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
+  //	//Prevents certain links from colliding with themselves.
+  //	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+  //	MeshComp->WeldTo(ParentComp);
+  //}
+
+  MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
+  //UE_LOG(LogTemp, Warning, TEXT("Add MeshComp [%s], Parent [%s], Parent WorldRotation = [%s]"), *MeshComp->GetName(), *ParentComp->GetName(), *ParentComp->GetComponentRotation().ToString());
+  MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
+  MeshComp->AddRelativeLocation(LocationVisual);
+  MeshComp->SetRelativeRotation(Link->Visual.Rotation);
+}
+
+
+
+
+
+
+
+
+ URMeshHandler* URMeshFactory::CreateMeshHandler(USceneComponent* RootComponent, FRNode* Node)
+{
+  URMeshHandler* MeshHandler = nullptr;
+
+  FRLink* Link = &(Node->Link);
+  bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
+  bool bUseCollision = false;
+
+  // Collision and Visual are the same
+  if (!bUseCollision && !bUseVisual)
     {
-      CreateSphereLink();
+
     }
   else
     {
-      CreateCustomLink();
-    }
-}
-
-
-
-
-
-void URMeshCollisionAndVisual::CreateCustomLink()
-{
-  Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
-}
-
-
-
-
-
-
-URMeshHandler* URMeshFactory::CreateMeshHandler(USceneComponent* RootComponent, bool bUseCollision, bool bUseVisual)
-{
-  URMeshHandler* MeshHandler = nullptr;
-  // Collision and Visual are the same
-  if ((bUseCollision && !bUseVisual) || (!bUseCollision && bUseVisual))
-	{
-      MeshHandler = NewObject<URMeshCollisionOrVisual>(RootComponent);
-    }
-  else if (bUseCollision && bUseVisual)
-	{
-      MeshHandler = NewObject<URMeshCollisionAndVisual>(RootComponent);
-    }
-  else if (!bUseCollision && !bUseVisual)
-    {
-      MeshHandler = NewObject<URMeshNoCollisionAndVisual>(RootComponent);
+      if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
+        {
+          MeshHandler = NewObject<URMeshHandlerBox>(RootComponent);
+        }
+      else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
+        {
+          MeshHandler = NewObject<URMeshHandlerCylinder>(RootComponent);
+        }
+      else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
+        {
+          MeshHandler = NewObject<URMeshHandlerSphere>(RootComponent);
+        }
+      else
+        {
+          MeshHandler = NewObject<URMeshHandlerCustom>(RootComponent);
+        }
     }
 
   return MeshHandler;
