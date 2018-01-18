@@ -224,15 +224,29 @@ void URMeshHandler::ConnectPositionLink()
     }
 }
 
-void URMeshHandler::AddConnectedJoint(FString Name, FString Type, FVector Location, FRotator Rotation, bool IsParent)
+void URMeshHandler::AddConnectedJoint()
 {
-  FRConnectedJoint ConnectedJoint;
-  ConnectedJoint.Name = Name;
-  ConnectedJoint.Type = Type;
-  ConnectedJoint.Location = Location;
-  ConnectedJoint.Rotation = Rotation;
-  ConnectedJoint.IsParent = IsParent;
-  ConnectedJoints.Add(ConnectedJoint);
+
+  UE_LOG(LogTemp, Log, TEXT("Before Add Joint"));
+  MeshComp->ConnectedJoints.Add(CreateConnectedJoint(false));
+  UE_LOG(LogTemp, Log, TEXT("After Add Joint"));
+
+  UE_LOG(LogTemp, Log, TEXT("Before Add Joint Parent"));
+  Cast<URStaticMeshComponent>(ParentLink)->ConnectedJoints.Add(CreateConnectedJoint(true));
+  UE_LOG(LogTemp, Log, TEXT("After Add Joint Parent"));
+
+  
+}
+
+FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
+{
+  FRConnectedJoint TempJoint;
+  TempJoint.Name = Joint->Name;
+  TempJoint.Type = Joint->Type;
+  TempJoint.Location = Joint->Location;
+  TempJoint.Rotation = Joint->Rotation;
+  TempJoint.IsParent = IsParent;
+  return TempJoint;
 }
 
 // void URMeshHandler::CreateConstraint()

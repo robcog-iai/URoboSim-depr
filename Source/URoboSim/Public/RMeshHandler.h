@@ -46,7 +46,7 @@ class UROBOSIM_API URMeshHandler : public UObject
   URMeshHandler();
 
 
-  TArray<FRConnectedJoint> ConnectedJoints;
+
 
   //TEMPLATE Load Obj From Path
   template <typename ObjClass>
@@ -62,7 +62,8 @@ class UROBOSIM_API URMeshHandler : public UObject
   virtual void CreateMeshComponent();
   virtual void ConfigureMeshComponent();
   virtual void ConfigureLinkPhysics();
-  virtual void AddConnectedJoint(FString Name, FString Type, FVector Location, FRotator Rotation, bool IsParent);
+  virtual void AddConnectedJoint();
+  virtual FRConnectedJoint CreateConnectedJoint(bool IsParent);
   //virtual void CreateConstraint();
   //virtual void ConfigureConstraint();
   virtual void ConnectPositionLink();

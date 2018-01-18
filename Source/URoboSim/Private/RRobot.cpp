@@ -605,52 +605,55 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
     URMeshHandler* MeshHandler = MeshFactory->CreateMeshHandler(Root, Node);
     if(MeshHandler)
         {
-            MeshHandler->CreateLink(Node, Root, LinkComponents, OriginLocations);
-            // Create and configure the Joint if this is not the topmost link
-            if (MeshHandler->ParentLink)
+            if (MeshHandler->CreateLink(Node, Root, LinkComponents, OriginLocations))
                 {
+                    if (MeshHandler->ParentLink)
+                        {
 
-                    URConstraint* Constraint = CreateConstraint(MeshHandler->ParentComp, MeshHandler->Joint, MeshHandler->Link);
-                    //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
-                    Constraint->InitDrive();
-                    Constraint->SetDisableCollision(true);
-                    Constraint->AttachToComponent(MeshHandler->ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+                            URConstraint* Constraint = CreateConstraint(MeshHandler->ParentComp, MeshHandler->Joint, MeshHandler->Link);
+                            //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
+                            Constraint->InitDrive();
+                            Constraint->SetDisableCollision(true);
+                            Constraint->AttachToComponent(MeshHandler->ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 
-                    Constraint->RegisterComponent();
-                    Constraint->ApplyWorldOffset(FVector(0), false);
+                            Constraint->RegisterComponent();
+                            Constraint->ApplyWorldOffset(FVector(0), false);
 
-                    MeshHandler->ConnectPositionLink();
+                            MeshHandler->ConnectPositionLink();
 
-                    Constraint->SetRelativeRotation(MeshHandler->Joint->Rotation);
+                            Constraint->SetRelativeRotation(MeshHandler->Joint->Rotation);
 
-                    // Connect joint to parent and child
-                    Constraint->ConstraintActor1 = this;
-                    Constraint->ConstraintActor2 = this;
+                            // Connect joint to parent and child
+                            Constraint->ConstraintActor1 = this;
+                            Constraint->ConstraintActor2 = this;
+                            if (MeshHandler->ShapeComp)
+                                {
+                                    Constraint->SetWorldLocation(MeshHandler->ShapeComp->GetComponentLocation());
+                                    Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->ShapeComp, NAME_None);
+                                }
+                            else
+                                {
+                                    Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
+                                    Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->MeshComp, NAME_None);
+                                }
+
+                            FRotator ParentRotation = MeshHandler->ParentLink->GetComponentRotation();
+                            FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
+                            FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
+
+                            OriginRotations.Add(MeshHandler->Joint->Name, InitialRotationRel);
+                            JointComponents.Add(MeshHandler->Joint->Name, Constraint);
+                        }
+
+
                     if (MeshHandler->ShapeComp)
-                        {
-                            Constraint->SetWorldLocation(MeshHandler->ShapeComp->GetComponentLocation());
-                            Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->ShapeComp, NAME_None);
-                        }
+                        LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->ShapeComp);
                     else
-                        {
-                            Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
-                            Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->MeshComp, NAME_None);
-                        }
+                        LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
 
-                    FRotator ParentRotation = MeshHandler->ParentLink->GetComponentRotation();
-                    FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
-                    FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
+                    MeshHandler->AddConnectedJoint();
 
-                    OriginRotations.Add(MeshHandler->Joint->Name, InitialRotationRel);
-                    JointComponents.Add(MeshHandler->Joint->Name, Constraint);
                 }
-
-
-            if (MeshHandler->ShapeComp)
-                LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->ShapeComp);
-            else
-                LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
-
 
 
         }
