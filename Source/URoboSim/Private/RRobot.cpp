@@ -476,7 +476,9 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 		MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
 		MeshComp->AddLocalOffset(LocationVisual);
 		MeshComp->AddLocalRotation(Link->Visual.Rotation);
-		MeshComp->SetWorldScale3D(Scale);
+		//MeshComp->SetWorldScale3D(Scale);
+		MeshComp->bHiddenInGame = true;
+		MeshComp->ToggleVisibility();
 	}
 	else
 	{
