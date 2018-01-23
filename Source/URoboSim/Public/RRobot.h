@@ -28,7 +28,7 @@ public:
 	URMeshFactory* MeshFactory;
 	  
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-	TMap<FString, UPrimitiveComponent*> LinkComponents;
+	TMap<FString, URStaticMeshComponent*> LinkComponents;
 
 	// All the joints that connect the links together. Key is Name of joint, Value is the joint.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
@@ -48,15 +48,15 @@ public:
 	bool bMotorSet = false;
 	FConstraintInstance NewConstraintInstanceFixed();
 
-	//TEMPLATE Load Obj From Path
-	template <typename ObjClass>
-	FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path);
+	// //TEMPLATE Load Obj From Path
+	// template <typename ObjClass>
+	// FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path);
 
-	// Load Static Mesh From Path 
-	FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
+	// // Load Static Mesh From Path
+	// FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-	bool bSubstepEnabled;
+	bool bSubstepEnabled = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	float StartVelocity;
@@ -101,7 +101,7 @@ public:
 	
 	// The root component
 	UPROPERTY(EditAnywhere)
-	USceneComponent* Root;
+	URStaticMeshComponent* Root;
 
 	// Adds the Link data to the Robot
 	bool AddLink(FRLink Link);
@@ -116,10 +116,10 @@ public:
 	void ParseURDF();
 
 	// Create the Constraint
-	URConstraint* CreateConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+	URConstraint* CreateConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
 
-	//	UPhysicsConstraintComponent* CreateJoint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+	//	UPhysicsConstraintComponent* CreateJoint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
 
 	

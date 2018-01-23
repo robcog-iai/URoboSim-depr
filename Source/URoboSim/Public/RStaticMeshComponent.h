@@ -46,6 +46,8 @@ public:
 
 	float StartH;
 	FVector StartPos;
+	FRotator StartRot;
+	FQuat StartOrientation;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tick")
 		FMySecondaryTickFunction SecondaryComponentTick;

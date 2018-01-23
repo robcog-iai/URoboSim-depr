@@ -1,6 +1,6 @@
 #include "RConstraint.h"
 
-void URFixedConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URFixedConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   ConstraintInstance.SetDisableCollision(true);
   ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
@@ -19,7 +19,7 @@ void URFixedConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink
 
 }
 
-void URFloatingConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URFloatingConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
   ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0.f);
@@ -29,7 +29,7 @@ void URFloatingConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRL
 }
 
 
-void URPrismaticConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URPrismaticConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
   //Currently simplified limit (lower + upper as a value).
@@ -72,7 +72,7 @@ void URPrismaticConstraint::InitDrive()
 
 }
 
-void URRevoluteConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URRevoluteConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
 	//Currently simplified limit (lower + upper as a value).
@@ -127,7 +127,7 @@ void URRevoluteConstraint::InitDrive()
 }
 
 
-void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URPlanarConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
   // A Constraint for planar type. This joint allows motion in a plane perpendicular to the axis.
@@ -170,7 +170,7 @@ void URPlanarConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLin
 }
 
 
-void URContinuousConstraint::Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+void URContinuousConstraint::Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URFixedConstraint::Init(ParentComp, Joint, Link);
 
@@ -222,7 +222,7 @@ void URContinuousConstraint::InitDrive()
 // }
 
 
-// URConstraint* URConstraintFactory::MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+// URConstraint* URConstraintFactory::MakeConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 // {
 //   if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
 // 	{

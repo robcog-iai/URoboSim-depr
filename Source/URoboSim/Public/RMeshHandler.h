@@ -21,9 +21,9 @@ class UROBOSIM_API URMeshHandler : public UObject
   UStaticMesh* Mesh;
   URStaticMeshComponent* MeshComp;
   UShapeComponent* ShapeComp;
-  USceneComponent* Root;
-  USceneComponent* ParentComp;
-  UPrimitiveComponent* ParentLink;
+  URStaticMeshComponent* Root;
+  URStaticMeshComponent* ParentComp;
+  URStaticMeshComponent* ParentLink;
   FVector Scale;
   FVector LocationCollision;
   FVector LocationVisual;
@@ -57,7 +57,7 @@ class UROBOSIM_API URMeshHandler : public UObject
 
   //Create the Link (MeshComponent) of the Robot
 
-  virtual bool CreateLink(FRNode* Node , USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
+  virtual bool CreateLink(FRNode* Node , URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
   virtual void CreateMesh(){};
   virtual void CreateMeshComponent();
   virtual void ConfigureMeshComponent();
@@ -118,6 +118,6 @@ class UROBOSIM_API URMeshFactory : public UObject
   GENERATED_BODY()
 	public:
 	URMeshFactory(){};
-  URMeshHandler* CreateMeshHandler(USceneComponent* RootComponent, FRNode* Node);
+  URMeshHandler* CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node);
 
 };

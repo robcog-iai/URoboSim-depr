@@ -32,8 +32,8 @@ ARRobot::ARRobot()
 	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
 	bEnableShapeCollisions = false;
 
-	// Create a USceneComponent to be the RootComponent
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneComponent"));
+	// Create a URStaticMeshComponent to be the RootComponent
+	Root = CreateDefaultSubobject<URStaticMeshComponent>(TEXT("DefaultSceneComponent"));
 	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
 	this->SetRootComponent(Root);
 	Root->bVisualizeComponent = true;
@@ -77,76 +77,17 @@ ARRobot::ARRobot()
 void ARRobot::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TArray<FString> Keys;
-	OriginLocations.GenerateKeyArray(Keys);
-
-	for (FString LinkName : Keys)
-	{
-		UPrimitiveComponent* PrimComp = LinkComponents.FindRef(LinkName);
-		// Location will be off by about 1/3 after the first gameframe so this extra value is added additionally
-		FVector MovementVector(OriginLocations.FindRef(LinkName) * -1.333333333f);
-		// if (PrimComp)
-		// 	PrimComp->AddRelativeLocation(MovementVector, true);
-		// else
-		// 	UE_LOG(LogTemp, Warning, TEXT("Error correcting location of link %s\n"), LinkName.GetCharArray().GetData());
-	}
-	
 }
 
 // Called every frame (currently not active)
 void ARRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// UE_LOG(LogTemp, Log, TEXT("Testing"));
-
-//    if (GFrameCounter % 5 == 0)
-//    {
-//        // Get All Rigid Bodies Rotation
-//        /*UE_LOG(LogTemp, Log, TEXT("At Frame [%d], Size of LinkComponents = [%d]"), GFrameCounter, LinkComponents.Num());
-//        for (auto &LinkElement : LinkComponents)
-//        {
-//            UE_LOG(LogTemp, Log, TEXT("Component [%s], Location [%s], Rotation [%s]"),
-//                *LinkElement.Value->GetName(), *LinkElement.Value->GetComponentLocation().ToString(),
-//                *LinkElement.Value->GetComponentRotation().ToString());
-//        }*/
-
-//        for (auto &JointElement : JointComponents)
-//        {
-//            /* UE_LOG(LogTemp, Log, TEXT("Component [%s], Location [%s], Rotation [%s], Sw1, Sw2, Tw = [%.3f, %.3f, %.3f]"),
-//                *JointElement.Value->GetName(), *JointElement.Value->GetComponentLocation().ToString(),
-//                *JointElement.Value->GetComponentRotation().ToString(),
-//                JointElement.Value->GetCurrentSwing1(),
-//                JointElement.Value->GetCurrentSwing2(),
-//                JointElement.Value->GetCurrentTwist()
-//                );*/
-//            GetJointPosition(JointElement.Key);
-//            GetJointVelocity(JointElement.Key);
-//        }
-//    }
 }
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
 	ParseURDF();
-
-	// Set material for all static meshes
-	if (BasicMaterial)
-	{
-        UE_LOG(LogTemp, Log, TEXT("Apply Basic Material"));
-		TArray<UActorComponent*> Children = GetComponents().Array();
-		for (auto ChildComp : Children)
-		{
-			if (ChildComp->IsA(UStaticMeshComponent::StaticClass()))
-			{
-				UStaticMeshComponent* Mesh = (UStaticMeshComponent*)ChildComp;
-				for (int c = 0; c < Mesh->GetNumMaterials(); c++)
-				{
-					Mesh->SetMaterial(c, BasicMaterial);
-				}
-			}
-		}
-	}
 }
 
 bool ARRobot::AddLink(FRLink Link)
@@ -222,378 +163,6 @@ bool ARRobot::CreateRobot()
 	return bSuccess;
 }
 
-// bool ARRobot::CreateActorsFromNode(FRNode* Node)
-// {
-// 	if (!Node)
-// 	{
-// 		return false;
-// 	}
-
-// 	FRLink* Link = &(Node->Link);
-// 	FRJoint* Joint = &(Node->Joint);
-// 	USceneComponent* ParentComp;
-// 	UPrimitiveComponent* ParentLink = nullptr;
-// 	Joint->LowerLimit = FMath::RadiansToDegrees(Joint->LowerLimit);
-// 	Joint->UpperLimit = FMath::RadiansToDegrees(Joint->UpperLimit);
-// 	FVector LinkOriginLocation(0);
-
-// 	bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
-// 	bool bUseCollision = !(Link->Collision.Mesh.IsEmpty());
-
-// 	//
-// 	//
-// 	// why bUseCollision hard coded????   Maybe because collision in pr2
-// 	//
-
-	
-// 	bUseCollision = bEnableCollisionTags;
-// 	//UE_LOG(LogTemp, Warning, TEXT("enable Collision tags = [%s]"), (bEnableCollisionTags ? TEXT("True") : TEXT("False")));
-// 	if (Node->Parent)
-// 	{
-// 		// Parent exists and is a UMeshComponent
-// 		ParentComp = (USceneComponent*)LinkComponents.FindRef(Node->Parent->Link.Name);
-// 		ParentLink = LinkComponents.FindRef(Node->Parent->Link.Name);
-// 	}
-// 	else
-// 	{
-// 		// This node is the topmost so the parent has to be the RootComponent
-// 		ParentComp = RootComponent;
-// 	}
-
-// 	// Quit if the link already exists
-// 	if (LinkComponents.Contains(Link->Name))
-// 	{
-// 		return false;
-// 	}
-
-// 	UStaticMesh* Mesh = nullptr;
-// 	//UStaticMeshComponent* MeshComp = nullptr;
-// 	URStaticMeshComponent* MeshComp = nullptr;
-// 	UShapeComponent* ShapeComp = nullptr;
-// 	FVector Scale(Link->Visual.Scale);
-
-
-
-// 	if ((bUseCollision && !bUseVisual) || (!bUseCollision && bUseVisual)) // Collision and Visual are the same
-// 	{
-// 		if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CubeMesh;
-// 			ShapeComp = NewObject<UBoxComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			FVector BoxSize(Scale);
-// 			BoxSize *= 50.f;
-// 			((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
-// 			((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
-// 		}
-// 		else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CylinderMesh;
-// 			ShapeComp = NewObject<UCapsuleComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			float Radius = Scale.X * 50.f;
-// 			float Height = Scale.Z * 50.f;
-// 			((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
-// 			((UCapsuleComponent*)ShapeComp)->SetCapsuleSize(Radius, Height);
-// 		}
-// 		else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = SphereMesh;
-// 			ShapeComp = NewObject<USphereComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			float Radius = Scale.X * 50.f;
-// 			((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
-// 			((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
-// 		}
-// 		else
-// 		{
-// 			// Load Mesh dynamically
-// 			if (bUseVisual)
-// 				Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
-// 			else
-// 				Mesh = LoadMeshFromPath(FName(*Link->Collision.Mesh));
-
-// 			if (!Mesh)
-// 			{
-// 				UE_LOG(LogTemp, Warning, TEXT("Failed to load custom mesh.\n"));
-// 				return false;
-// 			}
-
-// 		}
-// 	}
-// 	else if (bUseCollision && bUseVisual)
-// 	{
-// 		if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CubeMesh;
-// 		}
-// 		else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CylinderMesh;
-// 		}
-// 		else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = SphereMesh;
-// 		}
-// 		else
-// 		{
-// 			// Load Mesh dynamically
-// 			Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
-
-// 			if (!Mesh)
-// 			{
-// 				UE_LOG(LogTemp, Warning, TEXT("Failed to load custom mesh.\n"));
-// 				return false;
-// 			}
-
-// 		}
-
-// 		if (Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CubeMesh;
-// 			ShapeComp = NewObject<UBoxComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			FVector BoxSize(Scale);
-// 			BoxSize *= 50.f;
-// 			((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
-// 			((UBoxComponent*)ShapeComp)->SetBoxExtent(BoxSize);
-// 		}
-// 		else if (Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = CylinderMesh;
-// 			ShapeComp = NewObject<UCapsuleComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			float Radius = Scale.X * 50.f;
-// 			float Height = Scale.Z * 50.f;
-// 			((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
-// 			((UCapsuleComponent*)ShapeComp)->SetCapsuleSize(Radius, Height);
-// 		}
-// 		else if (Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
-// 		{
-// 			Mesh = SphereMesh;
-// 			ShapeComp = NewObject<USphereComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-// 			float Radius = Scale.X * 50.f;
-// 			((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
-// 			((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
-// 		}
-// 		else
-// 		{
-// 			// Load Mesh dynamically
-// 			if (bUseVisual)
-// 				Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
-// 			else
-// 				Mesh = LoadMeshFromPath(FName(*Link->Collision.Mesh));
-
-// 			if (!Mesh)
-// 			{
-// 				UE_LOG(LogTemp, Warning, TEXT("Failed to load custom mesh.\n"));
-// 				return false;
-// 			}
-// 		}
-// 	}
-// 	else if (!bUseCollision && !bUseVisual) {
-// 		// Create children
-// 		for (int c = 0; c < Node->Children.Num(); c++)
-// 		{
-// 			CreateActorsFromNode(Node->Children[c]);
-// 		}
-
-
-// 		return true;
-// 	}
-
-// 	// Create and configure the Link
-// 	if (ShapeComp)
-// 		MeshComp = NewObject<URStaticMeshComponent>(ShapeComp, FName((Link->Name + "_Visual").GetCharArray().GetData()));
-// 	else
-// 	{
-// 		// Using custom mesh
-// 		MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
-
-// 	}
-
-// 	MeshComp->SetStaticMesh(Mesh);
-// 	MeshComp->SetMaterial(0, BasicMaterial);
-// 	MeshComp->SetSimulatePhysics(true);
-// 	MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->PositionSolverIterationCount = 255;
-// 	MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 1;
-// 	MeshComp->RegisterComponent();
-
-// 	FVector minBounds;
-// 	FVector maxBounds;
-// 	MeshComp->GetLocalBounds(minBounds, maxBounds);
-
-// 	// Recalculate the numbers with the actual scale. Location value 1 equals maxBounds value in UE4
-// 	FVector LocationCollision = Link->Collision.Location; //All location information should be within the joints tag so LocationCollision and LocationVisual shouldn't be doing anything, should be removed later.
-// 	LocationCollision.Z *= maxBounds.Z * 2;
-// 	LocationCollision.X *= maxBounds.X * 2;
-// 	LocationCollision.Y *= maxBounds.Y * 2;
-
-// 	FVector LocationVisual = Link->Visual.Location;
-// 	LocationVisual.Z *= maxBounds.Z * 2;
-// 	LocationVisual.X *= maxBounds.X * 2;
-// 	LocationVisual.Y *= maxBounds.Y * 2;
-
-// 	if (ShapeComp)
-// 	{
-// 	  UE_LOG(LogTemp, Log, TEXT("Use Shape Component"));
-// 		if (Link->Inertial.Mass > 0) {
-// 			ShapeComp->SetMassOverrideInKg(FName("ShapeComp"), Link->Inertial.Mass, true);
-// 		}
-
-// 		ShapeComp->SetSimulatePhysics(true);
-// 		ShapeComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
-// 		ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-// 		ShapeComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-// 		ShapeComp->RegisterComponent();
-
-// 		//Disabling collisions for all shape components turned out to be necessary for the pr2.
-// 		if (!bEnableShapeCollisions) {
-// 			ShapeComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-// 		}
-		
-// 		MeshComp->WeldTo(ParentComp);
-		
-// 		ShapeComp->SetRelativeScale3D(FVector(1, 1, 1));
-
-// 		ShapeComp->SetWorldLocation(ParentComp->GetComponentLocation());
-// 		ShapeComp->SetWorldRotation(ParentComp->GetComponentRotation());
-// 		ShapeComp->AddLocalOffset(LocationCollision);
-// 		ShapeComp->AddLocalRotation(Link->Collision.Rotation);
-
-// 		// Weld visual part to the collision body
-// 		MeshComp->SetSimulatePhysics(false);
-// 		MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-// 		MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
-// 		MeshComp->WeldTo(ShapeComp);
-		
-// 		MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
-// 		MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
-// 		MeshComp->AddLocalOffset(LocationVisual);
-// 		MeshComp->AddLocalRotation(Link->Visual.Rotation);
-// 		MeshComp->SetWorldScale3D(Scale);
-// 	}
-// 	else
-// 	{
-// 		if (Link->Inertial.Mass > 0) {
-// 			MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
-// 		}
-
-		
-
-// 		MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-		
-
-// 		for (FString linkName : collisionFilterArr) {
-// 			if (Link->Name.Contains(linkName)) {
-// 				MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-// 				MeshComp->WeldTo(ParentComp);
-// 				break;
-// 			}
-// 		}
-
-// 		//if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
-// 		//	//Prevents certain links from colliding with themselves.
-// 		//	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-// 		//	MeshComp->WeldTo(ParentComp);
-// 		//}
-		
-// 		MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
-//         //UE_LOG(LogTemp, Warning, TEXT("Add MeshComp [%s], Parent [%s], Parent WorldRotation = [%s]"), *MeshComp->GetName(), *ParentComp->GetName(), *ParentComp->GetComponentRotation().ToString());
-// 		MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
-// 		MeshComp->AddRelativeLocation(LocationVisual);
-// 		MeshComp->SetRelativeRotation(Link->Visual.Rotation);
-		
-// 	}
-
-// 	// Create and configure the Joint if this is not the topmost link
-// 	if (ParentLink)
-// 	{
-
-// 	  URConstraint* Constraint = CreateConstraint(ParentComp, Joint, Link);
-// 	  //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
-// 	  Constraint->InitDrive();
-// 	  Constraint->SetDisableCollision(true);
-// 	  Constraint->AttachToComponent(ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-		
-// 	  Constraint->RegisterComponent();
-// 	  Constraint->ApplyWorldOffset(FVector(0), false);
-
-// 	  FVector LocationJoint = Joint->Location;
-// 	  //LocationJoint contains the location values as seen in the URDF, must be scaled by 100 when importing to UE4
-// 	  LocationJoint.Z = (LocationJoint.Z * 100);
-// 	  LocationJoint.X = (LocationJoint.X * 100);
-// 	  LocationJoint.Y = (LocationJoint.Y * 100);
-
-
-// 	  if (ShapeComp)
-// 		{
-// 		  ShapeComp->AddRelativeLocation(LocationJoint);
-// 		  ShapeComp->AddRelativeRotation(Joint->Rotation);
-// 		  LinkOriginLocation = ShapeComp->GetRelativeTransform().GetLocation();
-// 		}
-// 	  else
-// 		{
-// 		  MeshComp->AddRelativeLocation(LocationJoint);
-// 		  MeshComp->AddRelativeRotation(Joint->Rotation);
-// 		  LinkOriginLocation = MeshComp->GetRelativeTransform().GetLocation();
-// 		}
-
-// 	  // Prismatic joints need special positioning due to the style of constraint limits
-// 	  if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
-// 		{
-// 		  FVector MovementVector(Joint->Axis * (Joint->LowerLimit + Joint->UpperLimit));
-// 		  OriginLocations.Add(Joint->Child, MovementVector);
-// 		  if (ShapeComp)
-// 			{
-// 			  ShapeComp->AddRelativeLocation(MovementVector);
-// 			}
-// 		  else
-// 			{
-// 			  MeshComp->AddRelativeLocation(MovementVector);
-// 			}
-// 		}
-
-// 	  Constraint->SetRelativeRotation(Joint->Rotation);
-
-// 	  //	  FConstrainComponentPropName ConstrainCompName;
-
-// 	  // Connect joint to parent and child
-// 	  Constraint->ConstraintActor1 = this;
-// 	  Constraint->ConstraintActor2 = this;
-// 	  if (ShapeComp)
-// 		{
-// 		  Constraint->SetWorldLocation(ShapeComp->GetComponentLocation());
-// 		  Constraint->SetConstrainedComponents(ParentLink, NAME_None, ShapeComp, NAME_None);
-// 		}
-// 	  else
-// 		{
-// 		  Constraint->SetWorldLocation(MeshComp->GetComponentLocation());
-// 		  Constraint->SetConstrainedComponents(ParentLink, NAME_None, MeshComp, NAME_None);
-// 		  /* UE_LOG(LogTemp, Log, TEXT("[%s] [%s] [%x] [%x]"),
-// 		   *Constraint->ComponentName1.ComponentName.ToString(),
-// 		   *Constraint->ComponentName2.ComponentName.ToString(),
-// 		   Constraint->OverrideComponent1.Get(),
-// 		   Constraint->OverrideComponent2.Get()); */
-// 		}
-
-//         FRotator ParentRotation = ParentLink->GetComponentRotation();
-//         FRotator ChildRotation = ShapeComp ? (ShapeComp->GetComponentRotation()) : (MeshComp->GetComponentRotation());
-//         FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
-
-//         OriginRotations.Add(Joint->Name, InitialRotationRel);
-//     	JointComponents.Add(Joint->Name, Constraint);
-// 	}
-
-// 	if (ShapeComp)
-// 		LinkComponents.Add(Link->Name, ShapeComp);
-// 	else
-// 		LinkComponents.Add(Link->Name, MeshComp);
-
-// 	// Create children
-// 	for (int c = 0; c < Node->Children.Num(); c++)
-// 	{
-// 		CreateActorsFromNode(Node->Children[c]);
-// 	}
-
-
-// 	return true;
-// }
 
 bool ARRobot::CreateActorsFromNode(FRNode* Node)
 {
@@ -645,11 +214,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                             JointComponents.Add(MeshHandler->Joint->Name, Constraint);
                         }
 
-
-                    if (MeshHandler->ShapeComp)
-                        LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->ShapeComp);
-                    else
-                        LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
+                    LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
 
                     MeshHandler->AddConnectedJoint();
 
@@ -681,23 +246,6 @@ FConstraintInstance ARRobot::NewConstraintInstanceFixed()
 	ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
 
 	return ConstraintInstance;
-}
-
-//TEMPLATE Load Obj From Path
-template <typename ObjClass>
-FORCEINLINE ObjClass* ARRobot::LoadObjFromPath(const FName& Path)
-{
-	if (Path == NAME_None) return NULL;
-
-	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
-}
-
-// Load Static Mesh From Path 
-FORCEINLINE UStaticMesh* ARRobot::LoadMeshFromPath(const FName& Path)
-{
-	if (Path == NAME_None) return NULL;
-
-	return LoadObjFromPath<UStaticMesh>(Path);
 }
 
 void ARRobot::ParseURDF()
@@ -781,21 +329,21 @@ void ARRobot::BuildTree(FRNode* Node)
 
 bool ARRobot::RotateJoint(FString Name, FRotator TargetRotation)
 {
-	UE_LOG(LogTemp, Display, TEXT("RotateJoint %s"), *Name);
-	TArray<UActorComponent*> Children = GetComponents().Array();
-	for (int c = 0; c < Children.Num(); c++)
-	{
-		UActorComponent* SceneComp = Children[c];
-		if (SceneComp->GetName().Equals(Name, ESearchCase::IgnoreCase))
-		{
-			UPhysicsConstraintComponent* Constraint = (UPhysicsConstraintComponent*)SceneComp;
+	// UE_LOG(LogTemp, Display, TEXT("RotateJoint %s"), *Name);
+	// TArray<UActorComponent*> Children = GetComponents().Array();
+	// for (int c = 0; c < Children.Num(); c++)
+	// {
+	// 	UActorComponent* SceneComp = Children[c];
+	// 	if (SceneComp->GetName().Equals(Name, ESearchCase::IgnoreCase))
+	// 	{
+	// 		UPhysicsConstraintComponent* Constraint = (UPhysicsConstraintComponent*)SceneComp;
 
-			FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-			Constraint->SetAngularOrientationTarget(TargetRotation);
-			return true;
-		}
+	// 		FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
+	// 		Constraint->SetAngularOrientationTarget(TargetRotation);
+	// 		return true;
+	// 	}
 
-	}
+	// }
 
 
 	return false;
@@ -803,22 +351,22 @@ bool ARRobot::RotateJoint(FString Name, FRotator TargetRotation)
 
 bool ARRobot::MovePrismaticJoint(FString Name, FVector TargetPosition)
 {
-	UE_LOG(LogTemp, Display, TEXT("MovePrismaticJoint %s"), *Name);
-	TArray<UActorComponent*> Children = GetComponents().Array();
-	for (int c = 0; c < Children.Num(); c++)
-	{
-		UActorComponent* ActorComp = Children[c];
-		if (ActorComp->GetName().Equals(Name, ESearchCase::IgnoreCase))
-		{
-			UPhysicsConstraintComponent* Constraint = (UPhysicsConstraintComponent*)ActorComp;
+	// UE_LOG(LogTemp, Display, TEXT("MovePrismaticJoint %s"), *Name);
+	// TArray<UActorComponent*> Children = GetComponents().Array();
+	// for (int c = 0; c < Children.Num(); c++)
+	// {
+	// 	UActorComponent* ActorComp = Children[c];
+	// 	if (ActorComp->GetName().Equals(Name, ESearchCase::IgnoreCase))
+	// 	{
+	// 		UPhysicsConstraintComponent* Constraint = (UPhysicsConstraintComponent*)ActorComp;
 
-			FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
-			ConstraintInstance->SetLinearPositionTarget(TargetPosition);
+	// 		FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
+	// 		ConstraintInstance->SetLinearPositionTarget(TargetPosition);
 			
-			return true;
-		}
+	// 		return true;
+	// 	}
 
-	}
+	// }
 
 	return true;
 }
@@ -826,180 +374,182 @@ bool ARRobot::MovePrismaticJoint(FString Name, FVector TargetPosition)
 // Get Joint Position in *Degrees*
 float ARRobot::GetJointPosition(FString JointName)
 {
-    UPhysicsConstraintComponent* Joint = JointComponents[JointName];
+    // UPhysicsConstraintComponent* Joint = JointComponents[JointName];
 
-    FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
-    FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
-    UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
-    UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
-    if (ParentComponent && ChildComponent)
-    {
-        FRotator ParentRotation = ParentComponent->GetComponentRotation();
-        FRotator ChildRotation = ChildComponent->GetComponentRotation();
-        FQuat CurrentRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
-        FQuat InitialRotationRel = OriginRotations[Joint->GetName()];
-        FQuat QRel = CurrentRotationRel * InitialRotationRel.Inverse();
-        FVector Axis; float Angle;
-        QRel.ToAxisAndAngle(Axis, Angle);
+    // FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
+    // FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
+    // UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
+    // UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
+    // if (ParentComponent && ChildComponent)
+    // {
+    //     FRotator ParentRotation = ParentComponent->GetComponentRotation();
+    //     FRotator ChildRotation = ChildComponent->GetComponentRotation();
+    //     FQuat CurrentRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
+    //     FQuat InitialRotationRel = OriginRotations[Joint->GetName()];
+    //     FQuat QRel = CurrentRotationRel * InitialRotationRel.Inverse();
+    //     FVector Axis; float Angle;
+    //     QRel.ToAxisAndAngle(Axis, Angle);
 
-        // Get Axis
-        auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
-        auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
-        auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
-        bool rotationX = false, rotationY = false, rotationZ = false;
-        if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
-            rotationZ = true;
-        if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
-            rotationY = true;
-        if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
-            rotationX = true;
+    //     // Get Axis
+    //     auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
+    //     auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
+    //     auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
+    //     bool rotationX = false, rotationY = false, rotationZ = false;
+    //     if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationZ = true;
+    //     if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationY = true;
+    //     if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
+    //         rotationX = true;
 
-        if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
-        {
-            // not a hinged joint
-            // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
-            return 0;
-        }
-        else
-        {
-            // a hinged joint
-            FVector RefAxis;
-            if (rotationX) RefAxis = FVector(1, 0, 0);
-            if (rotationY) RefAxis = FVector(0, 1, 0);
-            if (rotationZ) RefAxis = FVector(0, 0, 1);
+    //     if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
+    //     {
+    //         // not a hinged joint
+    //         // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
+    //         return 0;
+    //     }
+    //     else
+    //     {
+    //         // a hinged joint
+    //         FVector RefAxis;
+    //         if (rotationX) RefAxis = FVector(1, 0, 0);
+    //         if (rotationY) RefAxis = FVector(0, 1, 0);
+    //         if (rotationZ) RefAxis = FVector(0, 0, 1);
 
-            float ResultAngle = FVector::DotProduct(Axis.GetSafeNormal(), RefAxis) * FMath::RadiansToDegrees(Angle);
-            while (ResultAngle > 180)
-                ResultAngle -= 360;
-            while (ResultAngle < -180 )
-                ResultAngle += 360;
+    //         float ResultAngle = FVector::DotProduct(Axis.GetSafeNormal(), RefAxis) * FMath::RadiansToDegrees(Angle);
+    //         while (ResultAngle > 180)
+    //             ResultAngle -= 360;
+    //         while (ResultAngle < -180 )
+    //             ResultAngle += 360;
 
 
 
-            return ResultAngle;
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Joint [%s] doesn't have parent or child."), *Joint->GetName());
-        return 0.0;
-    }
+    //         return ResultAngle;
+    //     }
+    // }
+    // else
+    // {
+    //     UE_LOG(LogTemp, Error, TEXT("Joint [%s] doesn't have parent or child."), *Joint->GetName());
+    //     return 0.0;
+    // }
+    return 0.0;
 }
 
 // Get Joint Velocity in Deg/s
 float ARRobot::GetJointVelocity(FString JointName)
 {
-    UPhysicsConstraintComponent* Joint = JointComponents[JointName];
+    // UPhysicsConstraintComponent* Joint = JointComponents[JointName];
 
-    FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
-    FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
-    UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
-    UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
+    // FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
+    // FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
+    // UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
+    // UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
 
-    if (ParentComponent && ChildComponent)
-    {
-        // Get Rotation Axis
-        auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
-        auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
-        auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
-        bool rotationX = false, rotationY = false, rotationZ = false;
-        if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
-            rotationZ = true;
-        if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
-            rotationY = true;
-        if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
-            rotationX = true;
+    // if (ParentComponent && ChildComponent)
+    // {
+    //     // Get Rotation Axis
+    //     auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
+    //     auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
+    //     auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
+    //     bool rotationX = false, rotationY = false, rotationZ = false;
+    //     if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationZ = true;
+    //     if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationY = true;
+    //     if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
+    //         rotationX = true;
 
-        if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
-        {
-            // not a hinged joint
-            UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
-            return 0.0;
-        }
-        else
-        {
-            // a hinged joint
-            FVector RefAxis;
-            if (rotationX) RefAxis = FVector(1, 0, 0);
-            if (rotationY) RefAxis = FVector(0, 1, 0);
-            if (rotationZ) RefAxis = FVector(0, 0, 1);
+    //     if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
+    //     {
+    //         // not a hinged joint
+    //         UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
+    //         return 0.0;
+    //     }
+    //     else
+    //     {
+    //         // a hinged joint
+    //         FVector RefAxis;
+    //         if (rotationX) RefAxis = FVector(1, 0, 0);
+    //         if (rotationY) RefAxis = FVector(0, 1, 0);
+    //         if (rotationZ) RefAxis = FVector(0, 0, 1);
 
-            // Get Axis ? 
-            FQuat JointQuat = Joint->GetComponentTransform().GetRotation();
-            FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
+    //         // Get Axis ?
+    //         FQuat JointQuat = Joint->GetComponentTransform().GetRotation();
+    //         FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
 
-            FVector ParentAvel = ParentComponent->GetPhysicsAngularVelocityInRadians();
-            FVector ChildAvel = ChildComponent->GetPhysicsAngularVelocityInRadians();
-            float HingeVel = FVector::DotProduct(ChildAvel - ParentAvel, GlobalAxis); 
+    //         FVector ParentAvel = ParentComponent->GetPhysicsAngularVelocityInRadians();
+    //         FVector ChildAvel = ChildComponent->GetPhysicsAngularVelocityInRadians();
+    //         float HingeVel = FVector::DotProduct(ChildAvel - ParentAvel, GlobalAxis);
 
-            /* UE_LOG(LogTemp, Warning, TEXT("Joint [%s]: HingeVel = %.3f; ChildAvel [%s], ParentAvel [%s], Axis [%s] (global)"),
-                *Joint->GetName(), HingeVel, *ChildAvel.ToString(), *ParentAvel.ToString(), *GlobalAxis.ToString()); */
+    //         /* UE_LOG(LogTemp, Warning, TEXT("Joint [%s]: HingeVel = %.3f; ChildAvel [%s], ParentAvel [%s], Axis [%s] (global)"),
+    //             *Joint->GetName(), HingeVel, *ChildAvel.ToString(), *ParentAvel.ToString(), *GlobalAxis.ToString()); */
 
-            return HingeVel;
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Joint [%s] doesn't have parent or child."), *Joint->GetName());
-        return 0.0;
-    }
+    //         return HingeVel;
+    //     }
+    // }
+    // else
+    // {
+    //     UE_LOG(LogTemp, Error, TEXT("Joint [%s] doesn't have parent or child."), *Joint->GetName());
+    //     return 0.0;
+    // }
+    return 0.0;
 }
 
 void ARRobot::AddForceToJoint(FString JointName, float Force)
 {
-    if (!JointComponents.Find(JointName))
-    {
-        UE_LOG(LogTemp, Error, TEXT("Unable to find Joint [%s]!"), *JointName);
-        return;
-    }
+    // if (!JointComponents.Find(JointName))
+    // {
+    //     UE_LOG(LogTemp, Error, TEXT("Unable to find Joint [%s]!"), *JointName);
+    //     return;
+    // }
 
-    UPhysicsConstraintComponent* Joint = JointComponents[JointName];
+    // UPhysicsConstraintComponent* Joint = JointComponents[JointName];
 
-    FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
-    FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
-    UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
-    UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
+    // FString ParentCompName = Joint->ComponentName1.ComponentName.ToString();
+    // FString ChildCompName = Joint->ComponentName2.ComponentName.ToString();
+    // UPrimitiveComponent* ParentComponent = LinkComponents[ParentCompName];
+    // UPrimitiveComponent* ChildComponent = LinkComponents[ChildCompName];
 
-    if (ParentComponent && ChildComponent)
-    {
-        // Get Rotation Axis
-        auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
-        auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
-        auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
-        bool rotationX = false, rotationY = false, rotationZ = false;
-        if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
-            rotationZ = true;
-        if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
-            rotationY = true;
-        if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
-            rotationX = true;
+    // if (ParentComponent && ChildComponent)
+    // {
+    //     // Get Rotation Axis
+    //     auto MotionSwing1 = Joint->ConstraintInstance.GetAngularSwing1Motion();
+    //     auto MotionSwing2 = Joint->ConstraintInstance.GetAngularSwing2Motion();
+    //     auto MotionTwist = Joint->ConstraintInstance.GetAngularTwistMotion();
+    //     bool rotationX = false, rotationY = false, rotationZ = false;
+    //     if (MotionSwing1 == EAngularConstraintMotion::ACM_Free || MotionSwing1 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationZ = true;
+    //     if (MotionSwing2 == EAngularConstraintMotion::ACM_Free || MotionSwing2 == EAngularConstraintMotion::ACM_Limited)
+    //         rotationY = true;
+    //     if (MotionTwist == EAngularConstraintMotion::ACM_Free || MotionTwist == EAngularConstraintMotion::ACM_Limited)
+    //         rotationX = true;
 
-        if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
-        {
-            // not a hinged joint
-            // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
-        }
-        else
-        {
-            // a hinged joint
-            FVector RefAxis;
-            if (rotationX) RefAxis = FVector(1, 0, 0);
-            if (rotationY) RefAxis = FVector(0, 1, 0);
-            if (rotationZ) RefAxis = FVector(0, 0, 1);
+    //     if ((!rotationX && !rotationY && !rotationZ) || (rotationX && rotationY) || (rotationX && rotationZ) || (rotationY && rotationZ))
+    //     {
+    //         // not a hinged joint
+    //         // UE_LOG(LogTemp, Error, TEXT("Joint [%s] is not a hinged joint with DOF=1"), *Joint->GetName());
+    //     }
+    //     else
+    //     {
+    //         // a hinged joint
+    //         FVector RefAxis;
+    //         if (rotationX) RefAxis = FVector(1, 0, 0);
+    //         if (rotationY) RefAxis = FVector(0, 1, 0);
+    //         if (rotationZ) RefAxis = FVector(0, 0, 1);
 
-            // Get Axis ?
-            FQuat JointQuat = Joint->GetComponentTransform().GetRotation();
-            FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
+    //         // Get Axis ?
+    //         FQuat JointQuat = Joint->GetComponentTransform().GetRotation();
+    //         FVector GlobalAxis = JointQuat.RotateVector(RefAxis); // Rotation Axis in Global Frame
 
-            FVector TorqueToAdd = GlobalAxis * Force;
-            ChildComponent->AddTorqueInRadians(TorqueToAdd);
-            ParentComponent->AddTorqueInRadians(-TorqueToAdd);
-        }
-    }
+    //         FVector TorqueToAdd = GlobalAxis * Force;
+    //         ChildComponent->AddTorqueInRadians(TorqueToAdd);
+    //         ParentComponent->AddTorqueInRadians(-TorqueToAdd);
+    //     }
+    // }
 }
 
 
-URConstraint* ARRobot::CreateConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+URConstraint* ARRobot::CreateConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
 {
   URConstraint* Constraint; 
 	if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))

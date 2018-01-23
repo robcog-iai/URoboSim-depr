@@ -18,7 +18,7 @@ class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
 	public:
 	URConstraint(){};
   virtual void InitDrive(){};
-  virtual void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link){};
+  virtual void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link){};
   bool bEnableMotor = false;
   // UPhysicsConstraintComponent* Constraint;
   // FConstraintInstance ConstraintInstance;
@@ -31,7 +31,7 @@ class UROBOSIM_API URFixedConstraint : public URConstraint
   GENERATED_BODY()
 	public:
 	URFixedConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive(){};
 };
 
@@ -41,7 +41,7 @@ class UROBOSIM_API URFloatingConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URFloatingConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive(){};
 };
 
@@ -51,7 +51,7 @@ class UROBOSIM_API URPrismaticConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URPrismaticConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive();
 };
 
@@ -61,7 +61,7 @@ class UROBOSIM_API URRevoluteConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URRevoluteConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive();
 };
 
@@ -71,7 +71,7 @@ class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URPlanarConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive(){};
 };
 
@@ -81,7 +81,7 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URContinuousConstraint(){};
-  void Init(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
   void InitDrive();
 };
 
@@ -95,7 +95,7 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
 // 	public:
 //     UPROPERTY()
 // 	TSubclassOf<class URConstraint>  NewConstraintClass;
-// 	static URConstraint* MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+// 	static URConstraint* MakeConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 // 	virtual ~URConstraintFactory();
 // };
 
@@ -105,6 +105,6 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
 //   GENERATED_BODY()
 // 	public:
 // 	URConstraintFactory(){};
-// 	static URConstraint* MakeConstraint(USceneComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+// 	static URConstraint* MakeConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
 
 // };

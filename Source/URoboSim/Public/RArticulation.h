@@ -31,6 +31,12 @@ public:
 	USceneComponent* Root;
 	USphereComponent* SphereComponent;
 
+
+	UStaticMeshComponent* SphereVisual;
+	UStaticMeshComponent* BoxVisual;
+
+	FQuat StartOrientation;
+
 	FORCEINLINE void ScreenMsg(const FString& Msg)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);

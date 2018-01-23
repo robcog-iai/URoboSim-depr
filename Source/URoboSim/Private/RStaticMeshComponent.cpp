@@ -56,6 +56,8 @@ void URStaticMeshComponent::BeginPlay()
 
 	StartH = GetComponentLocation().Z;
 	StartPos = GetComponentLocation();
+	StartRot = GetComponentRotation();
+	StartOrientation = GetComponentQuat();
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -88,15 +90,46 @@ void URStaticMeshComponent::SubstepTick(float DeltaTime, FBodyInstance* InBodyIn
 
 void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 {
+
 	if (PRigidBody)
 	{
 		FRotator CurrError;
-		CurrError = FRotator(0.0f, 0.0f, 0.0f) - GetCurrentRotation();
-		FRotator t = (CurrError * owner->KSpring);
-		//FVector t = GetTorque();
+		//CurrError = StartRot - GetCurrentRotation();
+		CurrError = StartRot - GetComponentRotation();
+
+		//FVector w = CurrError.Vector()/ DeltaTime;
+
+
+		FQuat Orientation = GetComponentQuat();
+		FQuat DeltaQ = Orientation.Inverse() *StartOrientation;
+		FVector Axis;
+		float Angle;
+		DeltaQ.ToAxisAndAngle(Axis, Angle);
+		Angle = FMath::RadiansToDegrees(Angle);
+		FVector w = Orientation.RotateVector((Axis * Angle) / DeltaTime);
+
+		//		w = FVector(0.0,0,0);
+		SetPhysicsAngularVelocityInDegrees(w,false);
+		//AddTorqueInDegrees(w);
+		//UE_LOG(LogTemp, Display, TEXT("Apply Velocities %f, %f, %f"), CurrError.Roll, CurrError.Pitch, CurrError.Yaw);
+
+		// for (auto& Joint : ConnectedJoints)
+		// 	{
+		// 		UE_LOG(LogTemp, Display, TEXT("Apply Velocities"));
+		// 		if(!Joint.IsParent && Joint.Type.Equals("revolute", ESearchCase::IgnoreCase))
+		// 			{
+		// 				//PRigidBody->setAngularVelocity(w);
+		// 				UE_LOG(LogTemp, Display, TEXT("Apply Velocities"));
+		// 				SetPhysicsAngularVelocity(w);
+		// 			}
+
+		// 	}
+
+
+		// FVector t = GetTorque();
 		// And apply them to the rigid body
-		//PRigidBody->addForce(PxVec3(f.X, f.Y, f.Z), physx::PxForceMode::eFORCE, true);
-		//PRigidBody->addTorque(PxVec3(t.Roll, t.Pitch, t.Yaw), PxForceMode::eFORCE, true);
+		// PRigidBody->addForce(PxVec3(f.X, f.Y, f.Z), physx::PxForceMode::eFORCE, true);
+		// PRigidBody->addTorque(PxVec3(t.Roll, t.Pitch, t.Yaw), PxForceMode::eFORCE, true);
 
 
 	}

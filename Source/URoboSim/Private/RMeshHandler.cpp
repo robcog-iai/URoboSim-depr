@@ -53,7 +53,7 @@ FORCEINLINE UStaticMesh* URMeshHandler::LoadMeshFromPath(const FName& Path)
 
 
 
-bool URMeshHandler::CreateLink(FRNode* Node, USceneComponent* RootComponent, TMap<FString, UPrimitiveComponent*> LinkComponents, TMap<FString, FVector> OriginLocation)
+bool URMeshHandler::CreateLink(FRNode* Node, URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation)
 {
 	Link = &(Node->Link);
 	Joint = &(Node->Joint);
@@ -84,7 +84,7 @@ bool URMeshHandler::CreateLink(FRNode* Node, USceneComponent* RootComponent, TMa
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
-		ParentComp = (USceneComponent*)LinkComponents.FindRef(Node->Parent->Link.Name);
+		ParentComp = (URStaticMeshComponent*)LinkComponents.FindRef(Node->Parent->Link.Name);
 		ParentLink = LinkComponents.FindRef(Node->Parent->Link.Name);
 	}
 	else
@@ -227,13 +227,10 @@ void URMeshHandler::ConnectPositionLink()
 void URMeshHandler::AddConnectedJoint()
 {
 
-  UE_LOG(LogTemp, Log, TEXT("Before Add Joint"));
-  MeshComp->ConnectedJoints.Add(CreateConnectedJoint(false));
-  UE_LOG(LogTemp, Log, TEXT("After Add Joint"));
 
-  UE_LOG(LogTemp, Log, TEXT("Before Add Joint Parent"));
-  Cast<URStaticMeshComponent>(ParentLink)->ConnectedJoints.Add(CreateConnectedJoint(true));
-  UE_LOG(LogTemp, Log, TEXT("After Add Joint Parent"));
+  MeshComp->ConnectedJoints.Add(CreateConnectedJoint(false));
+  ParentComp->ConnectedJoints.Add(CreateConnectedJoint(true));
+
 
   
 }
@@ -375,7 +372,7 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
 
 
 
- URMeshHandler* URMeshFactory::CreateMeshHandler(USceneComponent* RootComponent, FRNode* Node)
+ URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node)
 {
   URMeshHandler* MeshHandler = nullptr;
 
