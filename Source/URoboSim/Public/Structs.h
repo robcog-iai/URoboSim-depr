@@ -2,17 +2,24 @@
 
 
 #include "IURoboSim.h"
+#include "Structs.generated.h"
 
+USTRUCT()
 struct UROBOSIM_API FRConnectedJoint
 {
-
+  GENERATED_USTRUCT_BODY()
+    UPROPERTY(EditAnywhere)
   FString Name;
+  UPROPERTY(EditAnywhere)
   FString Type;
+
+  UPROPERTY(EditAnywhere)
+  bool IsParent;
 
   FVector Location;
   FRotator Rotation;
 
-  bool IsParent;
+
 
   bool operator== (const FRConnectedJoint &Joint)
   {

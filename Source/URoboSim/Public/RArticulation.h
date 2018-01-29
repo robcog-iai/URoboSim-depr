@@ -36,6 +36,20 @@ public:
 	UStaticMeshComponent* BoxVisual;
 
 	FQuat StartOrientation;
+	FTransform StartRelativeTransform;
+	FVector StartLocation;
+
+	FVector pid(FVector e, float Ta);
+	float ealt1=0;
+	float esum1=0;
+	float ealt2=0;
+	float esum2=0;
+	float ealt3=0;
+	float esum3=0;
+	float Kp;
+	float Ki;
+	float Kd;
+
 
 	FORCEINLINE void ScreenMsg(const FString& Msg)
 	{

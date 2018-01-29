@@ -31,7 +31,6 @@ URMeshHandler::URMeshHandler()
 	{
       SphereMesh = MeshSp.Object;
 	}
-
 }
 
 //TEMPLATE Load Obj From Path
@@ -226,23 +225,21 @@ void URMeshHandler::ConnectPositionLink()
 
 void URMeshHandler::AddConnectedJoint()
 {
+  MeshComp->ConnectedJoints.Add(Joint->Name, CreateConnectedJoint(false));
+  ParentComp->ConnectedJoints.Add(Joint->Name, CreateConnectedJoint(true));
+  MeshComp->Parent = ParentComp;
 
-
-  MeshComp->ConnectedJoints.Add(CreateConnectedJoint(false));
-  ParentComp->ConnectedJoints.Add(CreateConnectedJoint(true));
-
-
-  
 }
 
 FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
 {
-  FRConnectedJoint TempJoint;
+  static FRConnectedJoint TempJoint;
   TempJoint.Name = Joint->Name;
   TempJoint.Type = Joint->Type;
   TempJoint.Location = Joint->Location;
   TempJoint.Rotation = Joint->Rotation;
   TempJoint.IsParent = IsParent;
+
   return TempJoint;
 }
 
@@ -336,12 +333,17 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
     {
       MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
     }
-
-
-
   MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
 
 
+  for (auto& Tag : GravityDisabledTags)
+    {
+      if (Link->Name.Contains(Tag))
+        {
+          UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
+          MeshComp->SetEnableGravity(true);
+        }
+    }
   for (FString linkName : collisionFilterArr)
     {
       if (Link->Name.Contains(linkName))
@@ -351,7 +353,6 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
           break;
         }
     }
-
   //if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
   //	//Prevents certain links from colliding with themselves.
   //	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);

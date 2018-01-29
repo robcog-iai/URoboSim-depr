@@ -5,6 +5,7 @@
 
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Runtime/Engine/Classes/Components/InputComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
 #include "RConstraint.h"
@@ -17,12 +18,14 @@
 // A structure representing a URDF Joint
 
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor
+class UROBOSIM_API ARRobot : public APawn
 {
 	GENERATED_BODY()
 
 public:
 	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
+
+		virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 		ARArticulation* Articulation;
 	URMeshFactory* MeshFactory;
@@ -40,6 +43,12 @@ public:
 
 	// Original relative locations of links that are constrained with prismatic type
 	TMap<FString, FVector> OriginLocations;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+	TArray<URStaticMeshComponent*> WheelComponents;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+		TArray<URStaticMeshComponent*> WheelTurnComponents;
 
 	UStaticMesh* CylinderMesh;
 	UStaticMesh* CubeMesh;
@@ -69,6 +78,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	bool bEnableLogging;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drive Parameter")
+		float AngularVelocityOrTorque = 100000000.0f;
 
 	//	URConstraintFactory ConstraintFactory;
 	
@@ -152,6 +164,11 @@ public:
     UFUNCTION(BlueprintCallable, Category="Robot")
     void AddForceToJoint(FString JointName, float Force);
 
+	void MoveForward(float AxisValue);
+	void TurnWheels(float AxisValue);
+
+	FVector WheelTurnSpeed;
+	FVector WheelSpinnSpeed;
 private:
 	// Array of links added with AddLink. Is cleared in the process of creating the Robot
 	TArray<FRLink> Links;
@@ -167,6 +184,7 @@ private:
 
 	// Recursively creates the Robots physical links and joints
 	bool CreateActorsFromNode(FRNode* Node);
+
 };
 
 

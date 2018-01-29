@@ -47,15 +47,21 @@ public:
 	float StartH;
 	FVector StartPos;
 	FRotator StartRot;
-	FQuat StartOrientation;
+	FQuat TargetOrientation;
+	FTransform StartRelativeTransform;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Tick")
 		FMySecondaryTickFunction SecondaryComponentTick;
 
-	TArray<FRConnectedJoint> ConnectedJoints;
+	UPROPERTY(EditAnywhere)
+		TMap<FString, FRConnectedJoint> ConnectedJoints;
 
 	void AddConnectedJoint(FRJoint Joint);
+	UPROPERTY(EditAnywhere)
+	URStaticMeshComponent* Parent;
 
+	bool CheckJointType(FString Type);
+	FQuat GetLocalTransform();
 
 private:
 	FCalculateCustomPhysics OnCalculateCustomPhysics;
@@ -74,4 +80,14 @@ private:
 	FORCEINLINE FRotator GetCurrentRotation();
 	FORCEINLINE FVector  GetCurrentVelocity();
 	FORCEINLINE FVector  GetCurrentAngularVelocity();
+
+	FORCEINLINE void ScreenMsg(const FString& Msg)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
+	}
+
+	FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));
+	}
 };

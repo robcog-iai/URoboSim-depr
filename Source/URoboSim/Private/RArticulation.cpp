@@ -37,7 +37,9 @@ ARArticulation::ARArticulation()
       //SphereVisual->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
       SphereVisual->SetWorldScale3D(FVector(1.0f));
       SphereVisual->SetSimulatePhysics(true);
+      SphereVisual->SetEnableGravity(true);
 
+      SphereVisual->SetMassOverrideInKg(FName("Weight"), 1, true);
       //SphereVisual->SetMaterial(0, BasicMaterial);
     }
   else
@@ -55,9 +57,18 @@ ARArticulation::ARArticulation()
   Constraint->ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
   Constraint->AttachToComponent(BoxVisual, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
   Constraint->SetWorldLocation(BoxVisual->GetComponentLocation());
+  Constraint->SetAbsolute( /*location*/ false, /*rotation*/ false, /*scale*/ true);
   Constraint->AddRelativeLocation(FVector(0.0f,0.0f,50.0f));
 
-  StartOrientation = SphereVisual->GetComponentQuat();
+
+  StartRelativeTransform = SphereVisual->GetRelativeTransform();
+  StartOrientation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
+  StartLocation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetLocation();
+
+  Ki = 1000;
+  Kd = 1000;
+  Kp = 1000;
+
 }
 
 void ARArticulation::Tick(float DeltaTime)
@@ -69,17 +80,38 @@ void ARArticulation::Tick(float DeltaTime)
   // PxTransform Trans = PActor->getGlobalPose();
   // PxVec3& PxLoc = Trans.p;
   // FVector Location(PxLoc.x,PxLoc.y,PxLoc.z);
-  FQuat Orientation = SphereVisual->GetComponentQuat();
+  FQuat Orientation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
+  FQuat OrientationWorld = SphereVisual->GetComponentTransform().GetRotation();
+
+  FVector Location = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetLocation();
   FQuat DeltaQ = Orientation.Inverse() *StartOrientation;
+  FVector DeltaL = StartLocation - Location;
   FVector Axis;
   float Angle;
   DeltaQ.ToAxisAndAngle(Axis, Angle);
   Angle = FMath::RadiansToDegrees(Angle);
-  FVector w = Orientation.RotateVector((Axis * Angle) / DeltaTime);
-  //SphereVisual->SetPhysicsAngularVelocityInDegrees(w,false);
-  SphereVisual->AddTorqueInDegrees(w);
+  FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
+  FVector v = DeltaL/ DeltaTime;
+  FVector f = DeltaL * 10000;
+  FVector p = v * SphereVisual->GetMass();
 
-  ScreenMsg("physx loc", Orientation.ToString());
+  FVector pw = w;
+
+  SphereVisual->SetPhysicsAngularVelocityInDegrees(w,false);
+  //SphereVisual->SetPhysicsLinearVelocity(v,false);
+  //SphereVisual->AddForce(f);
+  //SphereVisual->AddImpulse(p);
+
+  FVector w_regler = pid(w, DeltaTime);
+
+  //SphereVisual->AddAngularImpulse(w*1000*Angle);
+  //SphereVisual->AddTorqueInDegrees(w);
+  FTransform t = SphereVisual->GetRelativeTransform();
+  ScreenMsg("Axis", Axis.ToString());
+
+  ScreenMsg("angle", FString::SanitizeFloat(Angle));
+  //ScreenMsg("DeltaQ", DeltaQ.Euler().ToString());
+  //ScreenMsg("w_regler", w_regler.ToString());
 
 }
 
@@ -88,5 +120,24 @@ void ARArticulation::MakeArticulation()
 {
   // articulation = physics.createArticulation();
   // link = articulation->createLink(parent, linkPose);
+
+}
+
+FVector ARArticulation::pid(FVector e, float Ta)
+{
+  FVector y;
+
+  esum1 = esum1 + e.X;
+  y.X = Kp * e.X + Ki * Ta * esum1;
+  ealt1 = e.X;
+
+  esum2 = esum2+ e.Y;
+  y.Y = Kp * e.Y + Ki * Ta * esum2;
+  ealt2 = e.Y;
+
+  esum3 = esum3 + e.Z;
+  y.Y = Kp * e.Z + Ki * Ta * esum3;
+  ealt3 = e.Z;
+  return y;
 
 }

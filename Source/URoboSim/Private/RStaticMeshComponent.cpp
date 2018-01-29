@@ -57,7 +57,22 @@ void URStaticMeshComponent::BeginPlay()
 	StartH = GetComponentLocation().Z;
 	StartPos = GetComponentLocation();
 	StartRot = GetComponentRotation();
-	StartOrientation = GetComponentQuat();
+
+	StartRelativeTransform = GetRelativeTransform();
+	StartPos = StartRelativeTransform.GetLocation();
+
+
+	for (auto& Joint : ConnectedJoints)
+		{
+			if(!Joint.Value.IsParent && CheckJointType(Joint.Value.Type))
+				{
+					FTransform ParentTransform = Parent->GetComponentTransform();
+					TargetOrientation = GetLocalTransform();
+
+					ParentTransform.ToString();
+					//UE_LOG(LogTemp, Log, TEXT("Origin %s"), *ParentTransform.ToString());
+				}
+		}
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -93,45 +108,74 @@ void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 
 	if (PRigidBody)
 	{
-		FRotator CurrError;
-		//CurrError = StartRot - GetCurrentRotation();
-		CurrError = StartRot - GetComponentRotation();
+		for (auto& Joint : ConnectedJoints)
+			{
+				if(!Joint.Value.IsParent && CheckJointType(Joint.Value.Type))
+					{
+						if(Joint.Value.Name.Contains("caster_rotation_joint"))
+							{
 
-		//FVector w = CurrError.Vector()/ DeltaTime;
+								for(auto& wheel : owner->WheelTurnComponents)
+									{
 
+										FQuat Orientation = wheel->GetComponentTransform().GetRotation();
+										wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelTurnSpeed),false);
+									}
+							}
 
-		FQuat Orientation = GetComponentQuat();
-		FQuat DeltaQ = Orientation.Inverse() *StartOrientation;
-		FVector Axis;
-		float Angle;
-		DeltaQ.ToAxisAndAngle(Axis, Angle);
-		Angle = FMath::RadiansToDegrees(Angle);
-		FVector w = Orientation.RotateVector((Axis * Angle) / DeltaTime);
+						else if(Joint.Value.Name.Contains("wheel_joint"))
+							{
+								// TArray<URStaticMeshComponent*> Wheels =owner->WheelComponents;
+								// FQuat Orientation = Wheels[0]->GetComponentTransform().GetRotation();
+								// wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelSpinnSpeed),false);
+								// for(int i = 1, i<WheelComponents.Num(), i++)
+								// 	{
 
-		//		w = FVector(0.0,0,0);
-		SetPhysicsAngularVelocityInDegrees(w,false);
-		//AddTorqueInDegrees(w);
-		//UE_LOG(LogTemp, Display, TEXT("Apply Velocities %f, %f, %f"), CurrError.Roll, CurrError.Pitch, CurrError.Yaw);
+								// 	}
 
-		// for (auto& Joint : ConnectedJoints)
-		// 	{
-		// 		UE_LOG(LogTemp, Display, TEXT("Apply Velocities"));
-		// 		if(!Joint.IsParent && Joint.Type.Equals("revolute", ESearchCase::IgnoreCase))
-		// 			{
-		// 				//PRigidBody->setAngularVelocity(w);
-		// 				UE_LOG(LogTemp, Display, TEXT("Apply Velocities"));
-		// 				SetPhysicsAngularVelocity(w);
-		// 			}
+								for(auto& wheel : owner->WheelComponents)
+									{
 
-		// 	}
-
-
-		// FVector t = GetTorque();
-		// And apply them to the rigid body
-		// PRigidBody->addForce(PxVec3(f.X, f.Y, f.Z), physx::PxForceMode::eFORCE, true);
-		// PRigidBody->addTorque(PxVec3(t.Roll, t.Pitch, t.Yaw), PxForceMode::eFORCE, true);
+										FQuat Orientation = wheel->GetComponentTransform().GetRotation();
+									wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelSpinnSpeed),false);
+									}
 
 
+							}
+						else if(!Joint.Value.Name.Contains("wheel"))
+							{
+								//PRigidBody->setAngularVelocity(w);
+								//UE_LOG(LogTemp, Display, TEXT("Apply Velocities"));
+								FQuat Orientation = GetLocalTransform();
+								FQuat OrientationWorld = GetComponentTransform().GetRotation();
+								// FRotator CurrError;
+								// //CurrError = StartRot - GetCurrentRotation();
+								// CurrError = StartRot - GetComponentRotation();
+
+								// //FVector w = CurrError.Vector()/ DeltaTime;
+								FQuat DeltaQ = Orientation.Inverse() * TargetOrientation;
+								FVector Axis;
+								float Angle;
+								DeltaQ.ToAxisAndAngle(Axis, Angle);
+								Angle = FMath::RadiansToDegrees(Angle);
+								FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
+
+								FVector pw = 0.1 * w;
+								if(Joint.Value.Name.Contains("l_upper_arm_roll_joint"))
+									{
+										UE_LOG(LogTemp, Display, TEXT("Delta %s"), *DeltaQ.Euler().ToString());
+									}
+
+								// ScreenMsg("Delta", DeltaQ.ToString());
+
+								SetPhysicsAngularVelocityInDegrees(w,false);
+								//AddAngularImpulse(pw);
+								//AddTorqueInDegrees(w);
+							}
+
+					}
+
+			}
 	}
 }
 
@@ -151,6 +195,9 @@ void URStaticMeshComponent::TickPostPhysics(
 			if (owner->GetWorldSettings() != NULL && !IsRunningDedicatedServer())
 			{
 				// Here your post physics tick stuff
+
+
+
 				if (owner->bEnableLogging)
 					UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickPostPhysics DeltaTime: %f, Z: %f"), FrameCount, DeltaSeconds, GetCurrentLocation().Z);
 			}
@@ -185,4 +232,21 @@ FVector URStaticMeshComponent::GetCurrentVelocity()
 void URStaticMeshComponent::AddConnectedJoint(FRJoint Joint)
 {
 
+}
+
+bool URStaticMeshComponent::CheckJointType(FString Type)
+{
+	bool check = false;
+	if (Type.Equals("revolute", ESearchCase::IgnoreCase) || Type.Equals("continuous", ESearchCase::IgnoreCase))
+		{
+			check = true;
+		}
+	return check;
+}
+
+FQuat URStaticMeshComponent::GetLocalTransform()
+{
+	FQuat LocalTransform;
+	LocalTransform = GetComponentTransform().GetRelativeTransform(Parent->GetComponentTransform()).GetRotation();
+	return  LocalTransform;
 }

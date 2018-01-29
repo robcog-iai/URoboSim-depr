@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include "Engine/EngineTypes.h"
 
+
+
 // Sets default values
 ARRobot::ARRobot()
 {
@@ -27,9 +29,10 @@ ARRobot::ARRobot()
 	// 	bEnableAngularMotors = placeHolder.bEnableAngularMotors;
 	// 	bEnableCollisionTags = placeHolder.bEnableCollisionTags;
 	// 	collisionFilterArr = placeHolder.collisionFilterArr;
-	// }	
-
-	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
+	// }
+    AutoPossessPlayer = EAutoReceiveInput::Player0;
+    PrimaryActorTick.bCanEverTick = true;
+	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link", "caster", "base" };
 	bEnableShapeCollisions = false;
 
 	// Create a URStaticMeshComponent to be the RootComponent
@@ -41,36 +44,6 @@ ARRobot::ARRobot()
 
 
      MeshFactory = NewObject<URMeshFactory>(Root, FName(TEXT("MeshFactory")));
-
-	// Preload meshes so they are available in runtime
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCy(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCu(TEXT("/Game/Geometry/Meshes/1M_Cube.1M_Cube"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCu(TEXT("/Engine/BasicShapes/Cube.Cube"));
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshSp(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere")); // Pivot point is not in the center
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshSp(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
-
-	//
-	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("/Game/StarterContent/Materials/M_Brick_Clay_New.M_Brick_Clay_New"));
-	//static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Material'/Game/StarterContent/Materials/M_Metal_Gold.M_Metal_Gold'"));
-
-	if (MeshCy.Succeeded())
-	{
-		CylinderMesh = MeshCy.Object;
-	}
-	if (MeshCu.Succeeded())
-	{
-		CubeMesh = MeshCu.Object;
-	}
-	if (MeshSp.Succeeded())
-	{
-		SphereMesh = MeshSp.Object;
-	}
-	/* Material support disabled for now
-	if (Material.Succeeded())
-	{
-		//BasicMaterial = Material.Object;
-	}
-	*/
 }
 
 // Called when the game starts or when spawned
@@ -112,6 +85,8 @@ bool ARRobot::CreateRobot()
 	}
 
 	// Since every Link other than the base link has to be connected to another link the number of joints is fixed
+    UE_LOG(LogTemp, Display, TEXT("Number Joints %d"), Joints.Num());
+    UE_LOG(LogTemp, Display, TEXT("Number L %d"), Links.Num());
 	if (Joints.Num() != Links.Num() - 1)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Robot is invalid. Abort creating.\n"));
@@ -212,11 +187,23 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
                             OriginRotations.Add(MeshHandler->Joint->Name, InitialRotationRel);
                             JointComponents.Add(MeshHandler->Joint->Name, Constraint);
+
+                            MeshHandler->AddConnectedJoint();
+
+                            if(MeshHandler->Link->Name.Contains("wheel_link"))
+                                {
+                                    WheelComponents.Add(MeshHandler->MeshComp);
+                                }
+                            if(MeshHandler->Link->Name.Contains("caster_rotation_link"))
+                                {
+                                    WheelTurnComponents.Add(MeshHandler->MeshComp);
+                                }
+
                         }
 
                     LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
 
-                    MeshHandler->AddConnectedJoint();
+
 
                 }
 
@@ -546,6 +533,25 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
     //         ParentComponent->AddTorqueInRadians(-TorqueToAdd);
     //     }
     // }
+}
+
+void ARRobot::MoveForward(float AxisValue)
+{
+    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 2000;
+}
+
+void ARRobot::TurnWheels(float AxisValue)
+{
+    WheelTurnSpeed = FVector(0.0f, 0.0f,AxisValue ) * 200;
+}
+
+
+
+void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+{
+    Super::SetupPlayerInputComponent(InputComponent);
+    InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
+    InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
 }
 
 

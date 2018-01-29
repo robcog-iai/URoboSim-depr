@@ -43,6 +43,7 @@ class UROBOSIM_API URMeshHandler : public UObject
   bool bUseCollision;
   bool bEnableShapeCollisions = false;
   TArray<FString> collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
+  TArray<FString> GravityDisabledTags = { "gripper","wrist", "arm", "elbow" };
   URMeshHandler();
 
 
