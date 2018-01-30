@@ -32,6 +32,8 @@ public:
 	USphereComponent* SphereComponent;
 
 
+	FQuat TestQuat;
+
 	UStaticMeshComponent* SphereVisual;
 	UStaticMeshComponent* BoxVisual;
 

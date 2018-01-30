@@ -341,18 +341,22 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
       if (Link->Name.Contains(Tag))
         {
           UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
-          MeshComp->SetEnableGravity(true);
+          MeshComp->SetEnableGravity(false);
         }
     }
-  for (FString linkName : collisionFilterArr)
-    {
-      if (Link->Name.Contains(linkName))
-        {
-          MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-          MeshComp->WeldTo(ParentComp);
-          break;
-        }
-    }
+
+  MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+
+  // for (FString linkName : collisionFilterArr)
+  //   {
+  //     if (Link->Name.Contains(linkName))
+  //       {
+  //         MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+  //         MeshComp->WeldTo(ParentComp);
+  //         break;
+  //       }
+  //   }
+
   //if (Link->Name.Contains("wheel_link") || Link->Name.Contains("shoulder") || Link->Name.Contains("arm") || Link->Name.Contains("finger_link")) {
   //	//Prevents certain links from colliding with themselves.
   //	MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);

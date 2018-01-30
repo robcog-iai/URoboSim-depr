@@ -56,7 +56,43 @@ void ARRobot::BeginPlay()
 void ARRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    // TArray<URStaticMeshComponent*>& Wheels = owner->WheelTurnComponents;
+
+    // for(int i = 1; i < Wheels.Num(); i++)
+    //     {
+
+
+    //     }
+    FQuat OrientationWheel = WheelTurnComponents[0]->GetComponentTransform().GetRotation();
+    FRotator Speed(WheelTurnSpeed * DeltaTime);
+    ScreenMsg("Speed", Speed.ToString());
+    for(auto& wheel : WheelTurnComponents)
+        {
+            OrientationWheel = OrientationWheel* Speed.Quaternion();
+            wheel->SetWorldRotation(OrientationWheel);
+            wheel->TargetOrientation = OrientationWheel;
+        }
 }
+
+void ARRobot::MoveForward(float AxisValue)
+{
+    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 2000;
+}
+
+void ARRobot::TurnWheels(float AxisValue)
+{
+    WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 200;
+}
+
+
+
+void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+{
+    Super::SetupPlayerInputComponent(InputComponent);
+    InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
+    InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
+}
+
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
@@ -535,24 +571,7 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
     // }
 }
 
-void ARRobot::MoveForward(float AxisValue)
-{
-    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 2000;
-}
 
-void ARRobot::TurnWheels(float AxisValue)
-{
-    WheelTurnSpeed = FVector(0.0f, 0.0f,AxisValue ) * 200;
-}
-
-
-
-void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
-    Super::SetupPlayerInputComponent(InputComponent);
-    InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
-    InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
-}
 
 
 URConstraint* ARRobot::CreateConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)

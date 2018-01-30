@@ -114,30 +114,24 @@ void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 					{
 						if(Joint.Value.Name.Contains("caster_rotation_joint"))
 							{
-
-								for(auto& wheel : owner->WheelTurnComponents)
-									{
-
-										FQuat Orientation = wheel->GetComponentTransform().GetRotation();
-										wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelTurnSpeed),false);
-									}
+								// for(auto& wheel : owner->WheelTurnComponents)
+								// 	{
+								// 		if(owner->WheelTurnSpeed.Size()!=0)
+								// 			{
+								// 				//creenMsg("Delta");
+								// 				FQuat Orientation = wheel->GetComponentTransform().GetRotation();
+								// 				// wheel->AddWorldRotation(Orientation.RotateVector(owner->WheelTurnSpeed*DeltaTime).ToOrientationRotator(),false);
+								// 				wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelTurnSpeed),false);
+								// 			}
+								// 	}
 							}
 
 						else if(Joint.Value.Name.Contains("wheel_joint"))
 							{
-								// TArray<URStaticMeshComponent*> Wheels =owner->WheelComponents;
-								// FQuat Orientation = Wheels[0]->GetComponentTransform().GetRotation();
-								// wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelSpinnSpeed),false);
-								// for(int i = 1, i<WheelComponents.Num(), i++)
-								// 	{
-
-								// 	}
-
 								for(auto& wheel : owner->WheelComponents)
 									{
-
-										FQuat Orientation = wheel->GetComponentTransform().GetRotation();
-									wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelSpinnSpeed),false);
+									   FQuat Orientation = wheel->GetComponentTransform().GetRotation();
+												wheel->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(owner->WheelSpinnSpeed),false);
 									}
 
 
@@ -161,10 +155,10 @@ void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 								FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
 
 								FVector pw = 0.1 * w;
-								if(Joint.Value.Name.Contains("l_upper_arm_roll_joint"))
-									{
-										UE_LOG(LogTemp, Display, TEXT("Delta %s"), *DeltaQ.Euler().ToString());
-									}
+								// if(Joint.Value.Name.Contains("l_upper_arm_roll_joint"))
+								// 	{
+								// 		UE_LOG(LogTemp, Display, TEXT("Delta %s"), *DeltaQ.Euler().ToString());
+								// 	}
 
 								// ScreenMsg("Delta", DeltaQ.ToString());
 
@@ -195,9 +189,6 @@ void URStaticMeshComponent::TickPostPhysics(
 			if (owner->GetWorldSettings() != NULL && !IsRunningDedicatedServer())
 			{
 				// Here your post physics tick stuff
-
-
-
 				if (owner->bEnableLogging)
 					UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickPostPhysics DeltaTime: %f, Z: %f"), FrameCount, DeltaSeconds, GetCurrentLocation().Z);
 			}

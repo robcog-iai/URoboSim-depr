@@ -23,7 +23,7 @@ ARArticulation::ARArticulation()
   SphereVisual->AddRelativeLocation(FVector(200.0f,0.0f,50.0f));
   SphereVisual->SetAbsolute( /*location*/ false, /*rotation*/ false, /*scale*/ true);
 
-  static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+  static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Engine/BasicShapes/Cube.Cube"));
   static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeVisualAsset(TEXT("/Engine/BasicShapes/Cube.Cube"));
   if (SphereVisualAsset.Succeeded())
     {
@@ -32,15 +32,19 @@ ARArticulation::ARArticulation()
       //SphereVisual->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
       BoxVisual->SetWorldScale3D(FVector(1.0f, 1.0f, 4.0f));
       BoxVisual->SetSimulatePhysics(true);
+      BoxVisual->SetEnableGravity(false);
 
       SphereVisual->SetStaticMesh(SphereVisualAsset.Object);
       //SphereVisual->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
       SphereVisual->SetWorldScale3D(FVector(1.0f));
       SphereVisual->SetSimulatePhysics(true);
-      SphereVisual->SetEnableGravity(true);
+      SphereVisual->SetEnableGravity(false);
+
 
       SphereVisual->SetMassOverrideInKg(FName("Weight"), 1, true);
       //SphereVisual->SetMaterial(0, BasicMaterial);
+
+
     }
   else
     {
@@ -65,6 +69,8 @@ ARArticulation::ARArticulation()
   StartOrientation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
   StartLocation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetLocation();
 
+  //TestQuat = BoxVisual->
+
   Ki = 1000;
   Kd = 1000;
   Kp = 1000;
@@ -75,43 +81,83 @@ void ARArticulation::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
 
-  // ScreenMsg("Got into PhysX!!!");
-  // PxRigidDynamic* PActor = SphereComponent->GetBodyInstance(FName("FirstComponent"),true)->GetPxRigidDynamic_AssumesLocked();
-  // PxTransform Trans = PActor->getGlobalPose();
-  // PxVec3& PxLoc = Trans.p;
-  // FVector Location(PxLoc.x,PxLoc.y,PxLoc.z);
-  FQuat Orientation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
-  FQuat OrientationWorld = SphereVisual->GetComponentTransform().GetRotation();
 
-  FVector Location = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetLocation();
-  FQuat DeltaQ = Orientation.Inverse() *StartOrientation;
-  FVector DeltaL = StartLocation - Location;
-  FVector Axis;
-  float Angle;
-  DeltaQ.ToAxisAndAngle(Axis, Angle);
-  Angle = FMath::RadiansToDegrees(Angle);
-  FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
-  FVector v = DeltaL/ DeltaTime;
-  FVector f = DeltaL * 10000;
-  FVector p = v * SphereVisual->GetMass();
+  // FQuat Orientation = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
+  // FQuat OrientationWorld = SphereVisual->GetComponentTransform().GetRotation();
 
-  FVector pw = w;
+  // FVector Location = SphereVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetLocation();
+  // FQuat DeltaQ = Orientation.Inverse() *StartOrientation;
+  // FVector DeltaL = StartLocation - Location;
+  // FVector Axis;
+  // float Angle;
+  // DeltaQ.ToAxisAndAngle(Axis, Angle);
+  // Angle = FMath::RadiansToDegrees(Angle);
+  // FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
+  // FVector v = DeltaL/ DeltaTime;
+  // FVector f = DeltaL * 10000;
+  // FVector p = v * SphereVisual->GetMass();
 
-  SphereVisual->SetPhysicsAngularVelocityInDegrees(w,false);
-  //SphereVisual->SetPhysicsLinearVelocity(v,false);
-  //SphereVisual->AddForce(f);
-  //SphereVisual->AddImpulse(p);
+  // FVector pw = w;
 
-  FVector w_regler = pid(w, DeltaTime);
+  // SphereVisual->SetPhysicsAngularVelocityInDegrees(w,false);
+  // //SphereVisual->SetPhysicsLinearVelocity(v,false);
+  // //SphereVisual->AddForce(f);
+  // //SphereVisual->AddImpulse(p);
 
-  //SphereVisual->AddAngularImpulse(w*1000*Angle);
-  //SphereVisual->AddTorqueInDegrees(w);
-  FTransform t = SphereVisual->GetRelativeTransform();
-  ScreenMsg("Axis", Axis.ToString());
+  // FVector w_regler = pid(w, DeltaTime);
 
-  ScreenMsg("angle", FString::SanitizeFloat(Angle));
-  //ScreenMsg("DeltaQ", DeltaQ.Euler().ToString());
-  //ScreenMsg("w_regler", w_regler.ToString());
+  // //SphereVisual->AddAngularImpulse(w*1000*Angle);
+  // //SphereVisual->AddTorqueInDegrees(w);
+  // FTransform t = SphereVisual->GetRelativeTransform();
+  // ScreenMsg("Axis", Axis.ToString());
+
+  // ScreenMsg("angle", FString::SanitizeFloat(Angle));
+  // //ScreenMsg("DeltaQ", DeltaQ.Euler().ToString());
+  // //ScreenMsg("w_regler", w_regler.ToString());
+
+  FRotator Rotation(00.0f, 0.0f, 10.0f);
+  Rotation = Rotation * DeltaTime;
+
+  FQuat OrientationLocal = BoxVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
+
+
+
+  FQuat OrientationWorld = BoxVisual->GetComponentTransform().GetRotation();
+  OrientationWorld = OrientationWorld* Rotation.Quaternion();
+
+  // FVector Axis;
+  // float Angle;
+  // OrientationWorld.ToAxisAndAngle(Axis, Angle);
+  //FVector w = OrientationWorld.RotateVector((Axis * Angle) / DeltaTime);
+  //OrientationWorld =  OrientationWorld.Euler() + Rotation.Quaternion();
+
+
+
+  BoxVisual->SetWorldRotation(OrientationWorld);
+  //BoxVisual->AddWorldRotation(Rotation);
+  //ScreenMsg("Time", FString::SanitizeFloat(DeltaTime));
+  ScreenMsg("Rotation", BoxVisual->GetComponentTransform().GetRotation().ToString());
+  ScreenMsg("Rotation", Rotation.Quaternion().ToString());
+
+
+  // FQuat OrientationLocal = BoxVisual->GetComponentTransform().GetRelativeTransform(BoxVisual->GetComponentTransform()).GetRotation();
+  // OrientationLocal = OrientationLocal * Rotation.ToOrientationQuat();
+
+  // BoxVisual->SetWorldRotation(OrientationLocal);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

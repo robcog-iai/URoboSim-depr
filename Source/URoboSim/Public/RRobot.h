@@ -50,6 +50,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 		TArray<URStaticMeshComponent*> WheelTurnComponents;
 
+	FQuat TestQuat;
 	UStaticMesh* CylinderMesh;
 	UStaticMesh* CubeMesh;
 	UStaticMesh* SphereMesh;
@@ -167,8 +168,20 @@ public:
 	void MoveForward(float AxisValue);
 	void TurnWheels(float AxisValue);
 
-	FVector WheelTurnSpeed;
+	FRotator WheelTurnSpeed;
 	FVector WheelSpinnSpeed;
+
+
+	FORCEINLINE void ScreenMsg(const FString& Msg)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
+	}
+
+	FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));
+	}
+
 private:
 	// Array of links added with AddLink. Is cleared in the process of creating the Robot
 	TArray<FRLink> Links;
