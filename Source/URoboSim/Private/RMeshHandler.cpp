@@ -136,39 +136,45 @@ void URMeshHandler::ConfigureMeshComponent()
 
 void URMeshHandler::ConfigureLinkPhysics()
 {
+
   if (Link->Inertial.Mass > 0)
     {
       MeshComp->SetMassOverrideInKg(NAME_None, Link->Inertial.Mass, true);
     }
-  MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-  MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-
-  //   MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-//   MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_Visibility);
-//   MeshComp->WeldTo(ParentComp);
-
-   MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
-   MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
-   MeshComp->AddLocalOffset(LocationVisual);
-   MeshComp->AddLocalRotation(Link->Visual.Rotation);
 
 
-  for (auto& Tag : GravityDisabledTags)
+  MeshComp->SetSimulatePhysics(true);
+  MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+  //MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+  MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+  //Disabling collisions for all shape components turned out to be necessary for the pr2.
+  if (!bEnableShapeCollisions)
     {
-      if (Link->Name.Contains(Tag))
-        {
-          //UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
-          MeshComp->SetEnableGravity(true);
-        }
-      else
-        {
-          MeshComp->SetEnableGravity(false);
-        }
+      MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     }
 
+  MeshComp->SetRelativeScale3D(FVector(1, 1, 1));
+  MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
+  MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
+  MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
+  MeshComp->AddLocalOffset(LocationVisual);
+  MeshComp->AddLocalRotation(Link->Visual.Rotation);
 
 
+  // for (auto& Tag : GravityDisabledTags)
+  //   {
+  //     if (Link->Name.Contains(Tag))
+  //       {
+  //         //UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
+  //         MeshComp->SetEnableGravity(true);
+  //       }
+  //     else
+  //       {
+  //         MeshComp->SetEnableGravity(false);
+  //       }
+  //   }
   MeshComp->SetWorldScale3D(Scale);
+  MeshComp->RegisterComponent();
 }
 
 
