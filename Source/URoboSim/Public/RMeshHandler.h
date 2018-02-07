@@ -71,7 +71,7 @@ TArray<FString> GravityDisabledTags = { "base"};
   virtual FRConnectedJoint CreateConnectedJoint(bool IsParent);
   //virtual void CreateConstraint();
   //virtual void ConfigureConstraint();
-  virtual void ConnectPositionLink();
+  virtual void PositionLink();
 
 
  protected:

@@ -195,23 +195,17 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                             Constraint->RegisterComponent();
                             Constraint->ApplyWorldOffset(FVector(0), false);
 
-                            MeshHandler->ConnectPositionLink();
+                            MeshHandler->PositionLink();
 
                             Constraint->SetRelativeRotation(MeshHandler->Joint->Rotation);
 
                             // Connect joint to parent and child
                             Constraint->ConstraintActor1 = this;
                             Constraint->ConstraintActor2 = this;
-                            if (MeshHandler->ShapeComp)
-                                {
-                                    Constraint->SetWorldLocation(MeshHandler->ShapeComp->GetComponentLocation());
-                                    Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->ShapeComp, NAME_None);
-                                }
-                            else
-                                {
-                                    Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
-                                    Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
-                                }
+
+                            Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
+                            Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
+
 
                             FRotator ParentRotation = MeshHandler->ParentComp->GetComponentRotation();
                             FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
