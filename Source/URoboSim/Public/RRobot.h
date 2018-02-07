@@ -45,7 +45,7 @@ public:
 	TMap<FString, FVector> OriginLocations;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-	TArray<URStaticMeshComponent*> WheelComponents;
+		TArray<URStaticMeshComponent*> WheelComponents;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 		TArray<URStaticMeshComponent*> WheelTurnComponents;
@@ -83,6 +83,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drive Parameter")
 		float AngularVelocityOrTorque = 100000000.0f;
 
+	TArray<FString> OuterWheel;
+	TArray<FString> InnerWheel;
 	//	URConstraintFactory ConstraintFactory;
 	
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
@@ -170,6 +172,8 @@ public:
 
 	FRotator WheelTurnSpeed;
 	FVector WheelSpinnSpeed;
+	float DistanceWheelCaster = 5.0f;
+	float WheelRadius = 8.0f;
 
 
 	FORCEINLINE void ScreenMsg(const FString& Msg)

@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/Engine/StaticMeshActor.h"
 #include "UnrealEd.h"
 #include <stdexcept>
+#include "RRobot.h"
 #include "Engine/EngineTypes.h"
 
 URMeshHandler::URMeshHandler()
@@ -52,14 +53,17 @@ FORCEINLINE UStaticMesh* URMeshHandler::LoadMeshFromPath(const FName& Path)
 
 
 
-bool URMeshHandler::CreateLink(FRNode* Node, URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation)
+bool URMeshHandler::CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation, FRNode* Node)
 {
 	Link = &(Node->Link);
 	Joint = &(Node->Joint);
     Root = RootComponent;
 	ParentComp = nullptr;
 	ParentLink = nullptr;
-    OriginLocations = OriginLocation;
+
+    UE_LOG(LogTemp, Warning, TEXT("1"));
+    OriginLocations = OriginLocations;
+
     UE_LOG(LogTemp, Log, TEXT("Create Link %s"), Link->Name.GetCharArray().GetData());
 	//UStaticMeshComponent* MeshComp = nullptr;
 	Scale = Link->Visual.Scale;
@@ -83,24 +87,33 @@ bool URMeshHandler::CreateLink(FRNode* Node, URStaticMeshComponent* RootComponen
 	if (Node->Parent)
 	{
 		// Parent exists and is a UMeshComponent
+      UE_LOG(LogTemp, Warning, TEXT("2a"));
 		ParentComp = (URStaticMeshComponent*)LinkComponents.FindRef(Node->Parent->Link.Name);
 		ParentLink = LinkComponents.FindRef(Node->Parent->Link.Name);
+        UE_LOG(LogTemp, Warning, TEXT("3a"));
 	}
 	else
 	{
 		// This node is the topmost so the parent has to be the RootComponent
-		ParentComp = Root;
+      UE_LOG(LogTemp, Warning, TEXT("2b"));
+		ParentComp = RootComponent;
+        UE_LOG(LogTemp, Warning, TEXT("3b"));
 	}
     if (LinkComponents.Contains(Link->Name))
       {
 		UE_LOG(LogTemp, Error, TEXT("Link already in LinkComponents contained"));
         return false;
       }
+    UE_LOG(LogTemp, Warning, TEXT("4"));
 
     CreateMesh();
+    UE_LOG(LogTemp, Warning, TEXT("5"));
     CreateMeshComponent();
+    UE_LOG(LogTemp, Warning, TEXT("6"));
     ConfigureMeshComponent();
+    UE_LOG(LogTemp, Warning, TEXT("7"));
     ConfigureLinkPhysics();
+    UE_LOG(LogTemp, Warning, TEXT("8"));
     //CreateConstraint();
     return true;
 }
@@ -116,7 +129,7 @@ void URMeshHandler::ConfigureMeshComponent()
   //MeshComp->SetMaterial(0, BasicMaterial);
   MeshComp->SetSimulatePhysics(true);
   MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->PositionSolverIterationCount = 255;
-  MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 1;
+  MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 32;
   MeshComp->RegisterComponent();
 
   FVector minBounds;
@@ -243,46 +256,6 @@ FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
   return TempJoint;
 }
 
-// void URMeshHandler::CreateConstraint()
-// {
-//   URConstraint* Constraint;
-// 	if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URFixedConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else if (Joint->Type.Equals("floating", ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URFloatingConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URPrismaticConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else if (Joint->Type.Equals("revolute", ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URRevoluteConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else if (Joint->Type.Equals("planar",ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URPlanarConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else if (Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
-// 	  {
-// 		Constraint = NewObject<URContinuousConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
-// 	  }
-// 	else
-// 	  {
-// 		UE_LOG(LogTemp, Fatal, TEXT("Not a supported Constraint Type"));
-// 		Constraint = nullptr;
-// 	  }
-// 	if(Constraint)
-// 	  {
-// 		Constraint->Init(ParentComp, Joint, Link);
-// 	  }
-
-// }
-
-
 void URMeshHandlerBox::CreateMesh()
 {
     Mesh = CubeMesh;
@@ -340,10 +313,16 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
     {
       if (Link->Name.Contains(Tag))
         {
-          UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
+          //UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
+          MeshComp->SetEnableGravity(true);
+        }
+      else
+        {
           MeshComp->SetEnableGravity(false);
         }
     }
+  //MeshComp->SetEnableGravity(false);
+
 
   MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
 
@@ -377,7 +356,8 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
 
 
 
- URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node)
+//URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
+URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node)
 {
   URMeshHandler* MeshHandler = nullptr;
 
@@ -409,6 +389,7 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
           MeshHandler = NewObject<URMeshHandlerCustom>(RootComponent);
         }
     }
-
+  //MeshHandler->owner = Owner;
+  //MeshHandler->Node = Node;
   return MeshHandler;
 }

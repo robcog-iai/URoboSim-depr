@@ -20,19 +20,16 @@ ARRobot::ARRobot()
 	StartVelocity = 1000.0f;
 	KSpring = 100.0f;
 	Damping = 0;
-	// //Get values from UROboSimEd
-	// if (IURoboSimEd::IsAvailableEd()) {
-	// 	FURoboSimEdModule& placeHolder = IURoboSimEd::GetEd();
-	// 	bEnableUROSBridge = placeHolder.bEnableUROSBridge;
-	// 	bEnableShapeCollisions = placeHolder.bEnableShapeCollisions;
-	// 	bEnableCollisionTags = placeHolder.bEnableShapeCollisions;
-	// 	bEnableAngularMotors = placeHolder.bEnableAngularMotors;
-	// 	bEnableCollisionTags = placeHolder.bEnableCollisionTags;
-	// 	collisionFilterArr = placeHolder.collisionFilterArr;
-	// }
+
     AutoPossessPlayer = EAutoReceiveInput::Player0;
     PrimaryActorTick.bCanEverTick = true;
 	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link", "caster", "base" };
+
+    OuterWheel = {"fl_caster_l_wheel_link","fr_caster_r_wheel_link", "bl_caster_l_wheel_link", "br_caster_r_wheel_link"};
+
+    InnerWheel = {"fl_caster_r_wheel_link","fr_caster_l_wheel_link","br_caster_l_wheel_link","bl_caster_r_wheel_link"};
+
+
 	bEnableShapeCollisions = false;
 
 	// Create a URStaticMeshComponent to be the RootComponent
@@ -40,7 +37,6 @@ ARRobot::ARRobot()
 	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
 	this->SetRootComponent(Root);
 	Root->bVisualizeComponent = true;
-    UE_LOG(LogTemp, Warning, TEXT("Root - Rotation = [%s]"), *Root->GetComponentRotation().ToString());
 
 
      MeshFactory = NewObject<URMeshFactory>(Root, FName(TEXT("MeshFactory")));
@@ -63,25 +59,25 @@ void ARRobot::Tick(float DeltaTime)
 
 
     //     }
-    FQuat OrientationWheel = WheelTurnComponents[0]->GetComponentTransform().GetRotation();
-    FRotator Speed(WheelTurnSpeed * DeltaTime);
-    ScreenMsg("Speed", Speed.ToString());
-    for(auto& wheel : WheelTurnComponents)
-        {
-            OrientationWheel = OrientationWheel* Speed.Quaternion();
-            wheel->SetWorldRotation(OrientationWheel);
-            wheel->TargetOrientation = OrientationWheel;
-        }
+    // FQuat OrientationWheel = WheelTurnComponents[0]->GetComponentTransform().GetRotation();
+    // FRotator Speed(WheelTurnSpeed * DeltaTime);
+    // ScreenMsg("Speed", Speed.ToString());
+    // for(auto& wheel : WheelTurnComponents)
+    //     {
+    //         OrientationWheel = OrientationWheel* Speed.Quaternion();
+    //         wheel->SetWorldRotation(OrientationWheel);
+    //         wheel->TargetOrientation = OrientationWheel;
+    //     }
 }
 
 void ARRobot::MoveForward(float AxisValue)
 {
-    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 2000;
+    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
 }
 
 void ARRobot::TurnWheels(float AxisValue)
 {
-    WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 200;
+    WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
 }
 
 
@@ -185,7 +181,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
     URMeshHandler* MeshHandler = MeshFactory->CreateMeshHandler(Root, Node);
     if(MeshHandler)
         {
-            if (MeshHandler->CreateLink(Node, Root, LinkComponents, OriginLocations))
+            if (MeshHandler->CreateLink(Root, LinkComponents, OriginLocations,Node))
                 {
                     if (MeshHandler->ParentLink)
                         {

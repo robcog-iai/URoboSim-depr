@@ -86,6 +86,11 @@ private:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
 	}
 
+	FORCEINLINE void ScreenMsg(const FString& Msg, const float Msg2)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %f"), *Msg, Msg2));
+	}
+
 	FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));

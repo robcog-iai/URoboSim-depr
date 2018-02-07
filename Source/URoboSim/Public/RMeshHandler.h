@@ -43,7 +43,8 @@ class UROBOSIM_API URMeshHandler : public UObject
   bool bUseCollision;
   bool bEnableShapeCollisions = false;
   TArray<FString> collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
-  TArray<FString> GravityDisabledTags = { "gripper","wrist", "arm", "elbow" };
+  //TArray<FString> GravityDisabledTags = { "gripper","wrist", "arm", "elbow" };
+TArray<FString> GravityDisabledTags = { "base"};
   URMeshHandler();
 
 
@@ -58,7 +59,7 @@ class UROBOSIM_API URMeshHandler : public UObject
 
   //Create the Link (MeshComponent) of the Robot
 
-  virtual bool CreateLink(FRNode* Node , URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
+  virtual bool CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation, FRNode* Node);
   virtual void CreateMesh(){};
   virtual void CreateMeshComponent();
   virtual void ConfigureMeshComponent();
@@ -68,6 +69,13 @@ class UROBOSIM_API URMeshHandler : public UObject
   //virtual void CreateConstraint();
   //virtual void ConfigureConstraint();
   virtual void ConnectPositionLink();
+
+ private:
+  class ARRobot *owner;
+  friend class URMeshFactory;
+
+  //FRNode* Node;
+
 };
 
 
@@ -119,6 +127,6 @@ class UROBOSIM_API URMeshFactory : public UObject
   GENERATED_BODY()
 	public:
 	URMeshFactory(){};
+  //URMeshHandler* CreateMeshHandler(ARRobot* Owner, FRNode* Node);
   URMeshHandler* CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node);
-
 };
