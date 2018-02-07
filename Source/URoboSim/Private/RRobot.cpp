@@ -178,15 +178,15 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
             return false;
         }
 
-    URMeshHandler* MeshHandler = MeshFactory->CreateMeshHandler(Root, Node);
+    URMeshHandler* MeshHandler = MeshFactory->CreateMeshHandler(this, Node);
     if(MeshHandler)
         {
-            if (MeshHandler->CreateLink(Root, LinkComponents, OriginLocations,Node))
+            if (MeshHandler->CreateLink())
                 {
-                    if (MeshHandler->ParentLink)
+                    if (MeshHandler->IsNotRoot)
                         {
 
-                            URConstraint* Constraint = CreateConstraint(MeshHandler->ParentComp, MeshHandler->Joint, MeshHandler->Link);
+                            URConstraint* Constraint = CreateConstraint(MeshHandler);
                             //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
                             Constraint->InitDrive();
                             Constraint->SetDisableCollision(true);
@@ -205,15 +205,15 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                             if (MeshHandler->ShapeComp)
                                 {
                                     Constraint->SetWorldLocation(MeshHandler->ShapeComp->GetComponentLocation());
-                                    Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->ShapeComp, NAME_None);
+                                    Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->ShapeComp, NAME_None);
                                 }
                             else
                                 {
                                     Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
-                                    Constraint->SetConstrainedComponents(MeshHandler->ParentLink, NAME_None, MeshHandler->MeshComp, NAME_None);
+                                    Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
                                 }
 
-                            FRotator ParentRotation = MeshHandler->ParentLink->GetComponentRotation();
+                            FRotator ParentRotation = MeshHandler->ParentComp->GetComponentRotation();
                             FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
                             FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
 
@@ -230,13 +230,9 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                                 {
                                     WheelTurnComponents.Add(MeshHandler->MeshComp);
                                 }
-
                         }
 
                     LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
-
-
-
                 }
 
 
@@ -570,32 +566,32 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
 
 
 
-URConstraint* ARRobot::CreateConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link)
+URConstraint* ARRobot::CreateConstraint(URMeshHandler* MeshHandler)
 {
   URConstraint* Constraint; 
-	if (Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
+	if (MeshHandler->Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URFixedConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URFixedConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("floating", ESearchCase::IgnoreCase))
+	else if (MeshHandler->Joint->Type.Equals("floating", ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URFloatingConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URFloatingConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
+	else if (MeshHandler->Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URPrismaticConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URPrismaticConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("revolute", ESearchCase::IgnoreCase))
+	else if (MeshHandler->Joint->Type.Equals("revolute", ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URRevoluteConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URRevoluteConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("planar",ESearchCase::IgnoreCase))
+	else if (MeshHandler->Joint->Type.Equals("planar",ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URPlanarConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URPlanarConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
-	else if (Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
+	else if (MeshHandler->Joint->Type.Equals("continuous",ESearchCase::IgnoreCase))
 	  {
-		Constraint = NewObject<URContinuousConstraint>(ParentComp, FName(Joint->Name.GetCharArray().GetData()));
+		Constraint = NewObject<URContinuousConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));
 	  }
 	else
 	  {
@@ -604,7 +600,7 @@ URConstraint* ARRobot::CreateConstraint(URStaticMeshComponent* ParentComp, FRJoi
 	  }
 	if(Constraint)
 	  {
-		Constraint->Init(ParentComp, Joint, Link);
+          Constraint->Init(MeshHandler);
 	  }
 	return Constraint;
 }

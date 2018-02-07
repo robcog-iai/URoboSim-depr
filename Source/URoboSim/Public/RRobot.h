@@ -131,7 +131,7 @@ public:
 	void ParseURDF();
 
 	// Create the Constraint
-	URConstraint* CreateConstraint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+	URConstraint* CreateConstraint(URMeshHandler* MeshHandler);
 
 
 	//	UPhysicsConstraintComponent* CreateJoint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);

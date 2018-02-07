@@ -17,9 +17,13 @@ class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
   GENERATED_BODY()
 	public:
 	URConstraint(){};
+  class URMeshHandler* MeshHandler;
+
   virtual void InitDrive(){};
-  virtual void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link){};
+  virtual void Init(URMeshHandler* MeshH){};
   bool bEnableMotor = false;
+
+
   // UPhysicsConstraintComponent* Constraint;
   // FConstraintInstance ConstraintInstance;
 
@@ -31,7 +35,7 @@ class UROBOSIM_API URFixedConstraint : public URConstraint
   GENERATED_BODY()
 	public:
 	URFixedConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive(){};
 };
 
@@ -41,7 +45,7 @@ class UROBOSIM_API URFloatingConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URFloatingConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive(){};
 };
 
@@ -51,7 +55,7 @@ class UROBOSIM_API URPrismaticConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URPrismaticConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive();
 };
 
@@ -61,7 +65,7 @@ class UROBOSIM_API URRevoluteConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URRevoluteConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive();
 };
 
@@ -71,7 +75,7 @@ class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URPlanarConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive(){};
 };
 
@@ -81,7 +85,7 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
   GENERATED_BODY()
 	public:
 	URContinuousConstraint(){};
-  void Init(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
+  void Init(URMeshHandler* MeshH);
   void InitDrive();
 };
 

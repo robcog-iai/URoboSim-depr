@@ -53,26 +53,17 @@ FORCEINLINE UStaticMesh* URMeshHandler::LoadMeshFromPath(const FName& Path)
 
 
 
-bool URMeshHandler::CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation, FRNode* Node)
+bool URMeshHandler::CreateLink()
 {
 	Link = &(Node->Link);
 	Joint = &(Node->Joint);
-    Root = RootComponent;
+
 	ParentComp = nullptr;
-	ParentLink = nullptr;
 
-    UE_LOG(LogTemp, Warning, TEXT("1"));
-    OriginLocations = OriginLocations;
-
-    UE_LOG(LogTemp, Log, TEXT("Create Link %s"), Link->Name.GetCharArray().GetData());
-	//UStaticMeshComponent* MeshComp = nullptr;
+    //OriginLocations = owner->OriginLocations;
 	Scale = Link->Visual.Scale;
-
-
 	Joint->LowerLimit = FMath::RadiansToDegrees(Joint->LowerLimit);
 	Joint->UpperLimit = FMath::RadiansToDegrees(Joint->UpperLimit);
-
-
 	bUseVisual = !(Link->Visual.Mesh.IsEmpty());
 	bUseCollision = !(Link->Collision.Mesh.IsEmpty());
 
@@ -83,37 +74,32 @@ bool URMeshHandler::CreateLink(URStaticMeshComponent* RootComponent, TMap<FStrin
 
 
 	bUseCollision = bEnableCollisionTags;
-	//UE_LOG(LogTemp, Warning, TEXT("enable Collision tags = [%s]"), (bEnableCollisionTags ? TEXT("True") : TEXT("False")));
+
 	if (Node->Parent)
-	{
+      {
 		// Parent exists and is a UMeshComponent
-      UE_LOG(LogTemp, Warning, TEXT("2a"));
-		ParentComp = (URStaticMeshComponent*)LinkComponents.FindRef(Node->Parent->Link.Name);
-		ParentLink = LinkComponents.FindRef(Node->Parent->Link.Name);
-        UE_LOG(LogTemp, Warning, TEXT("3a"));
-	}
+		ParentComp = owner->LinkComponents.FindRef(Node->Parent->Link.Name);
+        IsNotRoot = true;
+      }
 	else
-	{
+      {
 		// This node is the topmost so the parent has to be the RootComponent
-      UE_LOG(LogTemp, Warning, TEXT("2b"));
-		ParentComp = RootComponent;
-        UE_LOG(LogTemp, Warning, TEXT("3b"));
-	}
-    if (LinkComponents.Contains(Link->Name))
+		ParentComp = owner->Root;
+        IsNotRoot = false;
+      }
+
+    if (owner->LinkComponents.Contains(Link->Name))
       {
 		UE_LOG(LogTemp, Error, TEXT("Link already in LinkComponents contained"));
         return false;
       }
-    UE_LOG(LogTemp, Warning, TEXT("4"));
+
 
     CreateMesh();
-    UE_LOG(LogTemp, Warning, TEXT("5"));
     CreateMeshComponent();
-    UE_LOG(LogTemp, Warning, TEXT("6"));
     ConfigureMeshComponent();
-    UE_LOG(LogTemp, Warning, TEXT("7"));
     ConfigureLinkPhysics();
-    UE_LOG(LogTemp, Warning, TEXT("8"));
+
     //CreateConstraint();
     return true;
 }
@@ -147,6 +133,9 @@ void URMeshHandler::ConfigureMeshComponent()
   LocationVisual.X *= maxBounds.X * 2;
   LocationVisual.Y *= maxBounds.Y * 2;
 }
+
+
+
 
 void URMeshHandler::ConfigureLinkPhysics()
 {
@@ -224,7 +213,7 @@ void URMeshHandler::ConnectPositionLink()
   if (Joint->Type.Equals("prismatic", ESearchCase::IgnoreCase))
     {
       FVector MovementVector(Joint->Axis * (Joint->LowerLimit + Joint->UpperLimit));
-      OriginLocations.Add(Joint->Child, MovementVector);
+      owner->OriginLocations.Add(Joint->Child, MovementVector);
       if (ShapeComp)
         {
           ShapeComp->AddRelativeLocation(MovementVector);
@@ -259,7 +248,7 @@ FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
 void URMeshHandlerBox::CreateMesh()
 {
     Mesh = CubeMesh;
-    ShapeComp = NewObject<UBoxComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+    ShapeComp = NewObject<UBoxComponent>(owner->Root, FName(Link->Name.GetCharArray().GetData()));
     FVector BoxSize(Scale);
     BoxSize *= 50.f;
     ((UBoxComponent*)ShapeComp)->InitBoxExtent(BoxSize);
@@ -270,7 +259,7 @@ void URMeshHandlerBox::CreateMesh()
 void URMeshHandlerSphere::CreateMesh()
 {
     Mesh = SphereMesh;
-    ShapeComp = NewObject<USphereComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+    ShapeComp = NewObject<USphereComponent>(owner->Root, FName(Link->Name.GetCharArray().GetData()));
     float Radius = Scale.X * 50.f;
     ((USphereComponent*)ShapeComp)->InitSphereRadius(Radius);
     ((USphereComponent*)ShapeComp)->SetSphereRadius(Radius);
@@ -279,7 +268,7 @@ void URMeshHandlerSphere::CreateMesh()
 void URMeshHandlerCylinder::CreateMesh()
 {
     Mesh = CylinderMesh;
-    ShapeComp = NewObject<UCapsuleComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+    ShapeComp = NewObject<UCapsuleComponent>(owner->Root, FName(Link->Name.GetCharArray().GetData()));
     float Radius = Scale.X * 50.f;
     float Height = Scale.Z * 50.f;
     ((UCapsuleComponent*)ShapeComp)->InitCapsuleSize(Radius, Height);
@@ -292,12 +281,13 @@ void URMeshHandlerCustom::CreateMesh()
         Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
     else
         Mesh = LoadMeshFromPath(FName(*Link->Collision.Mesh));
-
-
 }
+
+
+
 void URMeshHandlerCustom::CreateMeshComponent()
 {
-  MeshComp = NewObject<URStaticMeshComponent>(Root, FName(Link->Name.GetCharArray().GetData()));
+  MeshComp = NewObject<URStaticMeshComponent>(owner->Root, FName(Link->Name.GetCharArray().GetData()));
 }
 
 void URMeshHandlerCustom::ConfigureLinkPhysics()
@@ -356,8 +346,8 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
 
 
 
-//URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
-URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node)
+URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
+//URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node)
 {
   URMeshHandler* MeshHandler = nullptr;
 
@@ -374,22 +364,26 @@ URMeshHandler* URMeshFactory::CreateMeshHandler(URStaticMeshComponent* RootCompo
     {
       if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("box", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerBox>(RootComponent);
+          MeshHandler = NewObject<URMeshHandlerBox>(Owner->Root);
         }
       else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))// || Link->Collision.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerCylinder>(RootComponent);
+          MeshHandler = NewObject<URMeshHandlerCylinder>(Owner->Root);
         }
       else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase) || Link->Collision.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerSphere>(RootComponent);
+          MeshHandler = NewObject<URMeshHandlerSphere>(Owner->Root);
         }
       else
         {
-          MeshHandler = NewObject<URMeshHandlerCustom>(RootComponent);
+          MeshHandler = NewObject<URMeshHandlerCustom>(Owner->Root);
         }
+
+      MeshHandler->Node = Node;
+
+      MeshHandler->owner = Owner;
     }
-  //MeshHandler->owner = Owner;
-  //MeshHandler->Node = Node;
+
+
   return MeshHandler;
 }

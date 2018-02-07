@@ -16,12 +16,14 @@ class UROBOSIM_API URMeshHandler : public UObject
   GENERATED_BODY()
 	public:
 
+  bool IsNotRoot;
+
   FRLink* Link;
   FRJoint* Joint;
   UStaticMesh* Mesh;
   URStaticMeshComponent* MeshComp;
   UShapeComponent* ShapeComp;
-  URStaticMeshComponent* Root;
+  //URStaticMeshComponent* Root;
   URStaticMeshComponent* ParentComp;
   URStaticMeshComponent* ParentLink;
   FVector Scale;
@@ -29,7 +31,7 @@ class UROBOSIM_API URMeshHandler : public UObject
   FVector LocationVisual;
   FVector LinkOriginLocation;
 
-  TMap<FString, FVector> OriginLocations;
+  //TMap<FString, FVector> OriginLocations;
 
 
   UStaticMesh* CylinderMesh;
@@ -59,7 +61,8 @@ TArray<FString> GravityDisabledTags = { "base"};
 
   //Create the Link (MeshComponent) of the Robot
 
-  virtual bool CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation, FRNode* Node);
+  virtual bool CreateLink();
+  //virtual bool CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
   virtual void CreateMesh(){};
   virtual void CreateMeshComponent();
   virtual void ConfigureMeshComponent();
@@ -70,11 +73,12 @@ TArray<FString> GravityDisabledTags = { "base"};
   //virtual void ConfigureConstraint();
   virtual void ConnectPositionLink();
 
- private:
+
+ protected:
   class ARRobot *owner;
   friend class URMeshFactory;
 
-  //FRNode* Node;
+  FRNode* Node;
 
 };
 
@@ -127,6 +131,6 @@ class UROBOSIM_API URMeshFactory : public UObject
   GENERATED_BODY()
 	public:
 	URMeshFactory(){};
-  //URMeshHandler* CreateMeshHandler(ARRobot* Owner, FRNode* Node);
-  URMeshHandler* CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node);
+  URMeshHandler* CreateMeshHandler(ARRobot* Owner, FRNode* Node);
+  //URMeshHandler* CreateMeshHandler(URStaticMeshComponent* RootComponent, FRNode* Node);
 };
