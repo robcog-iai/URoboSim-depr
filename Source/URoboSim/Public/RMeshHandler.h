@@ -73,9 +73,12 @@ TArray<FString> GravityDisabledTags = { "base"};
   //virtual void ConfigureConstraint();
   virtual void PositionLink();
 
+  //class
+    ARRobot *owner;
 
  protected:
-  class ARRobot *owner;
+
+  friend class URConstraint;
   friend class URMeshFactory;
 
   FRNode* Node;

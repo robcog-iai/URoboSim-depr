@@ -21,6 +21,27 @@ void URFixedConstraint::Init(URMeshHandler* MeshH)
 
 }
 
+void URFixedConstraint::SetupConstraint()
+{
+  SetDisableCollision(true);
+  AttachToComponent(MeshHandler->ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+  RegisterComponent();
+  ApplyWorldOffset(FVector(0), false);
+  MeshHandler->PositionLink();
+
+  SetRelativeRotation(MeshHandler->Joint->Rotation);
+
+  // Connect joint to parent and child
+  ConstraintActor1 = (AActor*)MeshHandler->owner;
+  ConstraintActor2 = (AActor*)MeshHandler->owner;
+
+  SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
+  SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
+
+
+
+}
+
 void URFloatingConstraint::Init(URMeshHandler* MeshH)
 {
   URFixedConstraint::Init(MeshH);

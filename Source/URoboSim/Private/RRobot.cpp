@@ -58,6 +58,7 @@ void ARRobot::Tick(float DeltaTime)
     //     {
 
 
+
     //     }
     // FQuat OrientationWheel = WheelTurnComponents[0]->GetComponentTransform().GetRotation();
     // FRotator Speed(WheelTurnSpeed * DeltaTime);
@@ -92,7 +93,10 @@ void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
-	ParseURDF();
+    if(!AlreadyCreated)
+        {
+            ParseURDF();
+        }
 }
 
 bool ARRobot::AddLink(FRLink Link)
@@ -165,7 +169,7 @@ bool ARRobot::CreateRobot()
 
 	bool bSuccess = CreateActorsFromNode(BaseNode);
 
-
+    AlreadyCreated = true;
 
 	return bSuccess;
 }
@@ -189,23 +193,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                             URConstraint* Constraint = CreateConstraint(MeshHandler);
                             //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
                             Constraint->InitDrive();
-                            Constraint->SetDisableCollision(true);
-                            Constraint->AttachToComponent(MeshHandler->ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-
-                            Constraint->RegisterComponent();
-                            Constraint->ApplyWorldOffset(FVector(0), false);
-
-                            MeshHandler->PositionLink();
-
-                            Constraint->SetRelativeRotation(MeshHandler->Joint->Rotation);
-
-                            // Connect joint to parent and child
-                            Constraint->ConstraintActor1 = this;
-                            Constraint->ConstraintActor2 = this;
-
-                            Constraint->SetWorldLocation(MeshHandler->MeshComp->GetComponentLocation());
-                            Constraint->SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
-
+                            Constraint->SetupConstraint();
 
                             FRotator ParentRotation = MeshHandler->ParentComp->GetComponentRotation();
                             FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
@@ -228,8 +216,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
                     LinkComponents.Add(MeshHandler->Link->Name, MeshHandler->MeshComp);
                 }
-
-
         }
 	// Create children
 	for (int c = 0; c < Node->Children.Num(); c++)

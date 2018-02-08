@@ -21,6 +21,7 @@ class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
 
   virtual void InitDrive(){};
   virtual void Init(URMeshHandler* MeshH){};
+  virtual void SetupConstraint(){};
   bool bEnableMotor = false;
 
 
@@ -37,6 +38,7 @@ class UROBOSIM_API URFixedConstraint : public URConstraint
 	URFixedConstraint(){};
   void Init(URMeshHandler* MeshH);
   void InitDrive(){};
+  void SetupConstraint();
 };
 
 UCLASS()

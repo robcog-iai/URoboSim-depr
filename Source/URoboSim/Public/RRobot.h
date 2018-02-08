@@ -11,6 +11,7 @@
 #include "RConstraint.h"
 #include "RMeshHandler.h"
 #include "Structs.h"
+#include "RController.h"
 #include "RRobot.generated.h"
 
 
@@ -57,6 +58,9 @@ public:
 	float Time = 0.f;
 	bool bMotorSet = false;
 	FConstraintInstance NewConstraintInstanceFixed();
+
+	bool AlreadyCreated = false;
+
 
 	// //TEMPLATE Load Obj From Path
 	// template <typename ObjClass>
