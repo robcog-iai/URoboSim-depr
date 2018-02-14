@@ -8,7 +8,11 @@
 #include "Structs.h"
 #include "RConstraint.h"
 #include "RStaticMeshComponent.h"
+//#include "RController.h"
 #include "RMeshHandler.generated.h"
+
+class URMeshFactory;
+//class URControllerFactory;
 
 UCLASS()
 class UROBOSIM_API URMeshHandler : public UObject
@@ -46,9 +50,11 @@ class UROBOSIM_API URMeshHandler : public UObject
   bool bEnableShapeCollisions = false;
   TArray<FString> collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link" };
   //TArray<FString> GravityDisabledTags = { "gripper","wrist", "arm", "elbow" };
-TArray<FString> GravityDisabledTags = { "base"};
+  TArray<FString> GravityDisabledTags = { "base"};
   URMeshHandler();
-
+  ~URMeshHandler()
+    {
+    };
 
 
 
@@ -62,20 +68,18 @@ TArray<FString> GravityDisabledTags = { "base"};
   //Create the Link (MeshComponent) of the Robot
 
   virtual bool CreateLink();
-  //virtual bool CreateLink(URStaticMeshComponent* RootComponent, TMap<FString, URStaticMeshComponent*> LinkComponents, TMap<FString, FVector> OriginLocation);
   virtual void CreateMesh(){};
   virtual void CreateMeshComponent();
   virtual void ConfigureMeshComponent();
   virtual void ConfigureLinkPhysics();
   virtual void AddConnectedJoint();
   virtual FRConnectedJoint CreateConnectedJoint(bool IsParent);
-  //virtual void CreateConstraint();
-  //virtual void ConfigureConstraint();
+
   virtual void PositionLink();
 
   //class
     ARRobot *owner;
-
+    //URControllerFactory* ControllerFactory;
  protected:
 
   friend class URConstraint;

@@ -34,12 +34,19 @@ AActor* URFactoryRRobot::SpawnActor(UObject* Asset, ULevel* InLevel, const FTran
 		SpawnInfo.ObjectFlags = InObjectFlags;
 		SpawnInfo.Name = Name;
 
-		// Creates RRobot Actor. 
+		// Creates RRobot Actor.
+		UE_LOG(LogTemp, Warning, TEXT("Before Spawn"));
 		ARRobot* NewRobot = (ARRobot*)InLevel->OwningWorld->SpawnActor(DefaultActor->GetClass(), &Transform, SpawnInfo);
 
 		// Searches for the XML from the asset and delivers it to the robot.
 		NewRobot->XmlUrdf = FAssetData(Asset).GetTagValueRef<FString>(FName("Xml"));
+		UE_LOG(LogTemp, Warning, TEXT("Before Parse"));
 		NewRobot->ParseURDF();
+		// if(NewRobot->WheelTurnComponents[0]->Controller)
+		// 	{
+
+		// 		NewRobot->WheelTurnComponents[0]->Controller->ShowThatCreated();
+		// 	}
 
 		return NewRobot;
 	}

@@ -6,6 +6,8 @@
 #include "Structs.h"
 #include "RStaticMeshComponent.generated.h"
 
+class URController;
+
 USTRUCT()
 struct FMySecondaryTickFunction : public FTickFunction
 {
@@ -38,7 +40,11 @@ class UROBOSIM_API URStaticMeshComponent : public UStaticMeshComponent
 
 public:
 	URStaticMeshComponent();
+	~URStaticMeshComponent()
+		{
+		};
 
+	virtual void CreateController();
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -63,13 +69,23 @@ public:
 	bool CheckJointType(FString Type);
 	FQuat GetLocalTransform();
 
+	UPROPERTY(EditAnywhere)
+	URController* Controller;
+	UPROPERTY(EditAnywhere)
+	FString ControllerName;
+	UPROPERTY(EditAnywhere)
+	FString ControllerType;
+	class ARRobot *owner;
+
+
+
 private:
 	FCalculateCustomPhysics OnCalculateCustomPhysics;
 
 	void SubstepTick(float DeltaTime, FBodyInstance* BodyInstance);
 	void DoPhysics(float DeltaTime, bool InSubstep);
 
-	class ARRobot *owner;
+
 	int32 FrameCount;
 
 	physx::PxRigidBody* PRigidBody;

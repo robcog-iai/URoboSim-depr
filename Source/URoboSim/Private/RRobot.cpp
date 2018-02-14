@@ -33,25 +33,56 @@ ARRobot::ARRobot()
 	bEnableShapeCollisions = false;
 
 	// Create a URStaticMeshComponent to be the RootComponent
-	Root = CreateDefaultSubobject<URStaticMeshComponent>(TEXT("DefaultSceneComponent"));
-	Root->SetupAttachment(this->RootComponent, TEXT("DefaultSceneComponent"));
+	Root = CreateDefaultSubobject<URStaticMeshComponent>(TEXT("Root"));
+	Root->SetupAttachment(this->RootComponent, TEXT("Root"));
 	this->SetRootComponent(Root);
 	Root->bVisualizeComponent = true;
 
 
-     MeshFactory = NewObject<URMeshFactory>(Root, FName(TEXT("MeshFactory")));
+    MeshFactory = CreateDefaultSubobject<URMeshFactory>(FName(TEXT("MeshFactory")));
+    ControllerFactory = CreateDefaultSubobject<URControllerFactory>(FName(TEXT("ControllerFactory")));
+
+    //ParseURDF();
 }
 
 // Called when the game starts or when spawned
 void ARRobot::BeginPlay()
 {
+    UE_LOG(LogTemp, Log, TEXT("first?"));
+
+
+
 	Super::BeginPlay();
+    URStaticMeshComponent* Link;
+    for(auto& CD : ControllerDescriptionList)
+        {
+            Link = LinkComponents.FindRef(CD.TargetName);
+            Link->Controller = ControllerFactory->CreateController(CD.ControllerType, Link);
+            Link->Controller->InitController();
+            Link->Controller->ShowThatCreated();
+            Link->Controller->TargetOrientation = Link->GetLocalTransform();
+            //UE_LOG(LogTemp, Log, TEXT("Target Orientation %s"), *Link->Controller->TargetOrientation.ToString());
+        }
+
+
+
+    // for(auto& link : LinkComponents)
+    //     {
+    //         UE_LOG(LogTemp, Log, TEXT("Link Controller Type %s"), *link.Value->ControllerType);
+    //         link.Value->Controller = ControllerFactory->CreateController(link.Value->ControllerType, link.Value);
+    //     }
+
+
 }
 
 // Called every frame (currently not active)
 void ARRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+
+
     // TArray<URStaticMeshComponent*>& Wheels = owner->WheelTurnComponents;
 
     // for(int i = 1; i < Wheels.Num(); i++)
@@ -96,6 +127,8 @@ void ARRobot::OnConstruction(const FTransform &Transform)
     if(!AlreadyCreated)
         {
             ParseURDF();
+            UE_LOG(LogTemp, Error, TEXT("test %d"), WheelTurnComponents.Num());
+
         }
 }
 
@@ -169,7 +202,7 @@ bool ARRobot::CreateRobot()
 
 	bool bSuccess = CreateActorsFromNode(BaseNode);
 
-    AlreadyCreated = true;
+
 
 	return bSuccess;
 }
@@ -187,9 +220,13 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
         {
             if (MeshHandler->CreateLink())
                 {
+
+                    //MeshHandler->MeshComp->Controller = ControllerFactory->CreateController(MeshHandler->MeshComp->ControllerType, MeshHandler->MeshComp);
+
+
+
                     if (MeshHandler->IsNotRoot)
                         {
-
                             URConstraint* Constraint = CreateConstraint(MeshHandler);
                             //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);
                             Constraint->InitDrive();
@@ -245,6 +282,7 @@ FConstraintInstance ARRobot::NewConstraintInstanceFixed()
 
 void ARRobot::ParseURDF()
 {
+    UE_LOG(LogTemp, Log, TEXT("Start Parse URDF"));
 	// Callback Object for parser
 	FRURDFParser Call(this);
 
@@ -273,6 +311,7 @@ void ARRobot::ParseURDF()
 
 	CreateRobot();
 
+    AlreadyCreated = true;
 	if (!Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to create Robot\n"));

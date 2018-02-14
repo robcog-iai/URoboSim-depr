@@ -30,6 +30,8 @@ public:
 
 		ARArticulation* Articulation;
 	URMeshFactory* MeshFactory;
+	URControllerFactory* ControllerFactory;
+
 	  
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 	TMap<FString, URStaticMeshComponent*> LinkComponents;
@@ -50,6 +52,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
 		TArray<URStaticMeshComponent*> WheelTurnComponents;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+		TMap<FString,URController*> ControllerList;
+
+	UPROPERTY(VisibleAnywhere, Category = "Map")
+		TArray<FRControllerDesciption> ControllerDescriptionList;
+
+	//TODO  create a factory list !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	FQuat TestQuat;
 	UStaticMesh* CylinderMesh;

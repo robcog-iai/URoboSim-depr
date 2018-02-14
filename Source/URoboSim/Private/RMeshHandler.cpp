@@ -11,8 +11,8 @@
 
 URMeshHandler::URMeshHandler()
 {
-  MeshComp = nullptr;
-  Mesh = nullptr;
+  // MeshComp = nullptr;
+  // Mesh = nullptr;
   static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCy(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
   static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCu(TEXT("/Engine/BasicShapes/Cube.Cube"));
   static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshSp(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
@@ -29,7 +29,17 @@ URMeshHandler::URMeshHandler()
 	{
       SphereMesh = MeshSp.Object;
 	}
+
+
+  //ControllerFactory = NewObject<URControllerFactory>(owner->Root, FName(TEXT("ControllerFactory")));
 }
+
+// URMeshHandler::URMeshHandler(const FObjectInitializer& ObjectInitializer)
+// {
+//   //Make our mesh component (named 'MyMesh') and set it up to be our root component
+//   MyMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this,TEXT("MyMesh"));
+//   RootComponent = MyMesh;
+// }
 
 //TEMPLATE Load Obj From Path
 template <typename ObjClass>
@@ -63,7 +73,6 @@ bool URMeshHandler::CreateLink()
   Joint->UpperLimit = FMath::RadiansToDegrees(Joint->UpperLimit);
   bUseVisual = !(Link->Visual.Mesh.IsEmpty());
   bUseCollision = !(Link->Collision.Mesh.IsEmpty());
-
   //
   //
   // why bUseCollision hard coded????   Maybe because collision in pr2
@@ -94,16 +103,51 @@ bool URMeshHandler::CreateLink()
 
   CreateMesh();
   CreateMeshComponent();
+
+
+  FString ControllerType ="";
+  if(Link->Name.Contains("caster_rotation_link"))
+    {
+      //MeshComp->ControllerType = TEXT("caster");
+      ControllerType = TEXT("caster");
+      }
+  else if(Link->Name.Contains("wheel_link"))
+    {
+      //MeshComp->ControllerType = TEXT("wheel");
+      ControllerType = TEXT("wheel");
+    }
+  else if(Link->Name.Contains("base_link"))
+    {
+      //MeshComp->ControllerType = TEXT("orientation");
+      ControllerType = TEXT("orientation");
+    }
+  else if (Joint->Type.Equals("revolute", ESearchCase::IgnoreCase) ||
+           Joint->Type.Equals("continuous", ESearchCase::IgnoreCase))
+    {
+      //MeshComp->ControllerType = Joint->Type;
+      ControllerType = Joint->Type;
+    }
+
+
+  if(!ControllerType.Equals(""))
+    {
+      FRControllerDesciption ControllerDescription;
+      ControllerDescription.Set(MeshComp->GetName(), ControllerType);
+      owner->ControllerDescriptionList.Add(ControllerDescription);
+    }
+
+
   ConfigureMeshComponent();
   ConfigureLinkPhysics();
 
-  //CreateConstraint();
+  //MeshComp->Controller = nullptr;
   return true;
 }
 
 void URMeshHandler::CreateMeshComponent()
 {
   MeshComp = NewObject<URStaticMeshComponent>(owner->Root, FName((Link->Name).GetCharArray().GetData()));
+  MeshComp->owner = owner;
 }
 
 void URMeshHandler::ConfigureMeshComponent()
@@ -256,6 +300,8 @@ void URMeshHandlerCustom::CreateMesh()
 void URMeshHandlerCustom::CreateMeshComponent()
 {
   MeshComp = NewObject<URStaticMeshComponent>(owner->Root, FName(Link->Name.GetCharArray().GetData()));
+  MeshComp->owner = owner;
+
 }
 
 void URMeshHandlerCustom::ConfigureLinkPhysics()
@@ -313,19 +359,19 @@ URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
     {
       if (Link->Visual.Mesh.Equals("box", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerBox>(Owner->Root);
+          MeshHandler = NewObject<URMeshHandlerBox>(Owner);
         }
       else if (Link->Visual.Mesh.Equals("cylinder", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerCylinder>(Owner->Root);
+          MeshHandler = NewObject<URMeshHandlerCylinder>(Owner);
         }
       else if (Link->Visual.Mesh.Equals("sphere", ESearchCase::IgnoreCase))
         {
-          MeshHandler = NewObject<URMeshHandlerSphere>(Owner->Root);
+          MeshHandler = NewObject<URMeshHandlerSphere>(Owner);
         }
       else
         {
-          MeshHandler = NewObject<URMeshHandlerCustom>(Owner->Root);
+          MeshHandler = NewObject<URMeshHandlerCustom>(Owner);
         }
 
       MeshHandler->Node = Node;

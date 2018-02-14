@@ -32,6 +32,23 @@ struct UROBOSIM_API FRConnectedJoint
   }
 };
 
+USTRUCT()
+struct UROBOSIM_API FRControllerDesciption
+{
+  GENERATED_USTRUCT_BODY()
+    UPROPERTY(EditAnywhere)
+    FString TargetName;
+  UPROPERTY(EditAnywhere)
+    FString ControllerType;
+
+  void Set(FString Name, FString Type)
+  {
+    TargetName = Name;
+    ControllerType = Type;
+  }
+
+};
+
 struct UROBOSIM_API FRJoint
 {
 
