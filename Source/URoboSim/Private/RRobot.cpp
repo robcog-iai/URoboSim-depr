@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "Runtime/Engine/Classes/Engine/StaticMesh.h"
 #include "Runtime/Engine/Classes/Engine/StaticMeshActor.h"
+#include "RControllerComponent.h"
 #include "UnrealEd.h"
 #include <stdexcept>
 #include "Engine/EngineTypes.h"
@@ -21,14 +22,14 @@ ARRobot::ARRobot()
 	KSpring = 100.0f;
 	Damping = 0;
 
-    AutoPossessPlayer = EAutoReceiveInput::Player0;
     PrimaryActorTick.bCanEverTick = true;
-	collisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link", "caster", "base" };
+	CollisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link", "caster", "base" };
 
     OuterWheel = {"fl_caster_l_wheel_link","fr_caster_r_wheel_link", "bl_caster_l_wheel_link", "br_caster_r_wheel_link"};
 
     InnerWheel = {"fl_caster_r_wheel_link","fr_caster_l_wheel_link","br_caster_l_wheel_link","bl_caster_r_wheel_link"};
 
+    AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	bEnableShapeCollisions = false;
 
@@ -40,66 +41,25 @@ ARRobot::ARRobot()
 
 
     MeshFactory = CreateDefaultSubobject<URMeshFactory>(FName(TEXT("MeshFactory")));
-    ControllerFactory = CreateDefaultSubobject<URControllerFactory>(FName(TEXT("ControllerFactory")));
-
-    //ParseURDF();
 }
 
 // Called when the game starts or when spawned
 void ARRobot::BeginPlay()
 {
-    UE_LOG(LogTemp, Log, TEXT("first?"));
-
-
-
 	Super::BeginPlay();
-    URStaticMeshComponent* Link;
-    for(auto& CD : ControllerDescriptionList)
-        {
-            Link = LinkComponents.FindRef(CD.TargetName);
-            Link->Controller = ControllerFactory->CreateController(CD.ControllerType, Link);
-            Link->Controller->InitController();
-            Link->Controller->ShowThatCreated();
-            Link->Controller->TargetOrientation = Link->GetLocalTransform();
-            //UE_LOG(LogTemp, Log, TEXT("Target Orientation %s"), *Link->Controller->TargetOrientation.ToString());
-        }
-
-
-
-    // for(auto& link : LinkComponents)
-    //     {
-    //         UE_LOG(LogTemp, Log, TEXT("Link Controller Type %s"), *link.Value->ControllerType);
-    //         link.Value->Controller = ControllerFactory->CreateController(link.Value->ControllerType, link.Value);
-    //     }
-
-
+  URControllerComponent* ControllerComp = nullptr;
+  ControllerComp=FindComponentByClass<URControllerComponent>();
+  if(ControllerComp)
+  {
+    ControllerComp->CreateController();
+    UE_LOG(LogTemp, Error, TEXT("Controller Comp Found "));
+  }
 }
 
 // Called every frame (currently not active)
 void ARRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
-
-
-    // TArray<URStaticMeshComponent*>& Wheels = owner->WheelTurnComponents;
-
-    // for(int i = 1; i < Wheels.Num(); i++)
-    //     {
-
-
-
-    //     }
-    // FQuat OrientationWheel = WheelTurnComponents[0]->GetComponentTransform().GetRotation();
-    // FRotator Speed(WheelTurnSpeed * DeltaTime);
-    // ScreenMsg("Speed", Speed.ToString());
-    // for(auto& wheel : WheelTurnComponents)
-    //     {
-    //         OrientationWheel = OrientationWheel* Speed.Quaternion();
-    //         wheel->SetWorldRotation(OrientationWheel);
-    //         wheel->TargetOrientation = OrientationWheel;
-    //     }
 }
 
 void ARRobot::MoveForward(float AxisValue)
@@ -124,7 +84,7 @@ void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
-    if(!AlreadyCreated)
+    if(!bAlreadyCreated)
         {
             ParseURDF();
             UE_LOG(LogTemp, Error, TEXT("test %d"), WheelTurnComponents.Num());
@@ -221,7 +181,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
             if (MeshHandler->CreateLink())
                 {
 
-                    //MeshHandler->MeshComp->Controller = ControllerFactory->CreateController(MeshHandler->MeshComp->ControllerType, MeshHandler->MeshComp);
 
 
 
@@ -264,22 +223,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 	return true;
 }
 
-FConstraintInstance ARRobot::NewConstraintInstanceFixed()
-{
-	// Set the constraint limits
-	FConstraintInstance ConstraintInstance;
-	ConstraintInstance.SetDisableCollision(true);
-	ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0);
-	ConstraintInstance.SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0);
-	ConstraintInstance.SetLinearZLimit(ELinearConstraintMotion::LCM_Locked, 0);
-	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
-	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
-	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 0);
-	ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
-
-	return ConstraintInstance;
-}
-
 void ARRobot::ParseURDF()
 {
     UE_LOG(LogTemp, Log, TEXT("Start Parse URDF"));
@@ -311,7 +254,7 @@ void ARRobot::ParseURDF()
 
 	CreateRobot();
 
-    AlreadyCreated = true;
+    bAlreadyCreated = true;
 	if (!Success)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to create Robot\n"));

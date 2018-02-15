@@ -44,7 +44,7 @@ public:
 		{
 		};
 
-	virtual void CreateController();
+
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

@@ -116,12 +116,8 @@ URController*  URControllerFactory::CreateController(FString Type, URStaticMeshC
 
   if(Controller)
     {
-      //UE_LOG(LogTemp, Error, TEXT("Target Name %s"), *Target->GetName());
-      //UE_LOG(LogTemp, Error, TEXT("Target Owner Name %s"), *Target->owner->GetName());
       Controller->Target = Target;
       Target->ControllerName = Controller->GetName();
-      Target->owner->ControllerList.Add(Controller->GetName(),Controller);
-
     }
 
   return Controller;
