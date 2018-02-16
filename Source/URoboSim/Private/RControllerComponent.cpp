@@ -43,6 +43,7 @@ void URControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 // check(InputComponent);
 //
 //     InputComponent->BindAxis("MoveForward", this, &URControllerComponent::MoveForward);
+
 //     InputComponent->BindAxis("TurnWheels", this, &URControllerComponent::TurnWheels);
 // }
 //
@@ -63,6 +64,7 @@ void URControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 URPR2ControllerComponent::URPR2ControllerComponent()
 {
   // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+
   // off to improve performance if you don't need them.
   PrimaryComponentTick.bCanEverTick = true;
 
