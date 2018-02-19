@@ -29,6 +29,10 @@ UCLASS(Blueprintable)
 
     URMeshFactory* MeshFactory;
 
+    // The root component
+    UPROPERTY(EditAnywhere)
+      URStaticMeshComponent* Root;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
       TMap<FString, URStaticMeshComponent*> LinkComponents;
 
@@ -63,6 +67,10 @@ UCLASS(Blueprintable)
     bool bAlreadyCreated = false;
 
 
+    FRotator WheelTurnSpeed;
+    FVector WheelSpinnSpeed;
+    float DistanceWheelCaster = 5.0f;
+    float WheelRadius = 8.0f;
     // //TEMPLATE Load Obj From Path
     // template <typename ObjClass>
     // FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path);
@@ -119,10 +127,6 @@ UCLASS(Blueprintable)
     virtual void OnConstruction(const FTransform &Transform) override;
 
 
-    // The root component
-    UPROPERTY(EditAnywhere)
-      URStaticMeshComponent* Root;
-
     // Adds the Link data to the Robot
     bool AddLink(FRLink Link);
 
@@ -178,10 +182,6 @@ UCLASS(Blueprintable)
     void MoveForward(float AxisValue);
     void TurnWheels(float AxisValue);
 
-    FRotator WheelTurnSpeed;
-    FVector WheelSpinnSpeed;
-    float DistanceWheelCaster = 5.0f;
-    float WheelRadius = 8.0f;
 
 
     FORCEINLINE void ScreenMsg(const FString& Msg)
