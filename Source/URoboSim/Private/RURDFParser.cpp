@@ -435,3 +435,42 @@ TPair<FString, FVector> FRURDFParser::MeshAndScale(FString Element)
 
 	return MeshScale;
 }
+
+void  FRURDFParser::ParseURDF(FString XmlUrdf)
+{
+
+    UE_LOG(LogTemp, Log, TEXT("Start Parse URDF"));
+	// Callback Object for parser
+	// FRURDFParser Call(this);
+
+	// Error and description Message
+	FText Error = NSLOCTEXT("RFastXmlCallbackRobotError", "FFastXmlError", "Error in the execution of the XML-Parser");
+
+	// Default Line for OutErrorLineNumber
+	int32 LineNumb = -1;
+
+	// indicates if the robot could be created or not
+	bool Success;
+
+	// Remove linebreaks and tabs
+	//XmlUrdf = XmlUrdf.Trim().TrimTrailing();
+	XmlUrdf.TrimStartAndEndInline();
+	XmlUrdf = XmlUrdf.Replace(L"\n", L" ");
+	XmlUrdf = XmlUrdf.Replace(L"\r", L"");
+	XmlUrdf = XmlUrdf.Replace(L"\t", L" ");
+	
+	if (XmlUrdf.IsEmpty()) return;
+
+	// Create a copy of the URDF since the parser modifies the input string
+	FString StringToParse = XmlUrdf;
+
+	Success = FFastXml::ParseXmlFile((IFastXmlCallback*)this, TEXT(""), StringToParse.GetCharArray().GetData(), nullptr, false, false, Error, LineNumb);
+
+
+		UE_LOG(LogTemp, Warning, TEXT("Use Paser function to parse URDF"));
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create Robot\n"));
+	}
+
+}

@@ -59,7 +59,8 @@ void URWheelController::ControllComand(float DeltaTime)
 
 void URCasterController::ControllComand(float DeltaTime)
 {
-  // FQuat Orientation = Target->GetComponentTransform().GetRotation();
+  FQuat Orientation = Target->GetComponentTransform().GetRotation();
+
   // Orientation  = Orientation*Target->Controller->TargetOrientation;
   // Orientation  = Orientation*Target->Controller->TargetOrientation;
 

@@ -9,6 +9,6 @@ public class URoboSimDevEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "URoboSimDev" , "URoboSim"} );
+		ExtraModuleNames.AddRange( new string[] { "URoboSimDev" , "URoboSim", "URoboSimEd"} );
 	}
 }

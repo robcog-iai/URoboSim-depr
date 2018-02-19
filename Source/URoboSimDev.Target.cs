@@ -9,6 +9,6 @@ public class URoboSimDevTarget : TargetRules
 	{
 		Type = TargetType.Game;
 
-		ExtraModuleNames.AddRange( new string[] { "URoboSimDev", "URoboSim" } );
+		ExtraModuleNames.AddRange( new string[] { "URoboSimDev", "URoboSim" , "URoboSimEd"} );
 	}
 }

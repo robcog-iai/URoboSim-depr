@@ -76,8 +76,8 @@ void URPR2ControllerComponent::SetupRobotInputs()
 {
 
   Owner = Cast<ARRobot>(GetOwner());
-  Owner->InputComponent->BindAxis("MoveForward", Owner, &ARRobot::MoveForward);
-  Owner->InputComponent->BindAxis("TurnWheels", Owner, &ARRobot::TurnWheels);
+  // Owner->InputComponent->BindAxis("MoveForward", Owner, &ARRobot::MoveForward);
+  // Owner->InputComponent->BindAxis("TurnWheels", Owner, &ARRobot::TurnWheels);
 
 
 }

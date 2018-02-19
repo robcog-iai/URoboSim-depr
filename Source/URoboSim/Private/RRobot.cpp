@@ -25,11 +25,11 @@ ARRobot::ARRobot()
     PrimaryActorTick.bCanEverTick = true;
 	CollisionFilterArr = { "torso","wheel_link", "shoulder", "arm", "finger_link", "caster", "base" };
 
-    OuterWheel = {"fl_caster_l_wheel_link","fr_caster_r_wheel_link", "bl_caster_l_wheel_link", "br_caster_r_wheel_link"};
+    // OuterWheel = {"fl_caster_l_wheel_link","fr_caster_r_wheel_link", "bl_caster_l_wheel_link", "br_caster_r_wheel_link"};
 
-    InnerWheel = {"fl_caster_r_wheel_link","fr_caster_l_wheel_link","br_caster_l_wheel_link","bl_caster_r_wheel_link"};
+    // InnerWheel = {"fl_caster_r_wheel_link","fr_caster_l_wheel_link","br_caster_l_wheel_link","bl_caster_r_wheel_link"};
 
-    AutoPossessPlayer = EAutoReceiveInput::Player0;
+    // AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	bEnableShapeCollisions = false;
 
@@ -62,43 +62,43 @@ void ARRobot::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ARRobot::MoveForward(float AxisValue)
-{
-    WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
-}
+// void ARRobot::MoveForward(float AxisValue)
+// {
+//     WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
+// }
+//
+// void ARRobot::TurnWheels(float AxisValue)
+// {
+//     WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
+// }
 
-void ARRobot::TurnWheels(float AxisValue)
-{
-    WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
-}
 
 
-
-void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
-    Super::SetupPlayerInputComponent(InputComponent);
-
-    UE_LOG(LogTemp, Error, TEXT("Setup controll input"));
-    // InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
-    // InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
-
-    URControllerComponent* ControllerComp = nullptr;
-    ControllerComp=FindComponentByClass<URControllerComponent>();
-    if(ControllerComp)
-    {
-      ControllerComp->SetupRobotInputs();
-    }
-}
+// void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+// {
+//     Super::SetupPlayerInputComponent(InputComponent);
+//
+//     UE_LOG(LogTemp, Error, TEXT("Setup controll input"));
+//     // InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
+//     // InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
+//
+//     URControllerComponent* ControllerComp = nullptr;
+//     ControllerComp=FindComponentByClass<URControllerComponent>();
+//     if(ControllerComp)
+//     {
+//       ControllerComp->SetupRobotInputs();
+//     }
+// }
 
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
-    if(!bAlreadyCreated)
-        {
-            ParseURDF();
-            UE_LOG(LogTemp, Error, TEXT("test %d"), WheelTurnComponents.Num());
-
-        }
+    // if(!bAlreadyCreated)
+    //     {
+    //         ParseURDF();
+    //         UE_LOG(LogTemp, Error, TEXT("test %d"), WheelTurnComponents.Num());
+    //
+    //     }
 }
 
 bool ARRobot::AddLink(FRLink Link)
@@ -127,7 +127,7 @@ bool ARRobot::CreateRobot()
     UE_LOG(LogTemp, Display, TEXT("Number L %d"), Links.Num());
 	if (Joints.Num() != Links.Num() - 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Robot is invalid. Abort creating.\n"));
+		UE_LOG(LogTemp, Warning, TEXT("Mismatch number of links and joints"));
 		//return false;
 	}
 
@@ -231,46 +231,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 	return true;
 }
-
-void ARRobot::ParseURDF()
-{
-    UE_LOG(LogTemp, Log, TEXT("Start Parse URDF"));
-	// Callback Object for parser
-	FRURDFParser Call(this);
-
-	// Error and description Message
-	FText Error = NSLOCTEXT("RFastXmlCallbackRobotError", "FFastXmlError", "Error in the execution of the XML-Parser");
-
-	// Default Line for OutErrorLineNumber
-	int32 LineNumb = -1;
-
-	// indicates if the robot could be created or not
-	bool Success;
-
-	// Remove linebreaks and tabs
-	//XmlUrdf = XmlUrdf.Trim().TrimTrailing();
-	XmlUrdf.TrimStartAndEndInline();
-	XmlUrdf = XmlUrdf.Replace(L"\n", L" ");
-	XmlUrdf = XmlUrdf.Replace(L"\r", L"");
-	XmlUrdf = XmlUrdf.Replace(L"\t", L" ");
-	
-	if (XmlUrdf.IsEmpty()) return;
-
-	// Create a copy of the URDF since the parser modifies the input string
-	FString StringToParse = XmlUrdf;
-
-	Success = FFastXml::ParseXmlFile((IFastXmlCallback*)&Call, TEXT(""), StringToParse.GetCharArray().GetData(), nullptr, false, false, Error, LineNumb);
-
-	CreateRobot();
-
-    bAlreadyCreated = true;
-	if (!Success)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to create Robot\n"));
-	}
-}
-
-
 
 void ARRobot::BuildTree(FRNode* Node)
 {

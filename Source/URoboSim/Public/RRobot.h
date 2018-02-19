@@ -5,6 +5,7 @@
 
 
 #include "IURoboSim.h"
+// #include "IURoboSimEd.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
 #include "GameFramework/Actor.h"
@@ -19,7 +20,7 @@
 // A structure representing a URDF Joint
 
 UCLASS(Blueprintable)
-  class UROBOSIM_API ARRobot : public APawn
+  class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
 {
   GENERATED_BODY()
 
@@ -136,9 +137,6 @@ UCLASS(Blueprintable)
     // Creates the Robot using the links and joints added by AddLink and AddJoint
     bool CreateRobot();
 
-    // Parses the URDF code written into property XmlUrdf
-    void ParseURDF();
-
     // Create the Constraint
     URConstraint* CreateConstraint(URMeshHandler* MeshHandler);
 
@@ -150,9 +148,6 @@ UCLASS(Blueprintable)
     UPROPERTY(EditAnywhere, Export)
       float GlobalVarA;
 
-    // Copy the XML URDF Code
-    UPROPERTY(EditAnywhere, Export)
-      FString XmlUrdf;
 
     // The material used for all robot links
     UPROPERTY(EditAnywhere)
@@ -178,9 +173,9 @@ UCLASS(Blueprintable)
 
 
 
-    virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-    void MoveForward(float AxisValue);
-    void TurnWheels(float AxisValue);
+    // virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+    // void MoveForward(float AxisValue);
+    // void TurnWheels(float AxisValue);
 
 
 
