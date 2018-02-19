@@ -46,14 +46,14 @@ ARRobot::ARRobot()
 // Called when the game starts or when spawned
 void ARRobot::BeginPlay()
 {
-	Super::BeginPlay();
+  Super::BeginPlay();
   URControllerComponent* ControllerComp = nullptr;
   ControllerComp=FindComponentByClass<URControllerComponent>();
   if(ControllerComp)
   {
     ControllerComp->CreateController();
-    UE_LOG(LogTemp, Error, TEXT("Controller Comp Found "));
   }
+
 }
 
 // Called every frame (currently not active)
@@ -77,8 +77,17 @@ void ARRobot::TurnWheels(float AxisValue)
 void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
     Super::SetupPlayerInputComponent(InputComponent);
-    InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
-    InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
+
+    UE_LOG(LogTemp, Error, TEXT("Setup controll input"));
+    // InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
+    // InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
+
+    URControllerComponent* ControllerComp = nullptr;
+    ControllerComp=FindComponentByClass<URControllerComponent>();
+    if(ControllerComp)
+    {
+      ControllerComp->SetupRobotInputs();
+    }
 }
 
 

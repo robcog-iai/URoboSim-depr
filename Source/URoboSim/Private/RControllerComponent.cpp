@@ -47,17 +47,17 @@ void URControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 //     InputComponent->BindAxis("TurnWheels", this, &URControllerComponent::TurnWheels);
 // }
 //
-// void URControllerComponent::TurnWheels(float AxisValue)
-// {
-//     Owner->WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
-// }
-//
-//
-// void URControllerComponent::MoveForward(float AxisValue)
-// {
-//     UE_LOG(LogTemp, Log, TEXT("Axis Value %f"),AxisValue);
-//      Owner->WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
-// } 
+void URPR2ControllerComponent::TurnWheels(float AxisValue)
+{
+    Owner->WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
+}
+
+
+void URPR2ControllerComponent::MoveForward(float AxisValue)
+{
+    UE_LOG(LogTemp, Log, TEXT("Axis Value %f"),AxisValue);
+     Owner->WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
+} 
 
 // Start of PR2 Implementation
 
@@ -70,6 +70,18 @@ URPR2ControllerComponent::URPR2ControllerComponent()
 
   // ...
 }
+
+
+void URPR2ControllerComponent::SetupRobotInputs()
+{
+
+  Owner = Cast<ARRobot>(GetOwner());
+  Owner->InputComponent->BindAxis("MoveForward", Owner, &ARRobot::MoveForward);
+  Owner->InputComponent->BindAxis("TurnWheels", Owner, &ARRobot::TurnWheels);
+
+
+}
+
 
 
 // Called when the game starts
@@ -98,5 +110,24 @@ void URPR2ControllerComponent::CreateController()
             Link->Controller = ControllerFactory->CreateController(CD.ControllerType, Link);
             Link->Controller->InitController();
             Link->Controller->TargetOrientation = Link->GetLocalTransform();
+
+
+            if(Link->GetName().Equals("br_caster_rotation_link"))
+            {
+              UE_LOG(LogTemp, Log, TEXT("%s"),*Link->Controller->TargetOrientation.ToString());
+            }
         }
 }
+
+
+
+// void ARRobot::MoveForward(float AxisValue)
+// {
+//     WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
+// }
+//
+// void ARRobot::TurnWheels(float AxisValue)
+// {
+//     WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
+// }
+//

@@ -5,7 +5,9 @@ void URRevoluteController::ControllComand(float DeltaTime)
 {
 
   FQuat Orientation = Target->GetComponentTransform().GetRotation();
-  FQuat DeltaQ = Orientation.Inverse() * TargetOrientation;
+  FQuat OrientationLocal = Target->GetLocalTransform();
+  FQuat DeltaQ =  TargetOrientation*OrientationLocal.Inverse();
+  // FQuat DeltaQ = Orientation.Inverse() * TargetOrientation;
   FVector Axis;
   float Angle;
   DeltaQ.ToAxisAndAngle(Axis, Angle);
@@ -13,6 +15,12 @@ void URRevoluteController::ControllComand(float DeltaTime)
   FVector w = Orientation.RotateVector((Axis * Angle) / DeltaTime);
   Target->SetPhysicsAngularVelocityInDegrees(w,false);
 
+  // FVector w = Orientation.RotateVector();
+  // if(Target->GetName().Equals("l_upper_arm_roll_link"))
+  // {
+  //   UE_LOG(LogTemp, Log, TEXT("%s"),*DeltaQ.Euler().ToString());
+  // }
+  //
 }
 
 void URWheelController::ControllComand(float DeltaTime)
@@ -23,18 +31,11 @@ void URWheelController::ControllComand(float DeltaTime)
   if(Target->owner->WheelSpinnSpeed.Size()==0)
     {
 
-      if(Caster->GetName().Contains(Name.Left(9)))
-        {
 
           float AngularVelocityWheel = Target->owner->WheelTurnSpeed.Yaw * Target->owner->DistanceWheelCaster /Target->owner->WheelRadius;
 
           FQuat OrientationCaster = Caster->GetComponentTransform().GetRotation();
-          FQuat CasterTargetOrientation = Caster->Controller->TargetOrientation;
-          FQuat DeltaA = OrientationCaster.Inverse() * CasterTargetOrientation;
           FVector WTarget;
-          FVector WActual;
-          FVector DeltaW;
-          //WActual = Target->GetPhysicsAngularVelocity();
           if (Name.Contains("r_wheel"))
             {
               WTarget = OrientationCaster.RotateVector(FVector(0.0f, AngularVelocityWheel, 0.0f));
@@ -45,7 +46,6 @@ void URWheelController::ControllComand(float DeltaTime)
             }
           //DeltaW = WTarget - WActual;
           Target->SetPhysicsAngularVelocityInDegrees(WTarget,false);
-        }
 
 
     }
@@ -59,9 +59,15 @@ void URWheelController::ControllComand(float DeltaTime)
 
 void URCasterController::ControllComand(float DeltaTime)
 {
+  // FQuat Orientation = Target->GetComponentTransform().GetRotation();
+  // Orientation  = Orientation*Target->Controller->TargetOrientation;
+  // Orientation  = Orientation*Target->Controller->TargetOrientation;
 
-  Target->SetWorldRotation(Target->Controller->TargetOrientation, false, nullptr ,ETeleportType::None);
+  UE_LOG(LogTemp, Log, TEXT("%s"),*Orientation.Euler().ToString());
+  Target->SetWorldRotation(Orientation, false, nullptr ,ETeleportType::None);
 
+
+  // Target->SetWorldRotation(Target->Controller->TargetOrientation, false, nullptr ,ETeleportType::None);
 }
 
 
