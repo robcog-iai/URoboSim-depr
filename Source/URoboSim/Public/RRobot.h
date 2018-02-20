@@ -41,9 +41,9 @@ UCLASS(Blueprintable)
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
       TMap<FString, UPhysicsConstraintComponent*> JointComponents;
 
-    // Initial Relative Rotation (Quaternion) 
+    // Initial Relative Rotation (Quaternion)
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TMap<FString, FQuat> OriginRotations; 
+      TMap<FString, FQuat> OriginRotations;
 
     // Original relative locations of links that are constrained with prismatic type
     TMap<FString, FVector> OriginLocations;
@@ -89,7 +89,7 @@ UCLASS(Blueprintable)
       float KSpring;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-      float Damping;	
+      float Damping;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
       bool bEnableLogging;
@@ -101,7 +101,7 @@ UCLASS(Blueprintable)
     TArray<FString> InnerWheel;
     //	URConstraintFactory ConstraintFactory;
 
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") -
     //bool bEnableROSBridge;
 
     //URoboSimEd Variables
@@ -170,14 +170,6 @@ UCLASS(Blueprintable)
     // Add force / torque to given Joint
     UFUNCTION(BlueprintCallable, Category="Robot")
       void AddForceToJoint(FString JointName, float Force);
-
-
-
-    // virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-    // void MoveForward(float AxisValue);
-    // void TurnWheels(float AxisValue);
-
-
 
     FORCEINLINE void ScreenMsg(const FString& Msg)
     {

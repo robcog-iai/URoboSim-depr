@@ -51,6 +51,7 @@ void ARRobot::BeginPlay()
   ControllerComp=FindComponentByClass<URControllerComponent>();
   if(ControllerComp)
   {
+    UE_LOG(LogTemp, Warning, TEXT("Begin Controller component"));
     ControllerComp->CreateController();
   }
 
@@ -61,35 +62,6 @@ void ARRobot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-// void ARRobot::MoveForward(float AxisValue)
-// {
-//     WheelSpinnSpeed = FVector(0.0f, AxisValue, 0.0f) * 1000;
-// }
-//
-// void ARRobot::TurnWheels(float AxisValue)
-// {
-//     WheelTurnSpeed = FRotator(0.0f,AxisValue, 0.0f ) * 80;
-// }
-
-
-
-// void ARRobot::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-// {
-//     Super::SetupPlayerInputComponent(InputComponent);
-//
-//     UE_LOG(LogTemp, Error, TEXT("Setup controll input"));
-//     // InputComponent->BindAxis("MoveForward", this, &ARRobot::MoveForward);
-//     // InputComponent->BindAxis("TurnWheels", this, &ARRobot::TurnWheels);
-//
-//     URControllerComponent* ControllerComp = nullptr;
-//     ControllerComp=FindComponentByClass<URControllerComponent>();
-//     if(ControllerComp)
-//     {
-//       ControllerComp->SetupRobotInputs();
-//     }
-// }
-
 
 void ARRobot::OnConstruction(const FTransform &Transform)
 {
@@ -308,7 +280,7 @@ bool ARRobot::MovePrismaticJoint(FString Name, FVector TargetPosition)
 
 	// 		FConstraintInstance* ConstraintInstance = &(Constraint->ConstraintInstance);
 	// 		ConstraintInstance->SetLinearPositionTarget(TargetPosition);
-			
+
 	// 		return true;
 	// 	}
 
@@ -499,7 +471,7 @@ void ARRobot::AddForceToJoint(FString JointName, float Force)
 
 URConstraint* ARRobot::CreateConstraint(URMeshHandler* MeshHandler)
 {
-  URConstraint* Constraint; 
+  URConstraint* Constraint;
 	if (MeshHandler->Joint->Type.Equals("fixed", ESearchCase::IgnoreCase))
 	  {
 		Constraint = NewObject<URFixedConstraint>(MeshHandler->ParentComp, FName(MeshHandler->Joint->Name.GetCharArray().GetData()));

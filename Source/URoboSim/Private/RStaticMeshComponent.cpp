@@ -44,8 +44,6 @@ URStaticMeshComponent::URStaticMeshComponent()
 void URStaticMeshComponent::BeginPlay()
 {
   Super::BeginPlay();
-  UE_LOG(LogTemp, Log, TEXT("%s"), *GetName());
-
   owner = Cast<ARRobot>(GetOwner());
   if (!IsTemplate() && SecondaryComponentTick.bCanEverTick)
   {
@@ -78,7 +76,7 @@ void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
     //Add custom physics forces each tick
     GetBodyInstance()->AddCustomPhysics(OnCalculateCustomPhysics);
   }
-  else 
+  else
   {
     //DoPhysics(DeltaTime, false);
   }
@@ -128,25 +126,25 @@ void URStaticMeshComponent::TickPostPhysics(
   }
 }
 
-FVector URStaticMeshComponent::GetCurrentLocation() 
+FVector URStaticMeshComponent::GetCurrentLocation()
 {
   PxTransform PTransform = PRigidBody->getGlobalPose();
   return FVector(PTransform.p.x, PTransform.p.y, PTransform.p.z);
 }
 
-FRotator URStaticMeshComponent::GetCurrentRotation() 
+FRotator URStaticMeshComponent::GetCurrentRotation()
 {
   PxTransform PTransform = PRigidBody->getGlobalPose();
   return FRotator(FQuat(PTransform.q.x, PTransform.q.y, PTransform.q.z, PTransform.q.w));
 }
 
-FVector URStaticMeshComponent::GetCurrentAngularVelocity() 
+FVector URStaticMeshComponent::GetCurrentAngularVelocity()
 {
   PxVec3 PAngVelocity = PRigidBody->getAngularVelocity();
   return FMath::RadiansToDegrees(FVector(PAngVelocity.x, PAngVelocity.y, PAngVelocity.z));
 }
 
-FVector URStaticMeshComponent::GetCurrentVelocity() 
+FVector URStaticMeshComponent::GetCurrentVelocity()
 {
   PxVec3 PVelocity = PRigidBody->getLinearVelocity();
   return FVector(PVelocity.x, PVelocity.y, PVelocity.z);

@@ -6,7 +6,7 @@
 #include "Structs.h"
 #include "RStaticMeshComponent.generated.h"
 
-class URController;
+class URJointController;
 
 USTRUCT()
 struct FMySecondaryTickFunction : public FTickFunction
@@ -70,7 +70,7 @@ public:
 	FQuat GetLocalTransform();
 
 	UPROPERTY(EditAnywhere)
-	URController* Controller;
+	URJointController* Controller;
 	UPROPERTY(EditAnywhere)
 	FString ControllerName;
 	UPROPERTY(EditAnywhere)
