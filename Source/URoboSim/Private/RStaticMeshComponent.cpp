@@ -8,146 +8,146 @@
 #include "Runtime/Engine/Private/PhysicsEngine/PhysXSupport.h"
 
 void FMySecondaryTickFunction::ExecuteTick(
-    float DeltaTime,
-    ELevelTick TickType,
-    ENamedThreads::Type CurrentThread,
-    const FGraphEventRef& MyCompletionGraphEvent)
+        float DeltaTime,
+        ELevelTick TickType,
+        ENamedThreads::Type CurrentThread,
+        const FGraphEventRef& MyCompletionGraphEvent)
 {
-  if (Target && !Target->IsPendingKill() && !Target->IsUnreachable())
-  {
-    FScopeCycleCounterUObject ActorScope(Target);
-    Target->TickPostPhysics(DeltaTime /* * Target->CustomTimeDilation*/, TickType, *this);
-  }
+    if (Target && !Target->IsPendingKill() && !Target->IsUnreachable())
+    {
+        FScopeCycleCounterUObject ActorScope(Target);
+        Target->TickPostPhysics(DeltaTime /* * Target->CustomTimeDilation*/, TickType, *this);
+    }
 }
 
 FString FMySecondaryTickFunction::DiagnosticMessage()
 {
-  return Target->GetFullName() + TEXT("[TickActor2]");
+    return Target->GetFullName() + TEXT("[TickActor2]");
 }
 
 URStaticMeshComponent::URStaticMeshComponent()
 {
-  PrimaryComponentTick.TickGroup = TG_PrePhysics;
-  PrimaryComponentTick.bCanEverTick = true;
-  PrimaryComponentTick.bStartWithTickEnabled = true;
+    PrimaryComponentTick.TickGroup = TG_PrePhysics;
+    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bStartWithTickEnabled = true;
 
-  SecondaryComponentTick.TickGroup = TG_PostPhysics;
-  SecondaryComponentTick.bCanEverTick = true;
-  SecondaryComponentTick.bStartWithTickEnabled = true;
+    SecondaryComponentTick.TickGroup = TG_PostPhysics;
+    SecondaryComponentTick.bCanEverTick = true;
+    SecondaryComponentTick.bStartWithTickEnabled = true;
 
-  OnCalculateCustomPhysics.BindUObject(this, &URStaticMeshComponent::SubstepTick);
+    OnCalculateCustomPhysics.BindUObject(this, &URStaticMeshComponent::SubstepTick);
 
-  FrameCount = 0;
+    FrameCount = 0;
 
 }
 
 void URStaticMeshComponent::BeginPlay()
 {
-  Super::BeginPlay();
-  owner = Cast<ARRobot>(GetOwner());
-  if (!IsTemplate() && SecondaryComponentTick.bCanEverTick)
-  {
-    SecondaryComponentTick.Target = this;
-    SecondaryComponentTick.SetTickFunctionEnable(SecondaryComponentTick.bStartWithTickEnabled);
-    SecondaryComponentTick.RegisterTickFunction(owner->GetLevel());
-  }
+    Super::BeginPlay();
+    Owner = Cast<ARRobot>(GetOwner());
+    if (!IsTemplate() && SecondaryComponentTick.bCanEverTick)
+    {
+        SecondaryComponentTick.Target = this;
+        SecondaryComponentTick.SetTickFunctionEnable(SecondaryComponentTick.bStartWithTickEnabled);
+        SecondaryComponentTick.RegisterTickFunction(Owner->GetLevel());
+    }
 
-  PRigidBody = GetBodyInstance()->GetPxRigidBody_AssumesLocked();
+    PRigidBody = GetBodyInstance()->GetPxRigidBody_AssumesLocked();
 
-  StartH = GetComponentLocation().Z;
-  StartPos = GetComponentLocation();
-  StartRot = GetComponentRotation();
+    StartH = GetComponentLocation().Z;
+    StartPos = GetComponentLocation();
+    StartRot = GetComponentRotation();
 
-  StartRelativeTransform = GetRelativeTransform();
-  StartPos = StartRelativeTransform.GetLocation();
+    StartRelativeTransform = GetRelativeTransform();
+    StartPos = StartRelativeTransform.GetLocation();
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-  Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-  FrameCount++;
+    FrameCount++;
 
-  if (owner->bEnableLogging)
-    UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickComponent DeltaTime : %f, Z : %f"), FrameCount, DeltaTime, GetCurrentLocation().Z);
+    if (Owner->bEnableLogging)
+        UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickComponent DeltaTime : %f, Z : %f"), FrameCount, DeltaTime, GetCurrentLocation().Z);
 
-  if (owner->bSubstepEnabled)
-  {
-    //Add custom physics forces each tick
-    GetBodyInstance()->AddCustomPhysics(OnCalculateCustomPhysics);
-  }
-  else
-  {
-    //DoPhysics(DeltaTime, false);
-  }
+    if (Owner->bSubstepEnabled)
+    {
+        //Add custom physics forces each tick
+        GetBodyInstance()->AddCustomPhysics(OnCalculateCustomPhysics);
+    }
+    else
+    {
+        //DoPhysics(DeltaTime, false);
+    }
 }
 
 void URStaticMeshComponent::SubstepTick(float DeltaTime, FBodyInstance* InBodyInstance)
 {
-  DoPhysics(DeltaTime, true);
+    DoPhysics(DeltaTime, true);
 }
 
 void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 {
-  if(Controller)
-  {
-    //ScreenMsg("Command");
-    Controller->ControllComand(DeltaTime);
-  }
+    if(Controller)
+    {
+        //ScreenMsg("Command");
+        Controller->ControllComand(DeltaTime);
+    }
 }
 
 void URStaticMeshComponent::TickPostPhysics(
-    float DeltaSeconds,
-    ELevelTick TickType,
-    FMySecondaryTickFunction& ThisTickFunction
-    )
+        float DeltaSeconds,
+        ELevelTick TickType,
+        FMySecondaryTickFunction& ThisTickFunction
+        )
 {
-  // Non-player update.
-  const bool bShouldTick =
-    ((TickType != LEVELTICK_ViewportsOnly) || owner->ShouldTickIfViewportsOnly());
-  if (bShouldTick)
-  {
-    if (!IsPendingKill() && GetWorld())
+    // Non-player update.
+    const bool bShouldTick =
+        ((TickType != LEVELTICK_ViewportsOnly) || Owner->ShouldTickIfViewportsOnly());
+    if (bShouldTick)
     {
-      if (owner->GetWorldSettings() != NULL && !IsRunningDedicatedServer())
-      {
-        // Here your post physics tick stuff
+        if (!IsPendingKill() && GetWorld())
+        {
+            if (Owner->GetWorldSettings() != NULL && !IsRunningDedicatedServer())
+            {
+                // Here your post physics tick stuff
 
-        // if (GetName().Contains("fr_caster_r_wheel_link"))
-        // 	{
-        // 		ScreenMsg("Angular Speed",  GetPhysicsAngularVelocity().ToString());
-        // 	}
+                // if (GetName().Contains("fr_caster_r_wheel_link"))
+                // 	{
+                // 		ScreenMsg("Angular Speed",  GetPhysicsAngularVelocity().ToString());
+                // 	}
 
 
-        if (owner->bEnableLogging)
-          UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickPostPhysics DeltaTime: %f, Z: %f"), FrameCount, DeltaSeconds, GetCurrentLocation().Z);
-      }
+                if (Owner->bEnableLogging)
+                    UE_LOG(LogClass, Log, TEXT("%d URStaticMeshComponent::TickPostPhysics DeltaTime: %f, Z: %f"), FrameCount, DeltaSeconds, GetCurrentLocation().Z);
+            }
+        }
     }
-  }
 }
 
 FVector URStaticMeshComponent::GetCurrentLocation()
 {
-  PxTransform PTransform = PRigidBody->getGlobalPose();
-  return FVector(PTransform.p.x, PTransform.p.y, PTransform.p.z);
+    PxTransform PTransform = PRigidBody->getGlobalPose();
+    return FVector(PTransform.p.x, PTransform.p.y, PTransform.p.z);
 }
 
 FRotator URStaticMeshComponent::GetCurrentRotation()
 {
-  PxTransform PTransform = PRigidBody->getGlobalPose();
-  return FRotator(FQuat(PTransform.q.x, PTransform.q.y, PTransform.q.z, PTransform.q.w));
+    PxTransform PTransform = PRigidBody->getGlobalPose();
+    return FRotator(FQuat(PTransform.q.x, PTransform.q.y, PTransform.q.z, PTransform.q.w));
 }
 
 FVector URStaticMeshComponent::GetCurrentAngularVelocity()
 {
-  PxVec3 PAngVelocity = PRigidBody->getAngularVelocity();
-  return FMath::RadiansToDegrees(FVector(PAngVelocity.x, PAngVelocity.y, PAngVelocity.z));
+    PxVec3 PAngVelocity = PRigidBody->getAngularVelocity();
+    return FMath::RadiansToDegrees(FVector(PAngVelocity.x, PAngVelocity.y, PAngVelocity.z));
 }
 
 FVector URStaticMeshComponent::GetCurrentVelocity()
 {
-  PxVec3 PVelocity = PRigidBody->getLinearVelocity();
-  return FVector(PVelocity.x, PVelocity.y, PVelocity.z);
+    PxVec3 PVelocity = PRigidBody->getLinearVelocity();
+    return FVector(PVelocity.x, PVelocity.y, PVelocity.z);
 }
 
 void URStaticMeshComponent::AddConnectedJoint(FRJoint Joint)
@@ -157,19 +157,19 @@ void URStaticMeshComponent::AddConnectedJoint(FRJoint Joint)
 
 bool URStaticMeshComponent::CheckJointType(FString Type)
 {
-  bool check = false;
-  if (Type.Equals("revolute", ESearchCase::IgnoreCase) || Type.Equals("continuous", ESearchCase::IgnoreCase))
-  {
-    check = true;
-  }
-  return check;
+    bool check = false;
+    if (Type.Equals("revolute", ESearchCase::IgnoreCase) || Type.Equals("continuous", ESearchCase::IgnoreCase))
+    {
+        check = true;
+    }
+    return check;
 }
 
 FQuat URStaticMeshComponent::GetLocalTransform()
 {
-  FQuat LocalTransform;
-  LocalTransform = GetComponentTransform().GetRelativeTransform(Parent->GetComponentTransform()).GetRotation();
-  return  LocalTransform;
+    FQuat LocalTransform;
+    LocalTransform = GetComponentTransform().GetRelativeTransform(Parent->GetComponentTransform()).GetRotation();
+    return  LocalTransform;
 }
 
 

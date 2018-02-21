@@ -14,81 +14,81 @@
 UCLASS()
 class UROBOSIM_API URConstraint : public UPhysicsConstraintComponent
 {
-  GENERATED_BODY()
-	public:
-	URConstraint(){};
-  class URMeshHandler* MeshHandler;
+    GENERATED_BODY()
+public:
+    URConstraint(){};
+    class URMeshHandler* MeshHandler;
 
-  virtual void InitDrive(){};
-  virtual void Init(URMeshHandler* MeshH){};
-  virtual void SetupConstraint(){};
-  bool bEnableMotor = false;
+    virtual void InitDrive(){};
+    virtual void Init(URMeshHandler* MeshH){};
+    virtual void SetupConstraint(){};
+    bool bEnableMotor = false;
 
 
-  // UPhysicsConstraintComponent* Constraint;
-  // FConstraintInstance ConstraintInstance;
+    // UPhysicsConstraintComponent* Constraint;
+    // FConstraintInstance ConstraintInstance;
 
 };
 
 UCLASS()
 class UROBOSIM_API URFixedConstraint : public URConstraint
 {
-  GENERATED_BODY()
-	public:
-	URFixedConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive(){};
-  void SetupConstraint();
+    GENERATED_BODY()
+public:
+    URFixedConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive(){};
+    void SetupConstraint();
 };
 
 UCLASS()
 class UROBOSIM_API URFloatingConstraint : public URFixedConstraint
 {
-  GENERATED_BODY()
-	public:
-	URFloatingConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive(){};
+    GENERATED_BODY()
+public:
+    URFloatingConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive(){};
 };
 
 UCLASS()
 class UROBOSIM_API URPrismaticConstraint : public URFixedConstraint
 {
-  GENERATED_BODY()
-	public:
-	URPrismaticConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive();
+    GENERATED_BODY()
+public:
+    URPrismaticConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive();
 };
 
 UCLASS()
 class UROBOSIM_API URRevoluteConstraint : public URFixedConstraint
 {
-  GENERATED_BODY()
-	public:
-	URRevoluteConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive();
+    GENERATED_BODY()
+public:
+    URRevoluteConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive();
 };
 
 UCLASS()
 class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
 {
-  GENERATED_BODY()
-	public:
-	URPlanarConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive(){};
+    GENERATED_BODY()
+public:
+    URPlanarConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive(){};
 };
 
 UCLASS()
 class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
 {
-  GENERATED_BODY()
-	public:
-	URContinuousConstraint(){};
-  void Init(URMeshHandler* MeshH);
-  void InitDrive();
+    GENERATED_BODY()
+public:
+    URContinuousConstraint(){};
+    void Init(URMeshHandler* MeshH);
+    void InitDrive();
 };
 
 // UCLASS()
@@ -97,7 +97,7 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
 //   GENERATED_BODY()
 // private:
 // 	URConstraintFactory(const FObjectInitializer& ObjectInitializer);
- 
+
 // 	public:
 //     UPROPERTY()
 // 	TSubclassOf<class URConstraint>  NewConstraintClass;

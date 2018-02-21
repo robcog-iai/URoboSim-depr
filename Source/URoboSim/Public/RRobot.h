@@ -20,11 +20,10 @@
 // A structure representing a URDF Joint
 
 UCLASS(Blueprintable)
-  class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
+class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
 {
-  GENERATED_BODY()
-
-  public:
+GENERATED_BODY()
+public:
     // All the links that are attached to this Robot. Key is Name of link, Value is the link.
 
 
@@ -32,33 +31,33 @@ UCLASS(Blueprintable)
 
     // The root component
     UPROPERTY(EditAnywhere)
-      URStaticMeshComponent* Root;
+        URStaticMeshComponent* Root;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TMap<FString, URStaticMeshComponent*> LinkComponents;
+        TMap<FString, URStaticMeshComponent*> LinkComponents;
 
     // All the joints that connect the links together. Key is Name of joint, Value is the joint.
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TMap<FString, UPhysicsConstraintComponent*> JointComponents;
+        TMap<FString, UPhysicsConstraintComponent*> JointComponents;
 
     // Initial Relative Rotation (Quaternion)
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TMap<FString, FQuat> OriginRotations;
+        TMap<FString, FQuat> OriginRotations;
 
     // Original relative locations of links that are constrained with prismatic type
     TMap<FString, FVector> OriginLocations;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TArray<URStaticMeshComponent*> WheelComponents;
+        TArray<URStaticMeshComponent*> WheelComponents;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TArray<URStaticMeshComponent*> WheelTurnComponents;
+        TArray<URStaticMeshComponent*> WheelTurnComponents;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-      TMap<FString,URController*> ControllerList;
+        TMap<FString,URController*> ControllerList;
 
     UPROPERTY(VisibleAnywhere, Category = "Map")
-      TArray<FRControllerDesciption> ControllerDescriptionList;
+        TArray<FRControllerDesciption> ControllerDescriptionList;
 
     UStaticMesh* CylinderMesh;
     UStaticMesh* CubeMesh;
@@ -80,22 +79,22 @@ UCLASS(Blueprintable)
     // FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-      bool bSubstepEnabled = true;
+        bool bSubstepEnabled = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-      float StartVelocity;
+        float StartVelocity;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
-      float KSpring;
+        float KSpring;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-      float Damping;
+        float Damping;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-      bool bEnableLogging;
+        bool bEnableLogging;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drive Parameter")
-      float AngularVelocityOrTorque = 100000000.0f;
+        float AngularVelocityOrTorque = 100000000.0f;
 
     TArray<FString> OuterWheel;
     TArray<FString> InnerWheel;
@@ -146,12 +145,12 @@ UCLASS(Blueprintable)
 
 
     UPROPERTY(EditAnywhere, Export)
-      float GlobalVarA;
+        float GlobalVarA;
 
 
     // The material used for all robot links
     UPROPERTY(EditAnywhere)
-      UMaterial* BasicMaterial;
+        UMaterial* BasicMaterial;
 
     // Rotates the joint to the targeted rotation
     bool RotateJoint(FString Name, FRotator TargetRotation);
@@ -161,27 +160,27 @@ UCLASS(Blueprintable)
 
     // Get Joint Position in *Degrees*
     UFUNCTION(BlueprintCallable, Category="Robot")
-      float GetJointPosition(FString JointName);
+        float GetJointPosition(FString JointName);
 
     // Get Joint Velocity in Deg/s
     UFUNCTION(BlueprintCallable, Category="Robot")
-      float GetJointVelocity(FString JointName);
+        float GetJointVelocity(FString JointName);
 
     // Add force / torque to given Joint
     UFUNCTION(BlueprintCallable, Category="Robot")
-      void AddForceToJoint(FString JointName, float Force);
+        void AddForceToJoint(FString JointName, float Force);
 
     FORCEINLINE void ScreenMsg(const FString& Msg)
     {
-      GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
     }
 
     FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
     {
-      GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));
     }
 
-  private:
+private:
     // Array of links added with AddLink. Is cleared in the process of creating the Robot
     TArray<FRLink> Links;
 

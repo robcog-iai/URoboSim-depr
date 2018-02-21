@@ -75,7 +75,7 @@ public:
 	FString ControllerName;
 	UPROPERTY(EditAnywhere)
 	FString ControllerType;
-	class ARRobot *owner;
+	class ARRobot *Owner;
 
 
 

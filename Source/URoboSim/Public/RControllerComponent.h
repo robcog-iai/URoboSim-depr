@@ -10,11 +10,11 @@
 class ARRobot;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-  class UROBOSIM_API URControllerComponent : public UActorComponent
+class UROBOSIM_API URControllerComponent : public UActorComponent
 {
-  GENERATED_BODY()
+    GENERATED_BODY()
 
-  public:
+public:
     // Sets default values for this component's properties
     URControllerComponent();
     URControllerFactory* ControllerFactory;
@@ -24,7 +24,7 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
     virtual void CreateController(){};
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-  protected:
+protected:
 
     // Called when the game starts
     virtual void BeginPlay() override;
@@ -34,18 +34,18 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UROBOSIM_API URPR2ControllerComponent : public URControllerComponent
 {
-  GENERATED_BODY()
+    GENERATED_BODY()
 
-  public:
+public:
     // Sets default values for this component's properties
     URPR2ControllerComponent();
     virtual void CreateController();
 
-  protected:
+protected:
     // Called when the game starts
     virtual void BeginPlay() override;
 
-  public:
+public:
     // Called every frame
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

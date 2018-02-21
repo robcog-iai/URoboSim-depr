@@ -9,17 +9,17 @@
 class ARRobot;
 
 UCLASS()
-  class UROBOSIM_API URController : public UObject
+    class UROBOSIM_API URController : public UObject
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
     URController(){};
     ~URController(){};
 
 
     virtual void ShowThatCreated()
     {
-      UE_LOG(LogTemp, Error, TEXT("Created"));
+        UE_LOG(LogTemp, Error, TEXT("Created"));
     };
 
     virtual void InitController();
@@ -29,62 +29,62 @@ UCLASS()
 };
 
 UCLASS()
-  class UROBOSIM_API URInputController : public URController
+    class UROBOSIM_API URInputController : public URController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
     URInputController(){};
 
     virtual void InitController();
     virtual void SetupInputBindings(UInputComponent* IC){};
     UFUNCTION()
-      virtual void MoveForward(float AxisValue){};
+        virtual void MoveForward(float AxisValue){};
     UFUNCTION()
-      virtual void TurnWheels(float AxisValue){};
+        virtual void TurnWheels(float AxisValue){};
 
 };
 
 UCLASS()
-  class UROBOSIM_API URJointController : public URController
+    class UROBOSIM_API URJointController : public URController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
     URJointController(){};
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-      URStaticMeshComponent* Caster;
+        URStaticMeshComponent* Caster;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-      URStaticMeshComponent* Target;
+        URStaticMeshComponent* Target;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-      FQuat TargetOrientation;
+        FQuat TargetOrientation;
 
     virtual void ControllComand(float DeltaTime){};
     virtual void SetTargetOrientation();
 };
 
 UCLASS()
-  class UROBOSIM_API URPR2InputController : public URInputController
+    class UROBOSIM_API URPR2InputController : public URInputController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
     URPR2InputController(){};
 
     virtual void SetupInputBindings(UInputComponent* IC);
 
     UFUNCTION()
-      virtual void MoveForward(float AxisValue);
+        virtual void MoveForward(float AxisValue);
     UFUNCTION()
-      virtual void TurnWheels(float AxisValue);
+        virtual void TurnWheels(float AxisValue);
 
 };
 
 UCLASS()
-  class UROBOSIM_API URWheelController : public URJointController
+    class UROBOSIM_API URWheelController : public URJointController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
     URWheelController(){};
 
     virtual void ControllComand(float DeltaTime);
@@ -92,10 +92,10 @@ UCLASS()
 };
 
 UCLASS()
-  class UROBOSIM_API URRevoluteController : public URJointController
+    class UROBOSIM_API URRevoluteController : public URJointController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
 
     URRevoluteController(){};
     virtual void ControllComand(float DeltaTime);
@@ -103,10 +103,10 @@ UCLASS()
 };
 
 UCLASS()
-  class UROBOSIM_API URCasterController : public URJointController
+    class UROBOSIM_API URCasterController : public URJointController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
 
     URCasterController(){};
     virtual void ControllComand(float DeltaTime);
@@ -114,10 +114,10 @@ UCLASS()
 };
 
 UCLASS()
-  class UROBOSIM_API URCasterOrientationController : public URJointController
+    class UROBOSIM_API URCasterOrientationController : public URJointController
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
 
     URCasterOrientationController(){};
     virtual void ControllComand(float DeltaTime);
@@ -126,10 +126,10 @@ UCLASS()
 
 
 UCLASS()
-  class UROBOSIM_API URControllerFactory : public UObject
+    class UROBOSIM_API URControllerFactory : public UObject
 {
-  GENERATED_BODY()
-  public:
+    GENERATED_BODY()
+public:
 
     URControllerFactory(){};
     URJointController* CreateController(FString Type, URStaticMeshComponent* Target);
