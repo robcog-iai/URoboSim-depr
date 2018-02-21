@@ -59,36 +59,15 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "Map")
         TArray<FRControllerDesciption> ControllerDescriptionList;
 
-    UStaticMesh* CylinderMesh;
-    UStaticMesh* CubeMesh;
-    UStaticMesh* SphereMesh;
     float Time = 0.f;
-    bool bMotorSet = false;
-    bool bAlreadyCreated = false;
-
 
     FRotator WheelTurnSpeed;
     FVector WheelSpinnSpeed;
     float DistanceWheelCaster = 5.0f;
     float WheelRadius = 8.0f;
-    // //TEMPLATE Load Obj From Path
-    // template <typename ObjClass>
-    // FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path);
-
-    // // Load Static Mesh From Path
-    // FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
         bool bSubstepEnabled = true;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-        float StartVelocity;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
-        float KSpring;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-        float Damping;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
         bool bEnableLogging;
@@ -98,10 +77,6 @@ public:
 
     TArray<FString> OuterWheel;
     TArray<FString> InnerWheel;
-    //	URConstraintFactory ConstraintFactory;
-
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") -
-    //bool bEnableROSBridge;
 
     //URoboSimEd Variables
     TArray<FString> CollisionFilterArr; //holds links on which self-collision should be disabled
@@ -139,11 +114,6 @@ public:
     // Create the Constraint
     URConstraint* CreateConstraint(URMeshHandler* MeshHandler);
 
-
-    //	UPhysicsConstraintComponent* CreateJoint(URStaticMeshComponent* ParentComp, FRJoint* Joint, FRLink* Link);
-
-
-
     UPROPERTY(EditAnywhere, Export)
         float GlobalVarA;
 
@@ -151,24 +121,6 @@ public:
     // The material used for all robot links
     UPROPERTY(EditAnywhere)
         UMaterial* BasicMaterial;
-
-    // Rotates the joint to the targeted rotation
-    bool RotateJoint(FString Name, FRotator TargetRotation);
-
-    // Moves the prismatic joint to the targeted position
-    bool MovePrismaticJoint(FString Name, FVector TargetTranslation);
-
-    // Get Joint Position in *Degrees*
-    UFUNCTION(BlueprintCallable, Category="Robot")
-        float GetJointPosition(FString JointName);
-
-    // Get Joint Velocity in Deg/s
-    UFUNCTION(BlueprintCallable, Category="Robot")
-        float GetJointVelocity(FString JointName);
-
-    // Add force / torque to given Joint
-    UFUNCTION(BlueprintCallable, Category="Robot")
-        void AddForceToJoint(FString JointName, float Force);
 
     FORCEINLINE void ScreenMsg(const FString& Msg)
     {
