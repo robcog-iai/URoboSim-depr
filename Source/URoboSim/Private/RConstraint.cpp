@@ -1,4 +1,5 @@
 #include "RConstraint.h"
+#include "RRobot.h"
 #include "RMeshHandler.h"
 
 void URFixedConstraint::Init(URMeshHandler* MeshH)
@@ -39,6 +40,12 @@ void URFixedConstraint::SetupConstraint()
     SetConstrainedComponents(MeshHandler->ParentComp, NAME_None, MeshHandler->MeshComp, NAME_None);
 
 
+    FRotator ParentRotation = MeshHandler->ParentComp->GetComponentRotation();
+    FRotator ChildRotation =  MeshHandler->MeshComp->GetComponentRotation();
+    FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
+
+    MeshHandler->Owner->OriginRotations.Add(MeshHandler->Joint->Name, InitialRotationRel);
+    MeshHandler->Owner->JointComponents.Add(MeshHandler->Joint->Name, this);
 
 }
 

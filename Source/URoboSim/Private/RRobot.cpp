@@ -162,12 +162,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
                 Constraint->InitDrive();
                 Constraint->SetupConstraint();
 
-                FRotator ParentRotation = MeshHandler->ParentComp->GetComponentRotation();
-                FRotator ChildRotation = MeshHandler->ShapeComp ? (MeshHandler->ShapeComp->GetComponentRotation()) : (MeshHandler->MeshComp->GetComponentRotation());
-                FQuat InitialRotationRel = FQuat(ParentRotation).Inverse() * FQuat(ChildRotation);
-
-                OriginRotations.Add(MeshHandler->Joint->Name, InitialRotationRel);
-                JointComponents.Add(MeshHandler->Joint->Name, Constraint);
 
                 MeshHandler->AddConnectedJoint();
 
