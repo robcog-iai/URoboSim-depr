@@ -53,8 +53,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
         TArray<URStaticMeshComponent*> WheelTurnComponents;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-        TMap<FString,URController*> ControllerList;
+    // UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+    //     TMap<FString,URController*> ControllerList;
 
     UPROPERTY(VisibleAnywhere, Category = "Map")
         TArray<FRControllerDesciption> ControllerDescriptionList;

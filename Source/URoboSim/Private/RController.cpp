@@ -5,21 +5,18 @@
 
 void URController::InitController()
 {
-
     Owner = Cast<ARRobot>(GetOuter());
 }
 
 void URInputController::InitController()
 {
     Super::InitController();
-    UE_LOG(LogTemp, Warning, TEXT("Enter Init Controller"));
     APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
     if (PC)
     {
         UInputComponent* IC = PC->InputComponent;
         if (IC)
         {
-            UE_LOG(LogTemp, Warning, TEXT("before set Input binings"));
             SetupInputBindings(IC);
         }
     }
@@ -52,24 +49,15 @@ void URJointController::SetTargetOrientation()
 
 void URRevoluteController::ControllComand(float DeltaTime)
 {
-
     FQuat Orientation = Target->GetComponentTransform().GetRotation();
     FQuat OrientationLocal = Target->GetLocalTransform();
     FQuat DeltaQ =  TargetOrientation*OrientationLocal.Inverse();
-    // FQuat DeltaQ = Orientation.Inverse() * TargetOrientation;
     FVector Axis;
     float Angle;
     DeltaQ.ToAxisAndAngle(Axis, Angle);
     Angle = FMath::RadiansToDegrees(Angle);
     FVector w = Orientation.RotateVector((Axis * Angle) / DeltaTime);
     Target->SetPhysicsAngularVelocityInDegrees(w,false);
-
-    // FVector w = Orientation.RotateVector();
-    // if(Target->GetName().Equals("l_upper_arm_roll_link"))
-    // {
-    //   UE_LOG(LogTemp, Log, TEXT("%s"),*DeltaQ.Euler().ToString());
-    // }
-    //
 }
 
 void URWheelController::ControllComand(float DeltaTime)
@@ -80,7 +68,6 @@ void URWheelController::ControllComand(float DeltaTime)
     if(Target->Owner->WheelSpinnSpeed.Size()==0)
     {
         float AngularVelocityWheel = Target->Owner->WheelTurnSpeed.Yaw * Target->Owner->DistanceWheelCaster /Target->Owner->WheelRadius;
-
         FQuat OrientationCaster = Caster->GetComponentTransform().GetRotation();
         FVector WTarget;
         if (Name.Contains("r_wheel"))
@@ -91,20 +78,13 @@ void URWheelController::ControllComand(float DeltaTime)
         {
             WTarget = OrientationCaster.RotateVector(FVector(0.0f,-1* AngularVelocityWheel, 0.0f));
         }
-        //DeltaW = WTarget - WActual;
         Target->SetPhysicsAngularVelocityInDegrees(WTarget,false);
-
-
     }
     else
     {
         Target->SetPhysicsAngularVelocityInDegrees(Orientation.RotateVector(Target->Owner->WheelSpinnSpeed),false);
     }
-
-
 }
-
-
 
 void URCasterController::SetTargetOrientation()
 {
@@ -113,18 +93,8 @@ void URCasterController::SetTargetOrientation()
 
 void URCasterController::ControllComand(float DeltaTime)
 {
-    // FQuat Orientation = Target->GetComponentTransform().GetRotation();
-
-    // Orientation  = Orientation*Target->Controller->TargetOrientation;
-    // Orientation  = Orientation*Target->Controller->TargetOrientation;
-
-    // UE_LOG(LogTemp, Log, TEXT("%s"),*Orientation.Euler().ToString());
-    // Target->SetWorldRotation(Orientation, false, nullptr ,ETeleportType::None);
-
-
     Target->SetWorldRotation(Target->Controller->TargetOrientation, false, nullptr ,ETeleportType::None);
 }
-
 
 void URWheelController::InitController()
 {
@@ -133,7 +103,6 @@ void URWheelController::InitController()
     {
         if(caster->GetName().Contains(GetName().Left(9)))
         {
-
             Caster = caster;
         }
     }
@@ -143,17 +112,11 @@ void URWheelController::InitController()
 void URCasterOrientationController::ControllComand(float DeltaTime)
 {
     FRotator AngularRotation(Target->Owner->WheelTurnSpeed * DeltaTime);
-
-
-    //UE_LOG(LogTemp, Error, TEXT("Target Orientation %s"), *Target->Owner->WheelTurnComponents[0]->TargetOrientation.ToString());
-
-
     for (auto& Caster : Target->Owner->WheelTurnComponents)
     {
         Caster->Controller->TargetOrientation = Caster->Controller->TargetOrientation* AngularRotation.Quaternion();
     }
 }
-
 
 URJointController*  URControllerFactory::CreateController(FString Type, URStaticMeshComponent* Target)
 {
@@ -181,7 +144,6 @@ URJointController*  URControllerFactory::CreateController(FString Type, URStatic
         Controller->Target = Target;
         Target->ControllerName = Controller->GetName();
     }
-
     return Controller;
 }
 

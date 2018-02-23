@@ -16,12 +16,6 @@ public:
     URController(){};
     ~URController(){};
 
-
-    virtual void ShowThatCreated()
-    {
-        UE_LOG(LogTemp, Error, TEXT("Created"));
-    };
-
     virtual void InitController();
 
     ARRobot* Owner;
