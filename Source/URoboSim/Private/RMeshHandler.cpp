@@ -189,7 +189,9 @@ void URMeshHandler::ConfigureLinkPhysics()
     MeshComp->AddLocalOffset(LocationVisual);
     MeshComp->AddLocalRotation(Link->Visual.Rotation);
 
-    MeshComp->SetWorldScale3D(Scale);
+    // MeshComp->SetWorldScale3D(Scale);
+    MeshComp->bHiddenInGame = true;
+    MeshComp->ToggleVisibility();
     MeshComp->RegisterComponent();
 }
 
