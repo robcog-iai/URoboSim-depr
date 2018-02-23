@@ -11,8 +11,6 @@
 
 URMeshHandler::URMeshHandler()
 {
-    // MeshComp = nullptr;
-    // Mesh = nullptr;
     static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCy(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshCu(TEXT("/Engine/BasicShapes/Cube.Cube"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshSp(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
@@ -29,17 +27,7 @@ URMeshHandler::URMeshHandler()
     {
         SphereMesh = MeshSp.Object;
     }
-
-
-    //ControllerFactory = NewObject<URControllerFactory>(Owner->Root, FName(TEXT("ControllerFactory")));
 }
-
-// URMeshHandler::URMeshHandler(const FObjectInitializer& ObjectInitializer)
-// {
-//   //Make our mesh component (named 'MyMesh') and set it up to be our root component
-//   MyMesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this,TEXT("MyMesh"));
-//   RootComponent = MyMesh;
-// }
 
 //TEMPLATE Load Obj From Path
     template <typename ObjClass>
@@ -58,16 +46,12 @@ FORCEINLINE UStaticMesh* URMeshHandler::LoadMeshFromPath(const FName& Path)
     return LoadObjFromPath<UStaticMesh>(Path);
 }
 
-
-
 bool URMeshHandler::CreateLink()
 {
     Link = &(Node->Link);
     Joint = &(Node->Joint);
 
     ParentComp = nullptr;
-
-    //OriginLocations = Owner->OriginLocations;
     Scale = Link->Visual.Scale;
     Joint->LowerLimit = FMath::RadiansToDegrees(Joint->LowerLimit);
     Joint->UpperLimit = FMath::RadiansToDegrees(Joint->UpperLimit);
@@ -85,13 +69,13 @@ bool URMeshHandler::CreateLink()
     {
         // Parent exists and is a UMeshComponent
         ParentComp = Owner->LinkComponents.FindRef(Node->Parent->Link.Name);
-        IsNotRoot = true;
+        bIsNotRoot = true;
     }
     else
     {
         // This node is the topmost so the parent has to be the RootComponent
         ParentComp = Owner->Root;
-        IsNotRoot = false;
+        bIsNotRoot = false;
     }
 
     if (Owner->LinkComponents.Contains(Link->Name))
@@ -108,26 +92,21 @@ bool URMeshHandler::CreateLink()
     FString ControllerType ="";
     if(Link->Name.Contains("caster_rotation_link"))
     {
-        //MeshComp->ControllerType = TEXT("caster");
         ControllerType = TEXT("caster");
     }
     else if(Link->Name.Contains("wheel_link"))
     {
-        //MeshComp->ControllerType = TEXT("wheel");
         ControllerType = TEXT("wheel");
     }
     else if(Link->Name.Contains("base_link"))
     {
-        //MeshComp->ControllerType = TEXT("orientation");
         ControllerType = TEXT("orientation");
     }
     else if (Joint->Type.Equals("revolute", ESearchCase::IgnoreCase) ||
             Joint->Type.Equals("continuous", ESearchCase::IgnoreCase))
     {
-        //MeshComp->ControllerType = Joint->Type;
         ControllerType = Joint->Type;
     }
-
 
     if(!ControllerType.Equals(""))
     {
@@ -136,11 +115,9 @@ bool URMeshHandler::CreateLink()
         Owner->ControllerDescriptionList.Add(ControllerDescription);
     }
 
-
     ConfigureMeshComponent();
     ConfigureLinkPhysics();
 
-    //MeshComp->Controller = nullptr;
     return true;
 }
 
@@ -157,8 +134,6 @@ void URMeshHandler::ConfigureMeshComponent()
     MeshComp->SetSimulatePhysics(true);
     MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->PositionSolverIterationCount = 255;
     MeshComp->GetBodyInstance(FName(Link->Name.GetCharArray().GetData()),false)->VelocitySolverIterationCount = 32;
-    MeshComp->RegisterComponent();
-
     FVector minBounds;
     FVector maxBounds;
     MeshComp->GetLocalBounds(minBounds, maxBounds);
@@ -174,9 +149,6 @@ void URMeshHandler::ConfigureMeshComponent()
     LocationVisual.X *= maxBounds.X * 2;
     LocationVisual.Y *= maxBounds.Y * 2;
 }
-
-
-
 
 void URMeshHandler::ConfigureLinkPhysics()
 {
@@ -204,35 +176,11 @@ void URMeshHandler::ConfigureLinkPhysics()
     MeshComp->AddLocalOffset(LocationVisual);
     MeshComp->AddLocalRotation(Link->Visual.Rotation);
 
-
-    // for (auto& Tag : GravityDisabledTags)
-    //   {
-    //     if (Link->Name.Contains(Tag))
-    //       {
-    //         //UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
-    //         MeshComp->SetEnableGravity(true);
-    //       }
-    //     else
-    //       {
-    //         MeshComp->SetEnableGravity(false);
-    //       }
-    //   }
     MeshComp->SetWorldScale3D(Scale);
     MeshComp->RegisterComponent();
 }
 
-
-// void URMeshHandler::ConfigureConstraint()
-// {
-//   Constraint->InitDrive();
-//   Constraint->SetDisableCollision(true);
-//   Constraint->AttachToComponent(ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-
-//   Constraint->RegisterComponent();
-//   Constraint->ApplyWorldOffset(FVector(0), false);
-// }
-
-void URMeshHandler::PositionLink()
+void URMeshHandler::PositionLinkAndJoint()
 {
     FVector LocationJoint = Joint->Location;
     //LocationJoint contains the location values as seen in the URDF, must be scaled by 100 when importing to UE4
@@ -269,7 +217,7 @@ FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
     TempJoint.Type = Joint->Type;
     TempJoint.Location = Joint->Location;
     TempJoint.Rotation = Joint->Rotation;
-    TempJoint.IsParent = IsParent;
+    TempJoint.bIsParent = IsParent;
 
     return TempJoint;
 }
@@ -325,17 +273,6 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
     }
     MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
 
-    // for (FString linkName : collisionFilterArr)
-    //   {
-    //     if (Link->Name.Contains(linkName))
-    //       {
-    //         MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-    //         MeshComp->WeldTo(ParentComp);
-    //         break;
-    //       }
-    //   }
-
-
     MeshComp->SetWorldLocation(ParentComp->GetComponentLocation());
     MeshComp->SetWorldRotation(ParentComp->GetComponentRotation());
     MeshComp->AddRelativeLocation(LocationVisual);
@@ -377,7 +314,5 @@ URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
         MeshHandler->Node = Node;
         MeshHandler->Owner = Owner;
     }
-
-
     return MeshHandler;
 }

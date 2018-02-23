@@ -19,15 +19,13 @@ public:
     URConstraint(){};
     class URMeshHandler* MeshHandler;
 
+    // Configures the Unreal Engine native joint drive
     virtual void InitDrive(){};
+    // Initializes and configures the contraint/ joint
     virtual void Init(URMeshHandler* MeshH){};
+    // Connects joint and links
     virtual void SetupConstraint(){};
     bool bEnableMotor = false;
-
-
-    // UPhysicsConstraintComponent* Constraint;
-    // FConstraintInstance ConstraintInstance;
-
 };
 
 UCLASS()

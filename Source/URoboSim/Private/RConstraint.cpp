@@ -15,11 +15,6 @@ void URFixedConstraint::Init(URMeshHandler* MeshH)
     ConstraintInstance.AngularRotationOffset = FRotator(0, 0, 0);
     ConstraintInstance.ProfileInstance.TwistLimit.bSoftConstraint = false;
     ConstraintInstance.ProfileInstance.ConeLimit.bSoftConstraint = false;
-    // ConstraintInstance.ProfileInstance.ProjectionAngularTolerance = 0.01f;
-    // ConstraintInstance.ProfileInstance.ProjectionLinearTolerance = 0.01f;
-    //  ConstraintInstance.ProfileInstance.bEnableProjection = false;
-
-
 }
 
 void URFixedConstraint::SetupConstraint()
@@ -28,7 +23,7 @@ void URFixedConstraint::SetupConstraint()
     AttachToComponent(MeshHandler->ParentComp, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
     RegisterComponent();
     ApplyWorldOffset(FVector(0), false);
-    MeshHandler->PositionLink();
+    MeshHandler->PositionLinkAndJoint();
 
     SetRelativeRotation(MeshHandler->Joint->Rotation);
 
@@ -131,14 +126,10 @@ void URRevoluteConstraint::Init(URMeshHandler* MeshH)
         ConstraintInstance.ProfileInstance.AngularDrive.AngularDriveMode = EAngularDriveMode::TwistAndSwing;
         ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.MaxForce = MeshHandler->Joint->Effort;
     }
-    //Constraint->ConstraintInstance = ConstraintInstance;
 }
 
 void URRevoluteConstraint::InitDrive()
 {
-    // SetAngularOrientationDrive(true, true);
-    // ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Damping = 1000;
-    //ConstraintInstance.ProfileInstance.AngularDrive.SwingDrive.Stiffness = 1000;
     float Strength = 100000000.0f;
     SetAngularDriveParams(Strength, Strength, Strength);
     SetLinearDriveParams(Strength, Strength, Strength);
@@ -189,8 +180,6 @@ void URPlanarConstraint::Init(URMeshHandler* MeshH)
         ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, SimpleLimit);
         ConstraintInstance.ProfileInstance.LinearDrive.XDrive.bEnablePositionDrive = bEnableMotor;
         ConstraintInstance.ProfileInstance.LinearDrive.XDrive.MaxForce = MeshHandler->Joint->Effort;
-
-
     }
 }
 
@@ -199,21 +188,6 @@ void URContinuousConstraint::Init(URMeshHandler* MeshH)
 {
     URFixedConstraint::Init(MeshH);
 
-    // if (MeshHandler->Joint->Axis.Z == 1) {
-    // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-    // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-    // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Locked, 0);
-    // }
-    // else if (MeshHandler->Joint->Axis.X == 1) {
-    // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Locked, 0);
-    // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Free, 0);
-    // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-    // }
-    // else if (MeshHandler->Joint->Axis.Y == 1) {
-    // 	ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);
-    // 	ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Locked, 0);
-    // 	ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Free, 0);
-    // }
     if (MeshHandler->Joint->Axis.Z == 1)
     {
         ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Free, 0);

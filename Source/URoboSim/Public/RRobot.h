@@ -17,8 +17,9 @@
 
 
 
-// A structure representing a URDF Joint
-
+// Robot that is created from joint and link information. Obtained through urdf.
+// TODO add compatibility with virtual links/ robots other than PR2
+// TODO add documentation to cpp
 UCLASS(Blueprintable)
 class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
 {
@@ -26,13 +27,14 @@ GENERATED_BODY()
 public:
     // All the links that are attached to this Robot. Key is Name of link, Value is the link.
 
-
+    // Factory for the MeshHandler which creates and initializes the Link/Mesh
     URMeshFactory* MeshFactory;
 
     // The root component
     UPROPERTY(EditAnywhere)
         URStaticMeshComponent* Root;
 
+    // Contains the Links/Meshs of the robot
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
         TMap<FString, URStaticMeshComponent*> LinkComponents;
 
@@ -47,23 +49,32 @@ public:
     // Original relative locations of links that are constrained with prismatic type
     TMap<FString, FVector> OriginLocations;
 
+    // List of all Wheel of the Robot
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
         TArray<URStaticMeshComponent*> WheelComponents;
 
+    //List of all caster/links responsible for the orientation of the wheels
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
         TArray<URStaticMeshComponent*> WheelTurnComponents;
 
-    // UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-    //     TMap<FString,URController*> ControllerList;
-
+    // List of Controller descibtions. Used by Controller component to create the controllers
     UPROPERTY(VisibleAnywhere, Category = "Map")
         TArray<FRControllerDesciption> ControllerDescriptionList;
 
     float Time = 0.f;
 
+    // Angular velocity of the wheels resulting in a forward motion of the robot
+    // TODO move to the controller component
     FRotator WheelTurnSpeed;
+    // Angular velocity of the wheels to change the direction of the robot
+    // TODO move to the controller component
     FVector WheelSpinnSpeed;
+
+    // Parameter for claculating angular velocity of wheels
+    // TODO move to the controller component
     float DistanceWheelCaster = 5.0f;
+    // Parameter for claculating angular velocity of wheels ;
+    // TODO move to the controller component
     float WheelRadius = 8.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
@@ -72,22 +83,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
         bool bEnableLogging;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drive Parameter")
-        float AngularVelocityOrTorque = 100000000.0f;
-
-    TArray<FString> OuterWheel;
-    TArray<FString> InnerWheel;
-
     //URoboSimEd Variables
     TArray<FString> CollisionFilterArr; //holds links on which self-collision should be disabled
     bool bEnableUROSBridge; //holds links on which self-collision should be disabled
     bool bEnableCollisionTags;
     bool bEnableAngularMotors;
-
     bool bEnableShapeCollisions;
 
-
-
+    // The material used for all robot links
+    UPROPERTY(EditAnywhere)
+        UMaterial* BasicMaterial;
 
     // Sets default values for this actor's properties
     ARRobot();
@@ -98,10 +103,6 @@ public:
     // Called every frame
     virtual void Tick(float DeltaSeconds) override;
 
-    // Called when the Robot is constructed
-    virtual void OnConstruction(const FTransform &Transform) override;
-
-
     // Adds the Link data to the Robot
     bool AddLink(FRLink Link);
 
@@ -111,16 +112,8 @@ public:
     // Creates the Robot using the links and joints added by AddLink and AddJoint
     bool CreateRobot();
 
-    // Create the Constraint
+    // Create the Constraint/Joints
     URConstraint* CreateConstraint(URMeshHandler* MeshHandler);
-
-    UPROPERTY(EditAnywhere, Export)
-        float GlobalVarA;
-
-
-    // The material used for all robot links
-    UPROPERTY(EditAnywhere)
-        UMaterial* BasicMaterial;
 
     FORCEINLINE void ScreenMsg(const FString& Msg)
     {

@@ -54,12 +54,12 @@ void URStaticMeshComponent::BeginPlay()
 
     PRigidBody = GetBodyInstance()->GetPxRigidBody_AssumesLocked();
 
-    StartH = GetComponentLocation().Z;
-    StartPos = GetComponentLocation();
-    StartRot = GetComponentRotation();
-
-    StartRelativeTransform = GetRelativeTransform();
-    StartPos = StartRelativeTransform.GetLocation();
+    // StartH = GetComponentLocation().Z;
+    // StartPos = GetComponentLocation();
+    // StartRot = GetComponentRotation();
+    //
+    // StartRelativeTransform = GetRelativeTransform();
+    // StartPos = StartRelativeTransform.GetLocation();
 }
 
 void URStaticMeshComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -91,7 +91,6 @@ void URStaticMeshComponent::DoPhysics(float DeltaTime, bool InSubstep)
 {
     if(Controller)
     {
-        //ScreenMsg("Command");
         Controller->ControllComand(DeltaTime);
     }
 }

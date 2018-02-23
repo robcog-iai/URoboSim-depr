@@ -7,7 +7,7 @@
 #include "RController.generated.h"
 
 class ARRobot;
-
+//implements the controller functions for the robot.
 UCLASS()
     class UROBOSIM_API URController : public UObject
 {
@@ -22,6 +22,7 @@ public:
 
 };
 
+// Handle the key input from the unreal editor and passes it to the Joint controller
 UCLASS()
     class UROBOSIM_API URInputController : public URController
 {
@@ -35,9 +36,9 @@ public:
         virtual void MoveForward(float AxisValue){};
     UFUNCTION()
         virtual void TurnWheels(float AxisValue){};
-
 };
 
+// Controlls implements the joint motor behaivior
 UCLASS()
     class UROBOSIM_API URJointController : public URController
 {
@@ -115,7 +116,6 @@ public:
 
     URCasterOrientationController(){};
     virtual void ControllComand(float DeltaTime);
-    //virtual void InitController();
 };
 
 

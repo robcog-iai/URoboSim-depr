@@ -14,12 +14,10 @@ struct UROBOSIM_API FRConnectedJoint
   FString Type;
 
   UPROPERTY(EditAnywhere)
-  bool IsParent;
+  bool bIsParent;
 
   FVector Location;
   FRotator Rotation;
-
-
 
   bool operator== (const FRConnectedJoint &Joint)
   {
@@ -61,7 +59,7 @@ struct UROBOSIM_API FRJoint
   FString Parent;
   FString Child;
 
-  FVector Axis;		
+  FVector Axis;
 
   float LowerLimit;
   float UpperLimit;

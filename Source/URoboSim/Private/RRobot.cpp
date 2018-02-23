@@ -53,15 +53,6 @@ void ARRobot::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void ARRobot::OnConstruction(const FTransform &Transform)
-{
-    // if(!bAlreadyCreated)
-    //     {
-    //         ParseURDF();
-    //         UE_LOG(LogTemp, Error, TEXT("test %d"), WheelTurnComponents.Num());
-    //
-    //     }
-}
 
 bool ARRobot::AddLink(FRLink Link)
 {
@@ -155,7 +146,7 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
 
 
 
-            if (MeshHandler->IsNotRoot)
+            if (MeshHandler->bIsNotRoot)
             {
                 URConstraint* Constraint = CreateConstraint(MeshHandler);
                 //	  URConstraint* Constraint = ConstraintFactory.MakeConstraint(ParentComp, Joint, Link);

@@ -11,7 +11,6 @@ URControllerComponent::URControllerComponent()
     // off to improve performance if you don't need them.
     PrimaryComponentTick.bCanEverTick = true;
     ControllerFactory = CreateDefaultSubobject<URControllerFactory>(FName(TEXT("ControllerFactory")));
-    // ...
 }
 
 
@@ -28,8 +27,6 @@ void URControllerComponent::BeginPlay()
 void URControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    // ...
 }
 
 
@@ -41,8 +38,6 @@ URPR2ControllerComponent::URPR2ControllerComponent()
 
     // off to improve performance if you don't need them.
     PrimaryComponentTick.bCanEverTick = true;
-
-    // ...
 }
 
 
@@ -50,7 +45,6 @@ URPR2ControllerComponent::URPR2ControllerComponent()
 void URPR2ControllerComponent::BeginPlay()
 {
     Super::BeginPlay();
-    //  CreateController();
 }
 
 
@@ -58,8 +52,6 @@ void URPR2ControllerComponent::BeginPlay()
 void URPR2ControllerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    // ...
 }
 
 void URPR2ControllerComponent::CreateController()
@@ -71,13 +63,6 @@ void URPR2ControllerComponent::CreateController()
         Link->Controller = ControllerFactory->CreateController(CD.ControllerType, Link);
         Link->Controller->InitController();
         Link->Controller->SetTargetOrientation();
-        // Link->Controller->TargetOrientation = Link->GetLocalTransform();
-
-
-        if(Link->GetName().Equals("br_caster_rotation_link"))
-        {
-            UE_LOG(LogTemp, Log, TEXT("%s"),*Link->Controller->TargetOrientation.ToString());
-        }
     }
     InputController = ControllerFactory->CreateInputController("pr2", Owner);
     InputController->InitController();
