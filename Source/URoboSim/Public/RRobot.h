@@ -1,247 +1,146 @@
+
 // Copyright 2017, Institute for Artificial Intelligence - University of Bremen
 
 #pragma once
 
-#include "IURoboSimEd.h"
+
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Runtime/Engine/Classes/Components/InputComponent.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/Pawn.h"
+#include "RConstraint.h"
+#include "RMeshHandler.h"
+#include "Structs.h"
+#include "RController.h"
 #include "RRobot.generated.h"
 
+
+
+// Robot that is created from joint and link information. Obtained through urdf.
+// TODO add compatibility with virtual links/ robots other than PR2
+// TODO add documentation to cpp
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
+class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
 {
-	GENERATED_BODY()
-
+GENERATED_BODY()
 public:
-	// All the links that are attached to this Robot. Key is Name of link, Value is the link.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-	TMap<FString, UPrimitiveComponent*> LinkComponents;
+    // All the links that are attached to this Robot. Key is Name of link, Value is the link.
 
-	// All the joints that connect the links together. Key is Name of joint, Value is the joint.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-	TMap<FString, UPhysicsConstraintComponent*> JointComponents;
+    // Factory for the MeshHandler which creates and initializes the Link/Mesh
+    URMeshFactory* MeshFactory;
 
-    // Initial Relative Rotation (Quaternion) 
+    // The root component
+    UPROPERTY(EditAnywhere)
+        URStaticMeshComponent* Root;
+
+    // Contains the Links/Meshs of the robot
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
-    TMap<FString, FQuat> OriginRotations; 
+        TMap<FString, URStaticMeshComponent*> LinkComponents;
 
-	// Original relative locations of links that are constrained with prismatic type
-	TMap<FString, FVector> OriginLocations;
+    // All the joints that connect the links together. Key is Name of joint, Value is the joint.
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+        TMap<FString, UPhysicsConstraintComponent*> JointComponents;
 
-	UStaticMesh* CylinderMesh;
-	UStaticMesh* CubeMesh;
-	UStaticMesh* SphereMesh;
-	float Time = 0.f;
-	bool bMotorSet = false;
-	FConstraintInstance NewConstraintInstanceFixed();
+    // Initial Relative Rotation (Quaternion)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+        TMap<FString, FQuat> OriginRotations;
 
-	//TEMPLATE Load Obj From Path
-	template <typename ObjClass>
-	FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path);
+    // Original relative locations of links that are constrained with prismatic type
+    TMap<FString, FVector> OriginLocations;
 
-	// Load Static Mesh From Path 
-	FORCEINLINE UStaticMesh* LoadMeshFromPath(const FName& Path);
+    // List of all Wheel of the Robot
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+        TArray<URStaticMeshComponent*> WheelComponents;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-	bool bSubstepEnabled;
+    //List of all caster/links responsible for the orientation of the wheels
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Map")
+        TArray<URStaticMeshComponent*> WheelTurnComponents;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-	float StartVelocity;
+    // List of Controller descibtions. Used by Controller component to create the controllers
+    UPROPERTY(VisibleAnywhere, Category = "Map")
+        TArray<FRControllerDesciption> ControllerDescriptionList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
-	float KSpring;
+    float Time = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-	float Damping;	
+    // Angular velocity of the wheels resulting in a forward motion of the robot
+    // TODO move to the controller component
+    FRotator WheelTurnSpeed;
+    // Angular velocity of the wheels to change the direction of the robot
+    // TODO move to the controller component
+    FVector WheelSpinnSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
-	bool bEnableLogging;
+    // Parameter for claculating angular velocity of wheels
+    // TODO move to the controller component
+    float DistanceWheelCaster = 5.0f;
+    // Parameter for claculating angular velocity of wheels ;
+    // TODO move to the controller component
+    float WheelRadius = 8.0f;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS Bridge") - 
-	//bool bEnableROSBridge;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+        bool bSubstepEnabled = true;
 
-	//URoboSimEd Variables
-	TArray<FString> collisionFilterArr; //holds links on which self-collision should be disabled
-	bool bEnableUROSBridge; //holds links on which self-collision should be disabled
-	bool bEnableCollisionTags;
-	bool bEnableAngularMotors;
-	bool bEnableShapeCollisions;
-	
-	// A structure representing a URDF Joint
-	struct FRJoint
-	{
-		FString Name;
-		FString Type;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
+        bool bEnableLogging;
 
-		FVector Location;
-		FRotator Rotation;
+    //URoboSimEd Variables
+    TArray<FString> CollisionFilterArr; //holds links on which self-collision should be disabled
+    bool bEnableUROSBridge; //holds links on which self-collision should be disabled
+    bool bEnableCollisionTags;
+    bool bEnableAngularMotors;
+    bool bEnableShapeCollisions;
 
-		FString Parent;
-		FString Child;
+    // The material used for all robot links
+    UPROPERTY(EditAnywhere)
+        UMaterial* BasicMaterial;
 
-		FVector Axis;		
+    // Sets default values for this actor's properties
+    ARRobot();
 
-		float LowerLimit;
-		float UpperLimit;
-		float Effort;
-		float Velocity;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-		//safety_controller
-		float k_velocity;
-		//dynamics
-		float damping;
-		float friction;
+    // Called every frame
+    virtual void Tick(float DeltaSeconds) override;
 
-		bool operator== (const FRJoint &Joint)
-		{
-			return Name.Equals(Joint.Name);
-		}
+    // Adds the Link data to the Robot
+    bool AddLink(FRLink Link);
 
-		bool operator== (const FString &String)
-		{
-			return Name.Equals(String);
-		}
-	};
+    // Adds the Joint data to the Robot
+    bool AddJoint(FRJoint Joint);
 
-	// A structure representing a URDF Link
-	struct FRLink
-	{
-		FString Name;
+    // Creates the Robot using the links and joints added by AddLink and AddJoint
+    bool CreateRobot();
 
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			float Mass;
-		} Inertial;
+    // Create the Constraint/Joints
+    URConstraint* CreateConstraint(URMeshHandler* MeshHandler);
 
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			FString Mesh;
-			FVector Scale;
+    FORCEINLINE void ScreenMsg(const FString& Msg)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, *Msg);
+    }
 
-			// Optional. The material of the visual element.
-			struct
-			{
-				FString Name;
-				FColor Color;
-				FString Texture;
-			} Material;
-		} Visual;
-
-		struct
-		{
-			FVector Location;
-			FRotator Rotation;
-			FString Mesh;
-			FVector Scale;
-		} Collision;
-
-		bool operator== (const FRLink &Link)
-		{
-			return Name.Equals(Link.Name);
-		}
-		bool operator== (const FString &String)
-		{
-			return Name.Equals(String);
-		}
-	};
-
-	// Sets default values for this actor's properties
-	ARRobot();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void Tick(float DeltaSeconds) override;
-
-	// Called when the Robot is constructed
-	virtual void OnConstruction(const FTransform &Transform) override;
-
-	// The root component
-	USceneComponent* Root;
-
-	// Adds the Link data to the Robot
-	bool AddLink(FRLink Link);
-
-	// Adds the Joint data to the Robot
-	bool AddJoint(FRJoint Joint);
-
-	// Creates the Robot using the links and joints added by AddLink and AddJoint
-	bool CreateRobot();
-
-	// Parses the URDF code written into property XmlUrdf
-	void ParseURDF();
-
-
-	UPROPERTY(EditAnywhere, Export)
-	float GlobalVarA;
-
-	// Copy the XML URDF Code
-	UPROPERTY(EditAnywhere, Export)
-	FString XmlUrdf;
-
-	// The material used for all robot links
-	UPROPERTY(EditAnywhere)
-	UMaterial* BasicMaterial;
-
-	// Rotates the joint to the targeted rotation
-	bool RotateJoint(FString Name, FRotator TargetRotation);
-
-	// Moves the prismatic joint to the targeted position
-	bool MovePrismaticJoint(FString Name, FVector TargetTranslation);
-
-    // Get Joint Position in *Degrees*
-    UFUNCTION(BlueprintCallable, Category="Robot")
-    float GetJointPosition(FString JointName);
-
-    // Get Joint Velocity in Deg/s
-    UFUNCTION(BlueprintCallable, Category="Robot")
-    float GetJointVelocity(FString JointName);
-
-    // Add force / torque to given Joint
-    UFUNCTION(BlueprintCallable, Category="Robot")
-    void AddForceToJoint(FString JointName, float Force);
+    FORCEINLINE void ScreenMsg(const FString& Msg, const FString& Msg2)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s %s"), *Msg, *Msg2));
+    }
 
 private:
-	// Array of links added with AddLink. Is cleared in the process of creating the Robot
-	TArray<FRLink> Links;
+    // Array of links added with AddLink. Is cleared in the process of creating the Robot
+    TArray<FRLink> Links;
 
-	// Array of joints added with AddJoint. Is cleared in the process of creating the Robot
-	TArray<FRJoint> Joints;
+    // Array of joints added with AddJoint. Is cleared in the process of creating the Robot
+    TArray<FRJoint> Joints;
 
-	// Node to represent the Robot virtually as a tree
-	struct FRNode
-	{
-		FRLink Link;
-		FRJoint Joint;
+    // The BaseNode that holds the topmost link and has no parent or joint
+    FRNode* BaseNode = nullptr;
 
-		FRNode* Parent;
-		TArray<FRNode*> Children;
+    // Builds a tree with the Elements in the Arrays Links and Joints (breadth-first)
+    void BuildTree(FRNode* Node);
 
-		~FRNode()
-		{
-			for (int c = 0; c < Children.Num(); c++)
-			{
-				delete Children[c];
-			}
-		}
-	};
+    // Recursively creates the Robots physical links and joints
+    bool CreateActorsFromNode(FRNode* Node);
 
-	// The BaseNode that holds the topmost link and has no parent or joint
-	FRNode* BaseNode = nullptr;
-
-	// Configures the constraint using the given Joint
-	FConstraintInstance SetConstraint(FRJoint* Joint);
-
-	// Builds a tree with the Elements in the Arrays Links and Joints (breadth-first)
-	void BuildTree(FRNode* Node);
-
-	// Recursively creates the Robots physical links and joints
-	bool CreateActorsFromNode(FRNode* Node);
 };
+
+
+
