@@ -45,7 +45,8 @@
 *.workspace
 *.kdev4
 *.txt
-
+*.uproject
+*.uplugin
 
 # Precompiled Assets
 SourceArt/**/*.png
@@ -71,3 +72,15 @@ DerivedDataCache/*
 
 Config/*
 Makefile
+.dir-locals.el
+CMakeFiles/
+Content/
+Examples/
+GPATH
+GRTAGS
+GTAGS
+TAGS
+cmake_install.cmake
+compile_commands.json
+core
+
