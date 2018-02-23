@@ -6,6 +6,10 @@
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
 #include "RController.generated.h"
 
+
+//TODO bug if durned by 180degree
+
+
 class ARRobot;
 //implements the controller functions for the robot.
 UCLASS()
