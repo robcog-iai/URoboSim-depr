@@ -161,9 +161,7 @@ void URMeshHandler::ConfigureLinkPhysics()
 
     MeshComp->SetSimulatePhysics(true);
     MeshComp->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
-    //MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
     MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-    //Disabling collisions for all shape components turned out to be necessary for the pr2.
     if (!bEnableShapeCollisions)
     {
         MeshComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);

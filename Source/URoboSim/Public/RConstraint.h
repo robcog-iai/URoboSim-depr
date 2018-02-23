@@ -34,8 +34,11 @@ class UROBOSIM_API URFixedConstraint : public URConstraint
     GENERATED_BODY()
 public:
     URFixedConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive(){};
+    // Connects joint and links
     void SetupConstraint();
 };
 
@@ -45,7 +48,9 @@ class UROBOSIM_API URFloatingConstraint : public URFixedConstraint
     GENERATED_BODY()
 public:
     URFloatingConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive(){};
 };
 
@@ -55,7 +60,9 @@ class UROBOSIM_API URPrismaticConstraint : public URFixedConstraint
     GENERATED_BODY()
 public:
     URPrismaticConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive();
 };
 
@@ -65,7 +72,9 @@ class UROBOSIM_API URRevoluteConstraint : public URFixedConstraint
     GENERATED_BODY()
 public:
     URRevoluteConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive();
 };
 
@@ -75,7 +84,9 @@ class UROBOSIM_API URPlanarConstraint : public URFixedConstraint
     GENERATED_BODY()
 public:
     URPlanarConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive(){};
 };
 
@@ -85,7 +96,9 @@ class UROBOSIM_API URContinuousConstraint : public URFixedConstraint
     GENERATED_BODY()
 public:
     URContinuousConstraint(){};
+    // Initializes and configures the contraint/ joint
     void Init(URMeshHandler* MeshH);
+    // Configures the Unreal Engine native joint drive
     void InitDrive();
 };
 
