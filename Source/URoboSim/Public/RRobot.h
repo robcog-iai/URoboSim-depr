@@ -3,7 +3,7 @@
 
 #pragma once
 
-
+#include "IURoboSimEd.h"
 #include "IURoboSim.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Runtime/Engine/Classes/Components/InputComponent.h"
@@ -20,7 +20,7 @@
 // TODO add compatibility with virtual links/ robots other than PR2
 // TODO add documentation to cpp
 UCLASS(Blueprintable)
-class UROBOSIM_API ARRobot : public AActor//, public IURoboSimEd
+class UROBOSIM_API ARRobot : public AActor, public IURoboSimEd
 {
 GENERATED_BODY()
 public:

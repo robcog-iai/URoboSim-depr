@@ -7,7 +7,7 @@ public class URoboSim : ModuleRules
 	public URoboSim(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+
 		PublicIncludePaths.AddRange(
 			new string[] {
 				"URoboSim/Public",
@@ -15,8 +15,8 @@ public class URoboSim : ModuleRules
 				// ... add public include paths required here ...
 			}
 			);
-				
-		
+
+
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				"URoboSim/Private",
@@ -24,26 +24,26 @@ public class URoboSim : ModuleRules
 				// ... add other private include paths required here ...
 			}
 			);
-			
-		
+
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX"
+                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX", "URoboSimEd"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX"
-				// ... add private dependencies that you statically link with here ...	
+                    		"Core", "CoreUObject", "Slate", "SlateCore", "Engine",  "HeadMountedDisplay", "XmlParser", "UnrealEd", "InputCore", "PhysX", "APEX", "URoboSimEd"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
-		
-		
+
+
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
