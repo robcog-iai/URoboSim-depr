@@ -88,5 +88,6 @@ public:
 
 	FRURDFParser(ARRobot* Robot);
 
+    virtual void ParseURDF(FString XmlUrdf);
 	virtual ~FRURDFParser();
 };
