@@ -141,10 +141,6 @@ bool ARRobot::CreateActorsFromNode(FRNode* Node)
     {
         if (MeshHandler->CreateLink())
         {
-
-
-
-
             if (MeshHandler->bIsNotRoot)
             {
                 URConstraint* Constraint = CreateConstraint(MeshHandler);

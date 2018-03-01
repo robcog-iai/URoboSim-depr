@@ -18,7 +18,7 @@ bool FRURDFParser::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* Att
 {
     FString AttName(AttributeName);
     FString AttValue(AttributeValue);
-
+    UE_LOG(LogTemp,Log,TEXT("%s"),*( Stack.Top()+" : "+AttName+" : "+AttValue ));
 
     if (!AttName.IsEmpty() && !AttValue.IsEmpty())
     {
@@ -439,7 +439,6 @@ TPair<FString, FVector> FRURDFParser::MeshAndScale(FString Element)
 void  FRURDFParser::ParseURDF(FString XmlUrdf)
 {
 
-    UE_LOG(LogTemp, Log, TEXT("Start Parse URDF"));
     // Callback Object for parser
     // FRURDFParser Call(this);
 

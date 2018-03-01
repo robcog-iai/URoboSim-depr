@@ -121,6 +121,14 @@ public:
 };
 
 UCLASS()
+class UROBOSIM_API URMeshHandlerFoundation : public URMeshHandler
+{
+    GENERATED_BODY()
+public:
+    URMeshHandlerFoundation(){};
+    void CreateMesh();
+};
+UCLASS()
 class UROBOSIM_API URMeshHandlerCustom: public URMeshHandler
 {
     GENERATED_BODY()
@@ -129,7 +137,6 @@ public:
     void CreateMesh();
     void CreateMeshComponent();
     void ConfigureLinkPhysics();
-
 };
 
 

@@ -144,6 +144,7 @@ void URMeshHandler::CreateMeshComponent()
 
 void URMeshHandler::ConfigureMeshComponent()
 {
+
     MeshComp->SetStaticMesh(Mesh);
 
     MeshComp->SetSimulatePhysics(true);
@@ -237,6 +238,11 @@ FRConnectedJoint URMeshHandler::CreateConnectedJoint(bool IsParent)
     return TempJoint;
 }
 
+void URMeshHandlerFoundation::CreateMesh()
+{
+    Mesh = CubeMesh;
+}
+
 void URMeshHandlerBox::CreateMesh()
 {
     Mesh = CubeMesh;
@@ -255,13 +261,19 @@ void URMeshHandlerCylinder::CreateMesh()
 void URMeshHandlerCustom::CreateMesh()
 {
     if (bUseVisual)
+    {
         Mesh = LoadMeshFromPath(FName(*Link->Visual.Mesh));
+        UE_LOG(LogTemp, Error, TEXT("%s"),*Link->Visual.Mesh);
+    }
     else
+    {
         Mesh = LoadMeshFromPath(FName(*Link->Collision.Mesh));
+    }
 }
 
 void URMeshHandlerCustom::CreateMeshComponent()
 {
+
     MeshComp = NewObject<URStaticMeshComponent>(Owner->Root, FName(Link->Name.GetCharArray().GetData()));
     MeshComp->Owner = Owner;
     if (bWriteParentTFTag)
@@ -276,7 +288,6 @@ void URMeshHandlerCustom::CreateMeshComponent()
         FString TFTag = FString::Printf(TEXT("TF;ChildFrameId,%s;"),
                 *Link->Name);
         MeshComp->ComponentTags.Add(FName(*TFTag));
-
     }
 
 }
@@ -293,11 +304,11 @@ void URMeshHandlerCustom::ConfigureLinkPhysics()
         if (Link->Name.Contains(Tag))
         {
             //UE_LOG(LogTemp, Display, TEXT("Disable Gravity"));
-            MeshComp->SetEnableGravity(true);
+            MeshComp->SetEnableGravity(false);
         }
         else
         {
-            MeshComp->SetEnableGravity(false);
+            MeshComp->SetEnableGravity(true);
         }
     }
     MeshComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
@@ -314,12 +325,21 @@ URMeshHandler* URMeshFactory::CreateMeshHandler(ARRobot* Owner, FRNode* Node)
 
     FRLink* Link = &(Node->Link);
     bool bUseVisual = !(Link->Visual.Mesh.IsEmpty());
-    bool bUseCollision = false;
+    bool bUseCollision = !(Link->Collision.Mesh.IsEmpty());//false;
 
     // Collision and Visual are the same
     if (!bUseCollision && !bUseVisual)
     {
-
+        if ( Link->Name.Equals("world"))
+        {
+            MeshHandler = NewObject<URMeshHandlerFoundation>(Owner);
+            MeshHandler->Node = Node;
+            MeshHandler->Owner = Owner;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("No Mesh created for %s"), *Link->Name);
+        }
     }
     else
     {
