@@ -18,7 +18,7 @@ public:
 #if WITH_EDITOR
 
 	/** Saves the XML */
-	UPROPERTY(VisibleAnywhere, AssetRegistrySearchable)
+	UPROPERTY(VisibleAnywhere, AssetRegistrySearchable, Category = ImportSettings)
 	FString Xml;
 
 	/** For Drag and Drop reimport. */

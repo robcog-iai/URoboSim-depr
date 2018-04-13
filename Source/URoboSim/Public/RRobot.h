@@ -50,7 +50,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	float StartVelocity;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SubsteppingParameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
 	float KSpring;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substepping Parameters")
@@ -179,15 +179,15 @@ public:
 	void ParseURDF();
 
 
-	UPROPERTY(EditAnywhere, Export)
+	UPROPERTY(EditAnywhere, Export, Category="Robot")
 	float GlobalVarA;
 
 	// Copy the XML URDF Code
-	UPROPERTY(EditAnywhere, Export)
+	UPROPERTY(EditAnywhere, Export, Category="Robot")
 	FString XmlUrdf;
 
 	// The material used for all robot links
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Robot")
 	UMaterial* BasicMaterial;
 
 	// Rotates the joint to the targeted rotation

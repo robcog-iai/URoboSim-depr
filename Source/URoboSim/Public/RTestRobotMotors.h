@@ -22,11 +22,11 @@ class UROBOSIM_API ARTestRobotMotors : public ARRobot
 	virtual void Tick(float DeltaSeconds) override;
 
 	// Target rotation for motor of second_to_third_joint
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Robot Motors")
 	FRotator TargetRotation;
 
 	// Target location for motor of first_to_second_joint
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Robot Motors")
 	FVector TargetLocation;
 
 };
