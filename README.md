@@ -4,6 +4,10 @@
 
 Unreal engine based robot simulator.
 
+## Experimental
+
+* new version with [SDF](http://sdformat.org/) format support coming soon
+
 # Features
 
 * Import a URDF file into UE4 by drag & drop into the content browser. A new asset is created with the URDF information. Before dragging the asset into the game world, certain properties can be edited using a new visual interface found in the Editor Mode window.
