@@ -1,12 +1,12 @@
-![Alt text](Documentation/Img/robot.png)
+![](Documentation/Img/robot.png)
 
-# URoboSim
+# URoboSim -- DEPRECATED
 
 Unreal engine based robot simulator.
 
-## Experimental
+# DEPRECATED
 
-* new version with [SDF](http://sdformat.org/) format support coming soon
+* New version is under development. See current state: ![](Documentation/Img/PR2.gif)
 
 # Features
 
