@@ -1,12 +1,13 @@
 ![](Documentation/Img/robot.png)
 
-# URoboSim -- DEPRECATED
+# URoboSim (DEPRECATED)
 
 Unreal engine based robot simulator.
 
-# DEPRECATED
+### DEPRECATED
 
-* New version is under development. See current state: ![](Documentation/Img/PR2.gif)
+* The current plugin is in a very experimental state (**no longer maintained**) and was created to test the capabilities of having a robot simulator in Unreal Engine.
+* We are currently working on a new version using a different approach. Early state of PR2: ![](Documentation/Img/PR2.gif)
 
 # Features
 
