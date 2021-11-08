@@ -7,6 +7,7 @@ Unreal engine based robot simulator.
 ### DEPRECATED
 
 * The current plugin is in a very experimental state (**no longer maintained**) and was created to test the capabilities of having a robot simulator in Unreal Engine.
+* Currently maintained version is located here: https://github.com/urobosim/URoboSim
 * We are currently working on a new version using a different approach. Early state of PR2: ![](Documentation/Img/PR2.gif)
 
 # Features
